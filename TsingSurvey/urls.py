@@ -15,9 +15,9 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from TsingSurvey.views import hello
+from Sample.views import test
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^hello/', hello),
+    url(r'^test/(.*)/(.*)/$', test),
 ]
