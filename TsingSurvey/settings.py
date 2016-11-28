@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'User',
+    'SUser',
 ]
 
 MIDDLEWARE = [
@@ -67,11 +67,6 @@ TEMPLATES = [
         },
     },
 ]
-
-# TEMPLATE_DIRS = (
-    # os.path.join(os.path.dirname(__file__), 'Template').replace('\\','/'),
-    # '/Users/luyiqin/Project/TsingSurvey/Template',
-# )
 
 WSGI_APPLICATION = 'TsingSurvey.wsgi.application'
 
