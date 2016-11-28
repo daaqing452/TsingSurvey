@@ -54,7 +54,7 @@ ROOT_URLCONF = 'TsingSurvey.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'Template'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -66,6 +66,11 @@ TEMPLATES = [
         },
     },
 ]
+
+# TEMPLATE_DIRS = (
+    # os.path.join(os.path.dirname(__file__), 'Template').replace('\\','/'),
+    # '/Users/luyiqin/Project/TsingSurvey/Template',
+# )
 
 WSGI_APPLICATION = 'TsingSurvey.wsgi.application'
 
