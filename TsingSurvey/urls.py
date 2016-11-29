@@ -15,15 +15,17 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from Test.views import test
-from SUser.views import login, logout, index
-from Utils.views import install
+from SUser.views import index, login, logout, adminlist
+from Utils.views import install, installtest
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^test/(.*)/(.*)/$', test),
+
     url(r'^login/$', login),
     url(r'^logout/$', logout),
     url(r'^index/$', index),
-    url(r'^install/$', install)
+    url(r'^adminlist/$', adminlist),
+
+    url(r'^install/$', install),
+    url(r'^installtest/$', installtest)
 ]

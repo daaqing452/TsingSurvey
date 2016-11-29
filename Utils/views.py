@@ -5,16 +5,29 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render
 
-def check_and_create(username, password, is_superuser):
+class Utils:
+	ROOT_PASSWORD = '123'
+
+	@staticmethod
+	def username_to_password(username):
+		return str((long(username) ^ 3968766407) % 104939997)
+
+
+def check_and_create(username, password, is_superuser, is_staff):
 	user = auth.authenticate(username=username, password=password)
 	if user is None:
-		User.objects.create_user(username=username, password=password, is_superuser=is_superuser)
+		User.objects.create_user(username=username, password=password, is_superuser=is_superuser, is_staff=is_staff)
 		return 'add ' + username + ' successful <br/>'
 	else:
 		return username + ' already exists <br/>'
 
 def install(request):
 	html = ''
-	html += check_and_create('admin', '123', 1)
-	html += check_and_create('user0', '123', 0)
+	html += check_and_create('root', Utils.ROOT_PASSWORD, 1, 1)
+	# html += check_and_create('admin', '123', 0, 1)
+	# html += check_and_create('user0', '123', 0, 0)
 	return HttpResponse(html)
+
+def installtest(request):
+	User.objects.create_user(username='admin_t', password=123, is_superuser=0, is_staff=1)
+	return HttpResponse('hello')
