@@ -3,27 +3,28 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>管理员列表</title>
+	<title>用户列表</title>
 </head>
 
 <body>
 <a href='/logout/'>登出</a> <br/>
+<a href='/index/'>首页</a> <br/>
 
-<h3>管理员列表</h3>
+<h3>用户列表</h3>
 <table>
-	{% for admin in admin_list %}
+{% for suser in suser_list %}
 	<tr>
-		<td> {{ admin.username }} </td>
+		<td> {{ suser.student_id }} </td>
 		<td> 删除 </td>
 	</tr>
-	{% endfor %}
+{% endfor %}
 </table>
 </body>
 
-<h3>添加管理员</h3>
+<h3>添加用户</h3>
 <form method='post' enctype='multipart/form-data'>
 	{% csrf_token %}
-	<input type='text' name='username' />
+	<input type='text' name='student_id' />
 	<input type='submit' value='添加' />
 </form>
 {{ info }}

@@ -4,6 +4,7 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render
+from SUser.models import SUser
 
 class Utils:
 	ROOT_PASSWORD = '123'
@@ -12,11 +13,11 @@ class Utils:
 	def username_to_password(username):
 		return str((long(username) ^ 3968766407) % 104939997)
 
-
 def check_and_create(username, password, is_superuser, is_staff):
 	user = auth.authenticate(username=username, password=password)
 	if user is None:
-		User.objects.create_user(username=username, password=password, is_superuser=is_superuser, is_staff=is_staff)
+		user = User.objects.create_user(username=username, password=password, is_superuser=is_superuser, is_staff=is_staff)
+		suser = SUser.objects.create(uid=user.id)
 		return 'add ' + username + ' successful <br/>'
 	else:
 		return username + ' already exists <br/>'
@@ -29,5 +30,7 @@ def install(request):
 	return HttpResponse(html)
 
 def installtest(request):
-	User.objects.create_user(username='admin_t', password=123, is_superuser=0, is_staff=1)
+	# User.objects.create_user(username='admin_t', password=123, is_superuser=0, is_staff=1)
+	# user = User.objects.filter(username='root')[0]
+	# SUser.objects.create(uid=user.id)
 	return HttpResponse('hello')

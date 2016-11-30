@@ -10,7 +10,7 @@ from SUser.models import SUser
 from Utils.views import Utils
 
 def index(request):
-	# 验证登录
+	# 验证身份
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('../login/')
 
@@ -23,6 +23,7 @@ def index(request):
 		access_userlist = True
 
 	return render(request, 'index.html', {			\
+		'username'        : request.user.username,	\
 		'access_adminlist': access_adminlist,		\
 		'access_userlist' : access_userlist,		\
 		})
@@ -31,8 +32,6 @@ def login(request):
 	# 如果已登录直接跳转
 	if request.user.is_authenticated():
 		return HttpResponseRedirect('../index/')
-
-	# 提示信息
 	info = ''
 	login = False
 
@@ -41,24 +40,19 @@ def login(request):
 	password = request.POST.get('password')
 
 	if username is not None and password is not None:
-		# 如果不是root进行清华验证
-		if username != 'root':
-			# 通过API判断是否清华用户
-			if username == password:
-				# 转换成SUser密码
-				password = Utils.username_to_password(username)
-				suser = SUser.objects.filter(student_id=username)
-				# 是否首次登陆
-				if len(suser) == 0:
-					user = User.objects.create_user(username=username, password=password, is_superuser=0, is_staff=0)
-					suser = SUser.objects.create(uid=user.id)
-			else:
-				password = ''
-		# 验证
 		users = User.objects.filter(username=username)
 		if len(users) == 0:
 			info = '用户名不存在'
 		else:
+			# 如果不是root进行清华验证
+			if username != 'root':
+				if username == password:
+					password = Utils.username_to_password(username)
+					# 是否首次登陆
+				else:
+					password = ''
+			
+			# 验证
 			user = auth.authenticate(username=username, password=password)
 			if user is not None:
 				auth.login(request, user)
@@ -75,9 +69,50 @@ def logout(request):
 	auth.logout(request)
 	return HttpResponseRedirect('../login/')
 
-def adminlist(request):
-	# 验证登录
-	if not request.user.is_authenticated():
+def userlist(request):
+	# 验证身份
+	if not request.user.is_authenticated() or not request.user.is_staff:
 		return HttpResponseRedirect('../login/')
+	info = ''
+
+	# 添加用户
+	student_id = request.POST.get('student_id')
+	if student_id is not None:
+		# 检查student_id
+		suser_list = SUser.objects.filter(student_id=student_id)
+		if len(suser_list) > 0:
+			info = '用户已存在'
+		else:
+			username = student_id
+			password = Utils.username_to_password(username)
+			user = User.objects.create_user(username=username, password=password)
+			suser = SUser.objects.create(uid=user.id, student_id=student_id)
+			info = '添加 ' + student_id + ' 成功'
+
+	# 取出列表
+	suser_list = SUser.objects.order_by("uid")
+
+	return render(request, 'userlist.html', {'suser_list': suser_list, 'info': info})
+
+def adminlist(request):
+	# 验证身份
+	if not request.user.is_authenticated() or not request.user.is_superuser:
+		return HttpResponseRedirect('../login/')
+	info = ''
+
+	# 添加管理员
+	username = request.POST.get('username')
+	if username is not None:
+		# 检查username
+		user_list = User.objects.filter(username=username)
+		if len(user_list) > 0:
+			user = user_list[0]
+			user.is_staff = 1
+			user.save()
+			info = '添加' + username + '成功'
+		else:
+			info = '用户不存在'
+
+	# 取出列表
 	admin_list = User.objects.filter(is_staff=1).filter(~Q(username='root'))
-	return render(request, 'adminlist.html', {'admin_list': admin_list})
+	return render(request, 'adminlist.html', {'admin_list': admin_list, 'info': info})

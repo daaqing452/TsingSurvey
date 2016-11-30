@@ -7,15 +7,17 @@
 </head>
 
 <body>
-<h3>首页</h3>
 <a href='/logout/'>登出</a> <br/>
+<h3>首页</h3>
+<b><i> {{ username }} </i></b>
+<br/><br/>
 
 {% if access_adminlist %}
 <a href='/adminlist/'>管理员列表</a> <br/>
 {% endif %}
 
 {% if access_userlist %}
-<a href='/userlist/'>样本列表</a> <br/>
+<a href='/userlist/'>用户列表</a> <br/>
 <a href='/survey/'>添加问卷</a> <br/>
 {% endif %}
 
