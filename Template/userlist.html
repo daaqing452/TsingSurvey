@@ -24,7 +24,7 @@
 <h3>添加用户</h3>
 <form method='post' enctype='multipart/form-data'>
 	{% csrf_token %}
-	<input type='text' name='student_id' />
+	<input type='text' name='username' />
 	<input type='submit' value='添加' />
 </form>
 {{ info }}

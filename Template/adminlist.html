@@ -5,32 +5,18 @@
 <head>
 	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
 	<title>管理员列表</title>
-	<script type='text/javascript' src='{% static 'jquery-3.1.1.min.js' %}'> </script>
-	<script type='text/javascript'>$(document).ready(function(){
-
-		$('td#delete').click(function(){
-			$('tr#' + $(this).attr('value') + '').remove();
-			/*if(confirm('确实要删除该管理员?')) {
-				alert('删除成功');
-				$.ajax({
-					url: 'adminlist',
-					type: 'POST',
-					data: {'op': 'delete', 'username': $(this).attr('value')},
-					success: function(data) {
-
-					}
-				});
-			}*/
-		});
-
-	});</script>
+	<script src='{% static 'js/jquery-3.1.1.min.js' %}'> </script>
+	<script src='{% static 'js/csrf.js' %}'> </script>
+	<script src='{% static 'js/adminlist.js' %}'> </script>
+	<script src='{% static 'js/angular.min.js' %}'> </script>
 </head>
 
 <body>
-<a href='/logout/'>登出</a> <br/>
+<a href='/logout/'> 登出 </a> <br/>
+<a href='/index/'> 首页 </a> <br/>
 
 <h3>管理员列表</h3>
-<table>
+<table id='adminlist'>
 	<tr>
 		<td align=center> 学号 </td>
 		<td align=center> 姓名 </td>
@@ -38,8 +24,8 @@
 	</tr>
 	{% for admin in admin_list %}
 	<tr id='{{ admin.username }}'>
-		<td> {{ admin.username }} </a> </td>
-		<td> 黄小明 </td>
+		<td> {{ admin.username }} </td>
+		<td> 黄晓明 </td>
 		<td id='delete' value='{{ admin.username }}'> 删除 </td>
 	</tr>
 	{% endfor %}
@@ -47,11 +33,7 @@
 </body>
 
 <h3>添加管理员</h3>
-<form method='post' enctype='multipart/form-data'>
-	{% csrf_token %}
-	<input type='text' name='username' />
-	<input type='submit' value='添加' />
-</form>
-{{ info }}
+<input type='text' id='add' name='username' />
+<button id='add'> 添加 </button>
 
 </html>

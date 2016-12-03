@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.template import RequestContext
 from SUser.models import SUser
 from Utils.views import Utils
+import json
 
 def index(request):
 	# 验证身份
@@ -76,18 +77,17 @@ def userlist(request):
 	info = ''
 
 	# 添加用户
-	student_id = request.POST.get('student_id')
-	if student_id is not None:
-		# 检查student_id
-		suser_list = SUser.objects.filter(student_id=student_id)
+	username = request.POST.get('username')
+	if username is not None:
+		# 检查username
+		suser_list = SUser.objects.filter(username=username)
 		if len(suser_list) > 0:
 			info = '用户已存在'
 		else:
-			username = student_id
 			password = Utils.username_to_password(username)
 			user = User.objects.create_user(username=username, password=password)
-			suser = SUser.objects.create(uid=user.id, student_id=student_id)
-			info = '添加 ' + student_id + ' 成功'
+			suser = SUser.objects.create(uid=user.id, username=username)
+			info = '添加 ' + username + ' 成功'
 
 	# 取出列表
 	suser_list = SUser.objects.order_by("uid")
@@ -99,20 +99,32 @@ def adminlist(request):
 	if not request.user.is_authenticated() or not request.user.is_superuser:
 		return HttpResponseRedirect('../login/')
 	info = ''
+	op = request.POST.get('op')
+
+	# 删除管理员
+	if op == 'delete':
+		username = request.POST.get('username')
+		user_list = User.objects.filter(username=username)
+		if len(user_list) > 0:
+			user = user_list[0]
+			user.is_staff = 0
+			user.save()
+			return HttpResponse(json.dumps({'result': 'yes'}))
+		else:
+			return HttpResponse(json.dumps({'result': 'no'}))
 
 	# 添加管理员
-	username = request.POST.get('username')
-	if username is not None:
-		# 检查username
+	if op == 'add':
+		username = request.POST.get('username')
 		user_list = User.objects.filter(username=username)
 		if len(user_list) > 0:
 			user = user_list[0]
 			user.is_staff = 1
 			user.save()
-			info = '添加' + username + '成功'
+			return HttpResponse(json.dumps({'result': 'yes'}))
 		else:
-			info = '用户不存在'
+			return HttpResponse(json.dumps({'result': 'no'}))
 
 	# 取出列表
 	admin_list = User.objects.filter(is_staff=1).filter(~Q(username='root'))
-	return render(request, 'adminlist.html', {'admin_list': admin_list, 'info': info})
+	return render(request, 'adminlist.html', {'admin_list': admin_list})
