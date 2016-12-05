@@ -16,8 +16,8 @@ Including another URLconf
 from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
-from SUser.views import index, login, logout, userlist, adminlist
-from Utils.views import install, installtest
+from SUser.views import index, login, logout, user_list, admin_list
+from Utils.views import install, install_test
 import settings
 
 urlpatterns = [
@@ -26,9 +26,9 @@ urlpatterns = [
     url(r'^login/$', login),
     url(r'^logout/$', logout),
     url(r'^index/$', index),
-    url(r'^userlist/$', userlist),
-    url(r'^adminlist/$', adminlist),
+    url(r'^user_list/$', user_list),
+    url(r'^admin_list/$', admin_list),
 
     url(r'^install/$', install),
-    url(r'^installtest/$', installtest)
+    url(r'^install_test/$', install_test)
 ]

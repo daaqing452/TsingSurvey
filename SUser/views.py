@@ -70,7 +70,7 @@ def logout(request):
 	auth.logout(request)
 	return HttpResponseRedirect('../login/')
 
-def userlist(request):
+def user_list(request):
 	# 验证身份
 	if not request.user.is_authenticated() or not request.user.is_staff:
 		return HttpResponseRedirect('../login/')
@@ -94,24 +94,37 @@ def userlist(request):
 
 	return render(request, 'userlist.html', {'suser_list': suser_list, 'info': info})
 
-def adminlist(request):
+def admin_list(request):
 	# 验证身份
-	if not request.user.is_authenticated() or not request.user.is_superuser:
+	if not request.user.is_authenticated():
 		return HttpResponseRedirect('../login/')
-	info = ''
+	if not request.user.is_superuser:
+		return HttpResponseRedirect('../index/')
 	op = request.POST.get('op')
+
+	def getAdminList():
+		admin_list_raw = User.objects.filter(is_staff=1).filter(~Q(username='root'))
+		admin_list = []
+		for admin_raw in admin_list_raw:
+			admin = {'username': admin_raw.username}
+			admin_list.append(admin)
+		return admin_list
+
+	# 加载
+	if op == 'load':
+		return HttpResponse(json.dumps({'admin_list': getAdminList()}));
 
 	# 删除管理员
 	if op == 'delete':
-		username = request.POST.get('username')
-		user_list = User.objects.filter(username=username)
-		if len(user_list) > 0:
-			user = user_list[0]
-			user.is_staff = 0
-			user.save()
-			return HttpResponse(json.dumps({'result': 'yes'}))
-		else:
-			return HttpResponse(json.dumps({'result': 'no'}))
+		username_list = eval(request.POST.get('username_list'))
+		print(username_list)
+		for username in username_list:
+			user_list = User.objects.filter(username=username)
+			if len(user_list) > 0:
+				user = user_list[0]
+				user.is_staff = 0
+				user.save()
+		return HttpResponse(json.dumps({'admin_list': getAdminList()}))
 
 	# 添加管理员
 	if op == 'add':
@@ -121,10 +134,8 @@ def adminlist(request):
 			user = user_list[0]
 			user.is_staff = 1
 			user.save()
-			return HttpResponse(json.dumps({'result': 'yes'}))
+			return HttpResponse(json.dumps({'result': 'yes', 'admin_list': getAdminList()}))
 		else:
 			return HttpResponse(json.dumps({'result': 'no'}))
-
-	# 取出列表
-	admin_list = User.objects.filter(is_staff=1).filter(~Q(username='root'))
-	return render(request, 'adminlist.html', {'admin_list': admin_list})
+	
+	return render(request, 'admin_list.html', {'admin_list': getAdminList()})

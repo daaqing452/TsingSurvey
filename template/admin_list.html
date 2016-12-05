@@ -5,10 +5,10 @@
 <head>
 	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
 	<title>管理员列表</title>
+	<script src='{% static 'js/angular.min.js' %}'> </script>
 	<script src='{% static 'js/jquery-3.1.1.min.js' %}'> </script>
 	<script src='{% static 'js/csrf.js' %}'> </script>
-	<script src='{% static 'js/adminlist.js' %}'> </script>
-	<script src='{% static 'js/angular.min.js' %}'> </script>
+	<script src='{% static 'js/admin_list.js' %}'> </script>
 </head>
 
 <body>
@@ -16,24 +16,12 @@
 <a href='/index/'> 首页 </a> <br/>
 
 <h3>管理员列表</h3>
-<table id='adminlist'>
-	<tr>
-		<td align=center> 学号 </td>
-		<td align=center> 姓名 </td>
-		<td> </td>
-	</tr>
-	{% for admin in admin_list %}
-	<tr id='{{ admin.username }}'>
-		<td> {{ admin.username }} </td>
-		<td> 黄晓明 </td>
-		<td id='delete' value='{{ admin.username }}'> 删除 </td>
-	</tr>
-	{% endfor %}
-</table>
-</body>
+<table id='admin_list'> </table>
+<button id='delete'> 删除 </button>
 
 <h3>添加管理员</h3>
 <input type='text' id='add' name='username' />
 <button id='add'> 添加 </button>
 
+</body>
 </html>

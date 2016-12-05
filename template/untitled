@@ -1,0 +1,8 @@
+
+	{% for admin in admin_list %}
+	<tr id='{{ admin.username }}'>
+		<td> <input type='checkbox'/> </td>
+		<td> {{ admin.username }} </td>
+		<td> 黄晓明 </td>
+	</tr>
+	{% endfor %}

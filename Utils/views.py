@@ -29,7 +29,7 @@ def install(request):
 	# html += check_and_create('user0', '123', 0, 0)
 	return HttpResponse(html)
 
-def installtest(request):
+def install_test(request):
 	# User.objects.create_user(username='admin_t', password=123, is_superuser=0, is_staff=1)
 	# user = User.objects.filter(username='root')[0]
 	# SUser.objects.create(uid=user.id)
