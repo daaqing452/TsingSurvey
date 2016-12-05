@@ -115,20 +115,36 @@ def user_list(request):
 				suser.save()
 		return HttpResponse(json.dumps({'user_list': getSUserList()}))
 
+	# 删除用户
+	if op == 'delete':
+		username_list = eval(request.POST.get('username_list'))
+		for username in username_list:
+			suser_list = SUser.objects.filter(username=username)
+			if len(suser_list) > 0:
+				suser = suser_list[0]
+				uid = suser.uid
+				user_list = User.objects.filter(id=uid)
+				if len(user_list) > 0:
+					user = user_list[0]
+					suser.delete()
+					user.delete()
+		return HttpResponse(json.dumps({'user_list': getSUserList()}))
+
 	# 添加用户
-	username = request.POST.get('username')
-	if username is not None:
+	if op == 'add':
+		username = request.POST.get('username')
 		# 检查username
 		suser_list = SUser.objects.filter(username=username)
 		if len(suser_list) > 0:
-			info = '用户已存在'
+			result = '用户已存在'
 		else:
 			password = Utils.username_to_password(username)
 			user = User.objects.create_user(username=username, password=password)
 			suser = SUser.objects.create(uid=user.id, username=username)
-			info = '添加 ' + username + ' 成功'
+			result = 'yes'
+		return HttpResponse(json.dumps({'result': result, 'user_list': getSUserList()}))
 
-	return render(request, 'user_list.html', {'suser_list': getSUserList()})
+	return render(request, 'user_list.html', {'user_list': getSUserList()})
 
 def admin_list(request):
 	# 验证身份
@@ -169,8 +185,9 @@ def admin_list(request):
 			user = user_list[0]
 			user.is_staff = 1
 			user.save()
-			return HttpResponse(json.dumps({'result': 'yes', 'admin_list': getAdminList()}))
+			result = 'yes'
 		else:
-			return HttpResponse(json.dumps({'result': 'no'}))
+			result = 'no'
+		return HttpResponse(json.dumps({'result': result, 'admin_list': getAdminList()}))
 	
 	return render(request, 'admin_list.html', {'admin_list': getAdminList()})

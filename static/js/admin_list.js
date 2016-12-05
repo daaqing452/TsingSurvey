@@ -61,7 +61,7 @@ $(document).ready(function(){
 				data = JSON.parse(data);
 				if (data['result'] == 'yes') {
 					refreshAdminList(data['admin_list']);
-					$('input#add').val();
+					$('input#add').val('');
 					alert('添加成功');
 				} else {
 					alert('不存在此用户');

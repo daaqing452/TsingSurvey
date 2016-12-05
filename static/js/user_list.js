@@ -83,23 +83,42 @@ $(document).ready(function(){
 		});
 	});
 
-	//	添加管理员
-	/*$('button#add').click(function(){
+	//	删除用户
+	$('button#delete').click(function(){
+		if (confirm('确实要删除用户?')) {
+			var username_list = new Array();
+			$('input[username]:checked').each(function(){
+				username_list.push($(this).attr('username'));
+			});
+			$.ajax({
+				url: '/user_list/',
+				type: 'POST',
+				data: {'op': 'delete', 'username_list': JSON.stringify(username_list)},
+				success: function(data) {
+					data = JSON.parse(data);
+					refreshUserList(data['user_list']);
+				}
+			});
+		}
+	});
+
+	//	添加用户
+	$('button#add').click(function(){
 		var username = $('input#add').val();
 		$.ajax({
-			url: '/admin_list/',
+			url: '/user_list/',
 			type: 'POST',
 			data: {'op': 'add', 'username': username},
 			success: function(data) {
 				data = JSON.parse(data);
 				if (data['result'] == 'yes') {
-					refreshAdminList(data['admin_list']);
-					$('input#add').val();
+					refreshUserList(data['user_list']);
+					$('input#add').val('');
 					alert('添加成功');
 				} else {
-					alert('不存在此用户');
+					alert(data['result']);
 				}
 			}
 		});
-	});*/
+	});
 });

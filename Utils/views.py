@@ -11,13 +11,13 @@ class Utils:
 
 	@staticmethod
 	def username_to_password(username):
-		return str((long(username) ^ 3968766407) % 104939997)
+		return str((hash(username) ^ 3968766407) % 104939997)
 
 def check_and_create(username, password, is_superuser, is_staff):
 	user = auth.authenticate(username=username, password=password)
 	if user is None:
 		user = User.objects.create_user(username=username, password=password, is_superuser=is_superuser, is_staff=is_staff)
-		suser = SUser.objects.create(uid=user.id)
+		suser = SUser.objects.create(username=username, uid=user.id)
 		return 'add ' + username + ' successful <br/>'
 	else:
 		return username + ' already exists <br/>'
