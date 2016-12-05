@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
-from SUser.views import index, login, logout, user_list, admin_list
+from SUser.views import index, login, logout, user_list, admin_list, profile
 from Utils.views import install, install_test
 import settings
 
@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^index/$', index),
     url(r'^user_list/$', user_list),
     url(r'^admin_list/$', admin_list),
+    url(r'^profile/(\d{1,10})/$', profile),
 
     url(r'^install/$', install),
     url(r'^install_test/$', install_test)

@@ -24,6 +24,7 @@ def index(request):
 		access_userlist = True
 
 	return render(request, 'index.html', {			\
+		'uid'             : request.user.id,		\
 		'username'        : request.user.username,	\
 		'access_adminlist': access_adminlist,		\
 		'access_userlist' : access_userlist,		\
@@ -144,7 +145,7 @@ def user_list(request):
 			result = 'yes'
 		return HttpResponse(json.dumps({'result': result, 'user_list': getSUserList()}))
 
-	return render(request, 'user_list.html', {'user_list': getSUserList()})
+	return render(request, 'user_list.html', {'user_list': getSUserList(), 'uid': request.user.id})
 
 def admin_list(request):
 	# 验证身份
@@ -190,4 +191,17 @@ def admin_list(request):
 			result = 'no'
 		return HttpResponse(json.dumps({'result': result, 'admin_list': getAdminList()}))
 	
-	return render(request, 'admin_list.html', {'admin_list': getAdminList()})
+	return render(request, 'admin_list.html', {'admin_list': getAdminList(), 'uid': request.user.id})
+
+def profile(request, uid):
+	# 验证身份
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('../../login/')
+	if (not request.user.is_staff) and (str(request.user.id) != uid):
+		return HttpResponseRedirect('../../index/')
+	op = request.POST.get('op')
+
+	return render(request, 'profile.html', {		\
+		'uid'      : request.user.id,				\
+		'username' : request.user.username,			\
+		});
