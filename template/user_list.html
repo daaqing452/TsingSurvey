@@ -1,32 +1,29 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>
+{% load static %}
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>用户列表</title>
+	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+	<title> 用户列表 </title>
+	<script src='{% static 'js/jquery-3.1.1.min.js' %}'> </script>
+	<script src='{% static 'js/csrf.js' %}'> </script>
+	<script src='{% static 'js/user_list.js' %}'> </script>
 </head>
 
 <body>
-<a href='/logout/'>登出</a> <br/>
-<a href='/index/'>首页</a> <br/>
+<a href='/logout/'> 登出 </a> <br/>
+<a href='/index/'> 首页 </a> <br/>
 
-<h3>用户列表</h3>
-<table>
-{% for suser in suser_list %}
-	<tr>
-		<td> {{ suser.student_id }} </td>
-		<td> 删除 </td>
-	</tr>
-{% endfor %}
-</table>
+<h3> 用户列表 </h3>
+<table id='user_list'> </table>
+<button id='select_all'> 全选 </button>
+<button id='select_none'> 全不选 </button>
+<button id='sample_yes'> 设置为样本 </button>
+<button id='sample_no'> 设置为非样本 </button>
+
+<h3> 添加用户 </h3>
+<input type='text' id='add' name='username' />
+<button id='add'> 添加 </button>
+
 </body>
-
-<h3>添加用户</h3>
-<form method='post' enctype='multipart/form-data'>
-	{% csrf_token %}
-	<input type='text' name='username' />
-	<input type='submit' value='添加' />
-</form>
-{{ info }}
-
 </html>

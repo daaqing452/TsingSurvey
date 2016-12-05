@@ -8,7 +8,7 @@ function refreshAdminList(admin_list) {
 		</tr>\
 	');
 	for (i in admin_list) {
-		username = admin_list[i]['username']
+		var username = admin_list[i]['username']
 		$('table#admin_list').append('\
 			<tr>\
 				<td> <input type=\'checkbox\' username=\'' + username + '\' /> </td>\

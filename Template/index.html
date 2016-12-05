@@ -3,22 +3,22 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>首页</title>
+	<title> 首页 </title>
 </head>
 
 <body>
-<a href='/logout/'>登出</a> <br/>
-<h3>首页</h3>
+<a href='/logout/'> 登出 </a> <br/>
+<h3> 首页 </h3>
 <b><i> {{ username }} </i></b>
 <br/><br/>
 
 {% if access_adminlist %}
-<a href='/adminlist/'>管理员列表</a> <br/>
+<a href='/admin_list/'> 管理员列表 </a> <br/>
 {% endif %}
 
 {% if access_userlist %}
-<a href='/userlist/'>用户列表</a> <br/>
-<a href='/survey/'>添加问卷</a> <br/>
+<a href='/user_list/'> 用户列表 </a> <br/>
+<a href='/survey/'> 添加问卷 </a> <br/>
 {% endif %}
 
 </body>

@@ -72,9 +72,48 @@ def logout(request):
 
 def user_list(request):
 	# 验证身份
-	if not request.user.is_authenticated() or not request.user.is_staff:
+	if not request.user.is_authenticated():
 		return HttpResponseRedirect('../login/')
-	info = ''
+	if not request.user.is_staff:
+		return HttpResponseRedirect('../index/')
+	op = request.POST.get('op')
+
+	def getSUserList():
+		suser_list_raw = SUser.objects.all()
+		suser_list = []
+		for suser_raw in suser_list_raw:
+			suser = {\
+				'username': suser_raw.username,\
+				'is_sample': suser_raw.is_sample,\
+				}
+			suser_list.append(suser)
+		return suser_list
+
+	# 加载
+	if op == 'load':
+		return HttpResponse(json.dumps({'user_list': getSUserList()}));
+
+	# 设置为样本
+	if op == 'sample_yes':
+		username_list = eval(request.POST.get('username_list'))
+		for username in username_list:
+			suser_list = SUser.objects.filter(username=username)
+			if len(suser_list) > 0:
+				suser = suser_list[0]
+				suser.is_sample = 1
+				suser.save()
+		return HttpResponse(json.dumps({'user_list': getSUserList()}))
+
+	# 设置为非样本
+	if op == 'sample_no':
+		username_list = eval(request.POST.get('username_list'))
+		for username in username_list:
+			suser_list = SUser.objects.filter(username=username)
+			if len(suser_list) > 0:
+				suser = suser_list[0]
+				suser.is_sample = 0
+				suser.save()
+		return HttpResponse(json.dumps({'user_list': getSUserList()}))
 
 	# 添加用户
 	username = request.POST.get('username')
@@ -89,10 +128,7 @@ def user_list(request):
 			suser = SUser.objects.create(uid=user.id, username=username)
 			info = '添加 ' + username + ' 成功'
 
-	# 取出列表
-	suser_list = SUser.objects.order_by("uid")
-
-	return render(request, 'userlist.html', {'suser_list': suser_list, 'info': info})
+	return render(request, 'user_list.html', {'suser_list': getSUserList()})
 
 def admin_list(request):
 	# 验证身份
@@ -117,7 +153,6 @@ def admin_list(request):
 	# 删除管理员
 	if op == 'delete':
 		username_list = eval(request.POST.get('username_list'))
-		print(username_list)
 		for username in username_list:
 			user_list = User.objects.filter(username=username)
 			if len(user_list) > 0:
