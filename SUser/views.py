@@ -204,4 +204,4 @@ def profile(request, uid):
 	return render(request, 'profile.html', {		\
 		'uid'      : request.user.id,				\
 		'username' : request.user.username,			\
-		});
+		})
