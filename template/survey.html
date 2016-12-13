@@ -1,0 +1,34 @@
+<!DOCTYPE>
+{% load static %}
+<head>
+	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title> 问卷 </title>
+	<script src='{% static 'js/jquery-3.1.1.min.js' %}'> </script>
+	<script src='{% static 'js/csrf.js' %}'> </script>
+	<script src='{% static 'js/header_footer.js' %}'> </script>
+	<script src='{% static 'js/survey.js' %}'> </script>
+
+</head>
+
+<body>
+<div id='header' uid={{ uid }}> </div>
+
+<p> 问卷 </p>
+{% for question in question_list %}
+<div>
+	<span> 第 {{ forloop.counter }} 题 </span> <br/>
+	<span> 类型： {{ question.qtype }} </span> <br/>
+	{{ question.content }} <br/>
+	<input type='text' />
+</div>
+<br/>
+{% endfor %}
+
+<button id='submit'> 提交 </button>
+
+{{ info }}
+
+<div id='footer'> </div>
+</body>
+</html>

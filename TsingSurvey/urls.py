@@ -32,7 +32,7 @@ urlpatterns = [
     url(r'^profile/(\d{1,10})/$', profile),
 
     url(r'^create_survey/$', create_survey),
-    url(r'^survey/([0-9A-Z]{10,20})/$', survey),
+    url(r'^survey/(\d{1,10})/$', survey),
     url(r'^bonus/', bonus),
 
     url(r'^install/$', install),

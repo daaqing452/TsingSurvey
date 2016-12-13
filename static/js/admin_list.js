@@ -22,7 +22,7 @@ function refreshAdminList(admin_list) {
 $(document).ready(function(){
 	//	加载
 	$.ajax({
-		url: '/admin_list/',
+		url: window.location.pathname,
 		type: 'POST',
 		data: {'op': 'load'},
 		success: function(data) {
@@ -39,7 +39,7 @@ $(document).ready(function(){
 				username_list.push($(this).attr('username'));
 			});
 			$.ajax({
-				url: '/admin_list/',
+				url: window.location.pathname,
 				type: 'POST',
 				data: {'op': 'delete', 'username_list': JSON.stringify(username_list)},
 				success: function(data) {
@@ -54,7 +54,7 @@ $(document).ready(function(){
 	$('button#add').click(function(){
 		var username = $('input#add').val();
 		$.ajax({
-			url: '/admin_list/',
+			url: window.location.pathname,
 			type: 'POST',
 			data: {'op': 'add', 'username': username},
 			success: function(data) {

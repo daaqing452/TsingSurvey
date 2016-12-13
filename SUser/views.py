@@ -13,7 +13,7 @@ import json
 def index(request):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('../login/')
+		return HttpResponseRedirect('/login/')
 
 	access_adminlist = False
 	if request.user.is_superuser:
@@ -33,7 +33,7 @@ def index(request):
 def login(request):
 	# 如果已登录直接跳转
 	if request.user.is_authenticated():
-		return HttpResponseRedirect('../index/')
+		return HttpResponseRedirect('/index/')
 	info = ''
 	login = False
 
@@ -63,32 +63,27 @@ def login(request):
 				info = '密码错误'
 
 	if login:
-		return HttpResponseRedirect('../index/')
+		return HttpResponseRedirect('/index/')
 	else:
 		return render(request, 'login.html', {'info': info})
 
 def logout(request):
 	auth.logout(request)
-	return HttpResponseRedirect('../login/')
+	return HttpResponseRedirect('/login/')
 
 def user_list(request):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('../login/')
+		return HttpResponseRedirect('/login/')
 	if not request.user.is_staff:
-		return HttpResponseRedirect('../index/')
+		return HttpResponseRedirect('/index/')
 	op = request.POST.get('op')
 
 	def getSUserList():
-		suser_list_raw = SUser.objects.all()
-		suser_list = []
-		for suser_raw in suser_list_raw:
-			suser = {\
-				'username': suser_raw.username,\
-				'is_sample': suser_raw.is_sample,\
-				}
-			suser_list.append(suser)
-		return suser_list
+		return [{								\
+			'username': suser_raw.username,		\
+			'is_sample': suser_raw.is_sample,	\
+		} for suser_raw in SUser.objects.all()]
 
 	# 加载
 	if op == 'load':
@@ -145,23 +140,21 @@ def user_list(request):
 			result = 'yes'
 		return HttpResponse(json.dumps({'result': result, 'user_list': getSUserList()}))
 
-	return render(request, 'user_list.html', {'user_list': getSUserList(), 'uid': request.user.id})
+	return render(request, 'user_list.html', {	\
+		'user_list': getSUserList(),			\
+		'uid': request.user.id, 				\
+		})
 
 def admin_list(request):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('../login/')
+		return HttpResponseRedirect('/login/')
 	if not request.user.is_superuser:
-		return HttpResponseRedirect('../index/')
+		return HttpResponseRedirect('/index/')
 	op = request.POST.get('op')
 
 	def getAdminList():
-		admin_list_raw = User.objects.filter(is_staff=1).filter(~Q(username='root'))
-		admin_list = []
-		for admin_raw in admin_list_raw:
-			admin = {'username': admin_raw.username}
-			admin_list.append(admin)
-		return admin_list
+		return [{'username': admin_raw.username} for admin_raw in User.objects.filter(is_staff=1).filter(~Q(username='root'))]
 
 	# 加载
 	if op == 'load':
@@ -191,14 +184,17 @@ def admin_list(request):
 			result = 'no'
 		return HttpResponse(json.dumps({'result': result, 'admin_list': getAdminList()}))
 	
-	return render(request, 'admin_list.html', {'admin_list': getAdminList(), 'uid': request.user.id})
+	return render(request, 'admin_list.html', {		\
+		'admin_list': getAdminList(),				\
+		'uid': request.user.id,						\
+		})
 
 def profile(request, uid):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('../../login/')
+		return HttpResponseRedirect('/login/')
 	if (not request.user.is_staff) and (str(request.user.id) != uid):
-		return HttpResponseRedirect('../../index/')
+		return HttpResponseRedirect('/index/')
 	op = request.POST.get('op')
 
 	return render(request, 'profile.html', {		\
