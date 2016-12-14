@@ -8,17 +8,11 @@ from django.template import RequestContext
 from Survey.models import Questionaire, Question, Answer
 import json
 
-def create_survey(request):
-	# 验证身份
-	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
-	if not request.user.is_staff:
-		return HttpResponseRedirect('/index/')
-	op = request.POST.get('op')
-
-	return render(request, 'create_survey.html', {	\
-		'uid': request.user.id,						\
-		})
+# 问卷状态
+#	 0 修改中（随时修改）
+#	 1 发布中
+#	 2 已结束（随时可分析）
+#	-1 用户不可见
 
 def survey(request, qid):
 	# 验证身份
@@ -26,23 +20,35 @@ def survey(request, qid):
 		return HttpResponseRedirect('/login/')
 	op = request.POST.get('op')
 	info = ''
-
-	print(qid, op);
-
-	if op == 'submit':
-		pass
+	status = -1
 
 	questionaire_list = Questionaire.objects.filter(id=qid)
+	question_list = []
 	if len(questionaire_list) == 0:
 		info = '找不到该问卷'
-		question_list = []
 	else:
 		questionaire = questionaire_list[0]
-		tid_list = map(int, questionaire.question_list.split(' '))
-		question_list = [Question.objects.get(id=tid) for tid in tid_list]
+		status = questionaire.status
+		# 检查问卷状态
+		if status == 0:
+			# 修改中管理员可见
+			if not request.user.is_staff:
+				info = '找不到该问卷'
+			# 修改问卷界面
+		elif status == 1:
+			# 填写问卷界面
+			tid_list = map(int, questionaire.question_list.split(' '))
+			question_list = [Question.objects.get(id=tid) for tid in tid_list]
+			pass
+		elif status == 2:
+			# 浏览问卷界面，可分析
+			pass
+		else:
+			info = '找不到该问卷'
 
 	return render(request, 'survey.html', {		\
 		'uid'			: request.user.id,		\
+		'status'		: status,				\
 		'info'			: info,					\
 		'question_list'	: question_list,		\
 		})

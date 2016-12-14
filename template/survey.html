@@ -14,7 +14,10 @@
 <body>
 <div id='header' uid={{ uid }}> </div>
 
+{% ifequal status 1 %}
 <p> 问卷 </p>
+{% endifequal %}
+
 {% for question in question_list %}
 <div>
 	<span> 第 {{ forloop.counter }} 题 </span> <br/>
@@ -25,8 +28,11 @@
 <br/>
 {% endfor %}
 
+{% ifequal status 1 %}
 <button id='submit'> 提交 </button>
+{% endifequal %}
 
+<br/>
 {{ info }}
 
 <div id='footer'> </div>
