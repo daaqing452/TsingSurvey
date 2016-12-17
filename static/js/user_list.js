@@ -16,7 +16,7 @@ function refreshUserList(user_list) {
 			<tr>\
 				<td> <input type=\'checkbox\' username=\'' + username + '\' /> </td>\
 				<td> ' + username + ' </td>\
-				<td> 黄晓明 </td>\
+				<td> 佚名 </td>\
 				<td align=center> ' + is_sample + ' </td>\
 			</tr>\
 		');
