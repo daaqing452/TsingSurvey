@@ -9,6 +9,15 @@ $(document).ready(function(){
 					data = JSON.parse(data);
 				}
 			});
+
+			$.ajax({
+				url: '/bonus/',
+				type: 'POST',
+				data: {'op': 'get_credit', 'credit': 110},
+				success: function(data) {
+					data = JSON.parse(data);
+				}
+			});
 			window.location.href = '/bonus/';
 		}
 	});

@@ -6,6 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
 from Survey.models import Questionaire, Question, Answer
+from SUser.models import SUser
 import json
 
 # 问卷状态
@@ -58,5 +59,11 @@ def bonus(request):
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('../login/')
 	op = request.POST.get('op')
+
+	if op == 'get_credit':
+		credit = request.POST.get('credit')
+		SUser = Suser.objects.get(uid=request.user.id)
+		Suser.credit += credit
+		
 
 	return render(request, 'bonus.html', {'uid': request.user.id})

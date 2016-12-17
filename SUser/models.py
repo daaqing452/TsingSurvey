@@ -6,3 +6,4 @@ class SUser(models.Model):
 	uid = models.IntegerField()
 	username = models.CharField(max_length=32)
 	is_sample = models.BooleanField(default=1)
+	credit = models.IntegerField(default=0)
