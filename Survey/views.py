@@ -60,3 +60,7 @@ def bonus(request):
 	op = request.POST.get('op')
 
 	return render(request, 'bonus.html', {'uid': request.user.id})
+
+def design(request):
+	# 设计问卷
+	return render(request,'mydesign.html',{})
