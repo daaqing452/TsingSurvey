@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>
+{% load static %}
+
+<head>
+	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+	<title>问卷设计</title>
+	<link href='{% static 'bootstrap/css/bootstrap.min.css' %}' rel="stylesheet">
+	<link href='{% static 'css/designjs.css' %}' rel="stylesheet">
+</head>
+
+<body>
+	<button type="button" class="btn" data-toggle="modal" data-target="#myModal" onclick="createSurvey(1)">
+	    单选题
+	</button>
+	<button type="button" class="btn" data-toggle="modal" data-target="#myModal" onclick="createSurvey(2)">
+  		多选题
+	</button>
+	<button type="button" class="btn" data-toggle="modal" data-target="#myModal" onclick="createSurvey(3)">
+  		填空题
+	</button>
+
+
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title" id="myModalLabel">添加新问题</h4>
+	      </div>
+	      <div class="modal-body" id="myModal_body"> 
+	       
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+	        <button type="button" class="btn btn-primary" onclick="commitS()">保存</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+	<!-- Survey preview -->
+	<div style="text-align:left;">
+		<table id="questions" style="width:100%;">
+
+		</table>
+	</div>
+
+
+<script src='{% static 'js/designjs.js' %}'> </script>
+<script src='{% static 'js/jquery-3.1.1.min.js' %}'> </script>
+<script src='{% static 'bootstrap/js/bootstrap.min.js' %}'> </script>
+</body>
+</html>
+

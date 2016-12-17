@@ -64,6 +64,9 @@ def bonus(request):
 		credit = request.POST.get('credit')
 		SUser = Suser.objects.get(uid=request.user.id)
 		Suser.credit += credit
-		
 
 	return render(request, 'bonus.html', {'uid': request.user.id})
+
+def design(request):
+	# 设计问卷
+	return render(request,'mydesign.html',{})
