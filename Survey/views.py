@@ -64,3 +64,6 @@ def bonus(request):
 def design(request):
 	# 设计问卷
 	return render(request,'mydesign.html',{})
+def surveypage(request):
+	# 回答问卷页面
+	return render(request,'mysurveypage.html',{})
