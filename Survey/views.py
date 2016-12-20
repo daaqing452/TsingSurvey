@@ -60,10 +60,11 @@ def bonus(request):
 		return HttpResponseRedirect('../login/')
 	op = request.POST.get('op')
 
-	if op == 'get_credit':
+	if op == 'add_credit':
 		credit = request.POST.get('credit')
-		SUser = Suser.objects.get(uid=request.user.id)
+		SUser = SUser.objects.get(uid=request.user.id)
 		Suser.credit += credit
+		print('c', credit);
 
 	return render(request, 'bonus.html', {'uid': request.user.id})
 

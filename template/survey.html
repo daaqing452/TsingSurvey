@@ -30,6 +30,9 @@
 <br/>
 {% endfor %}
 <button id='submit'> 提交 </button>
+<form id='submit_form' method='POST' action='/bonus/'>
+	<input id='submit_form_credit' type='hidden' name='credit' />
+</form>
 {% endifequal %}
 
 
