@@ -5,25 +5,31 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title> 首页 </title>
 	<script src='{% static 'js/jquery-3.1.1.min.js' %}'> </script>
+	<script src='{% static 'js/csrf.js' %}'> </script>
 	<script src='{% static 'js/header_footer.js' %}'> </script>
 </head>
 
 <body>
-<div id='header' uid={{ uid }}> </div>
+<div id='header' uid={{ user.uid }}> </div>
 
 <h3> 首页 </h3>
-<b><i> {{ username }} </i></b>
+<b><i> {{ user.username }} </i></b>
 <br/><br/>
 
-{% if access_adminlist %}
+{% if user.is_superuser %}
 <a href='/admin_list/'> 管理员列表 </a> <br/>
 {% endif %}
 
-{% if access_userlist %}
+{% if user.is_staff %}
 <a href='/user_list/'> 用户列表 </a> <br/>
-<a href=''> 添加问卷 </a> <br/>
-<p> 正在进行的问卷 </p>
+<button> 添加问卷 </button>
 {% endif %}
+
+<p> 正在进行的问卷 </p>
+{% for questionaire in questionaire_list %}
+<a href='/survey/{{ questionaire.id }}'> {{ questionaire.title }} </a>
+{% endfor %}
+
 
 <div id='footer'> </div>
 </body>

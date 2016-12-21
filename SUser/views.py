@@ -14,27 +14,15 @@ def index(request):
 	# 验证身份
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('/login/')
-
-	access_adminlist = False
-	if request.user.is_superuser:
-		access_adminlist = True
-
-	access_userlist = False
-	if request.user.is_staff:
-		access_userlist = True
-
-	return render(request, 'index.html', {			\
-		'uid'             : request.user.id,		\
-		'username'        : request.user.username,	\
-		'access_adminlist': access_adminlist,		\
-		'access_userlist' : access_userlist,		\
-		})
+	rdata = {}
+	rdata['user'] = request.user
+	return render(request, 'index.html', rdata)
 
 def login(request):
 	# 如果已登录直接跳转
 	if request.user.is_authenticated():
 		return HttpResponseRedirect('/index/')
-	info = ''
+	rdata = {}
 	login = False
 
 	# 获取用户名密码
@@ -44,7 +32,7 @@ def login(request):
 	if username is not None and password is not None:
 		users = User.objects.filter(username=username)
 		if len(users) == 0:
-			info = '用户名不存在'
+			rdata['info'] = '用户名不存在'
 		else:
 			# 如果不是root进行清华验证
 			if username != 'root':
@@ -60,12 +48,12 @@ def login(request):
 				auth.login(request, user)
 				login = True
 			else:
-				info = '密码错误'
+				rdata['info'] = '密码错误'
 
 	if login:
 		return HttpResponseRedirect('/index/')
 	else:
-		return render(request, 'login.html', {'info': info})
+		return render(request, 'login.html', rdata)
 
 def logout(request):
 	auth.logout(request)
@@ -77,13 +65,12 @@ def user_list(request):
 		return HttpResponseRedirect('/login/')
 	if not request.user.is_staff:
 		return HttpResponseRedirect('/index/')
+	rdata = {}
+	rdata['uid'] = request.user.id
 	op = request.POST.get('op')
 
 	def getSUserList():
-		return [{								\
-			'username': suser_raw.username,		\
-			'is_sample': suser_raw.is_sample,	\
-		} for suser_raw in SUser.objects.all()]
+		return [{'username': suser_raw.username, 'is_sample': suser_raw.is_sample} for suser_raw in SUser.objects.all()]
 
 	# 加载
 	if op == 'load':
@@ -140,10 +127,8 @@ def user_list(request):
 			result = 'yes'
 		return HttpResponse(json.dumps({'result': result, 'user_list': getSUserList()}))
 
-	return render(request, 'user_list.html', {	\
-		'user_list': getSUserList(),			\
-		'uid': request.user.id, 				\
-		})
+	rdata['user_list'] = getSUserList()
+	return render(request, 'user_list.html', rdata)
 
 def admin_list(request):
 	# 验证身份
@@ -151,6 +136,8 @@ def admin_list(request):
 		return HttpResponseRedirect('/login/')
 	if not request.user.is_superuser:
 		return HttpResponseRedirect('/index/')
+	rdata = {}
+	rdata['uid'] = request.user.id
 	op = request.POST.get('op')
 
 	def getAdminList():
@@ -184,10 +171,8 @@ def admin_list(request):
 			result = 'no'
 		return HttpResponse(json.dumps({'result': result, 'admin_list': getAdminList()}))
 	
-	return render(request, 'admin_list.html', {		\
-		'admin_list': getAdminList(),				\
-		'uid': request.user.id,						\
-		})
+	rdata['admin_list'] = getAdminList()
+	return render(request, 'admin_list.html', rdata)
 
 def profile(request, uid):
 	# 验证身份
@@ -195,9 +180,9 @@ def profile(request, uid):
 		return HttpResponseRedirect('/login/')
 	if (not request.user.is_staff) and (str(request.user.id) != uid):
 		return HttpResponseRedirect('/index/')
+	rdata = {}
+	rdata['uid'] = request.user.id
+	rdata['username'] = request.user.username
 	op = request.POST.get('op')
 
-	return render(request, 'profile.html', {		\
-		'uid'      : request.user.id,				\
-		'username' : request.user.username,			\
-		})
+	return render(request, 'profile.html', rdata)

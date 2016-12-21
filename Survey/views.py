@@ -19,15 +19,15 @@ def survey(request, qid):
 	# 验证身份
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('/login/')
-	retdata = {}
-	retdata['uid'] = request.user.id
+	rdata = {}
+	rdata['uid'] = request.user.id
 	op = request.POST.get('op')
 	status = -1
 
 	questionaire_list = Questionaire.objects.filter(id=qid)
 	question_list = []
 	if len(questionaire_list) == 0:
-		retdata['info'] = '找不到该问卷'
+		rdata['info'] = '找不到该问卷'
 	else:
 		questionaire = questionaire_list[0]
 		status = questionaire.status
@@ -35,7 +35,7 @@ def survey(request, qid):
 		if status == 0:
 			# 修改中管理员可见
 			if not request.user.is_staff:
-				retdata['info'] = '找不到该问卷'
+				rdata['info'] = '找不到该问卷'
 			# 修改问卷界面
 			if op == 'save':
 				print(request.POST.get('qstring'))
@@ -52,15 +52,17 @@ def survey(request, qid):
 			# 浏览问卷界面，可分析
 			pass
 		else:
-			retdata['info'] = '找不到该问卷'
+			rdata['info'] = '找不到该问卷'
 
-	retdata['status'] = status
-	return render(request, 'survey.html', retdata)
+	rdata['status'] = status
+	return render(request, 'survey.html', rdata)
 
 def bonus(request):
 	# 验证身份
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('../login/')
+	rdata = {}
+	rdata['uid'] = request.user.id
 	op = request.POST.get('op')
 
 	if op == 'add_credit':
@@ -69,7 +71,7 @@ def bonus(request):
 		Suser.credit += credit
 		print('c', credit);
 
-	return render(request, 'bonus.html', {'uid': request.user.id})
+	return render(request, 'bonus.html', rdata)
 
 def design(request):
 	# 设计问卷
