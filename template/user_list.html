@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+{% load static %}
+<head>
+	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title> 用户列表 </title>
+	<script src='{% static 'js/jquery-3.1.1.min.js' %}'> </script>
+	<script src='{% static 'js/csrf.js' %}'> </script>
+	<script src='{% static 'js/header_footer.js' %}'> </script>
+	<script src='{% static 'js/user_list.js' %}'> </script>
+</head>
+
+<body>
+<div id='header' uid={{ uid }}> </div>
+
+<h3> 用户列表 </h3>
+<table id='user_list'> </table>
+<button id='select_all'> 全选 </button>
+<button id='select_none'> 全不选 </button>
+<button id='sample_yes'> 设置为样本 </button>
+<button id='sample_no'> 设置为非样本 </button>
+<br/>
+<button id='delete'> 删除 </button>
+
+<h3> 添加用户 </h3>
+<input type='text' id='add' name='username' />
+<button id='add'> 添加 </button>
+<br/>
+<button id='load_file'> 批量添加 </button>
+
+<div id='footer'> </div>
+</body>
+</html>
