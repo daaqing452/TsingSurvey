@@ -15,10 +15,22 @@ function createSurvey(s_type){
 	createModal();
 }
 
-function submit(){
+function save(){
 	//s_type title [n_option [option1..] 
 	//save Qstring into database
 	var Qstring = JSON.stringify(questions);
+	
+	$.ajax({
+		url: window.location.pathname,
+		type: 'POST',
+		data: {'op': 'save', 'qstring': Qstring},
+		success: function(data) {
+			data = JSON.parse(data);
+		}
+	});
+}
+
+function release() {
 
 }
 

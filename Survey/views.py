@@ -19,14 +19,15 @@ def survey(request, qid):
 	# 验证身份
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('/login/')
+	retdata = {}
+	retdata['uid'] = request.user.id
 	op = request.POST.get('op')
-	info = ''
 	status = -1
 
 	questionaire_list = Questionaire.objects.filter(id=qid)
 	question_list = []
 	if len(questionaire_list) == 0:
-		info = '找不到该问卷'
+		retdata['info'] = '找不到该问卷'
 	else:
 		questionaire = questionaire_list[0]
 		status = questionaire.status
@@ -34,8 +35,14 @@ def survey(request, qid):
 		if status == 0:
 			# 修改中管理员可见
 			if not request.user.is_staff:
-				info = '找不到该问卷'
+				retdata['info'] = '找不到该问卷'
 			# 修改问卷界面
+			if op == 'save':
+				print(request.POST.get('qstring'))
+			elif op == 'release':
+				pass
+			else:
+				pass
 		elif status == 1:
 			# 填写问卷界面
 			tid_list = map(int, questionaire.question_list.split(' '))
@@ -45,14 +52,10 @@ def survey(request, qid):
 			# 浏览问卷界面，可分析
 			pass
 		else:
-			info = '找不到该问卷'
+			retdata['info'] = '找不到该问卷'
 
-	return render(request, 'survey.html', {		\
-		'uid'			: request.user.id,		\
-		'status'		: status,				\
-		'info'			: info,					\
-		'question_list'	: question_list,		\
-		})
+	retdata['status'] = status
+	return render(request, 'survey.html', retdata)
 
 def bonus(request):
 	# 验证身份
