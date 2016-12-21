@@ -7,6 +7,7 @@
 	<script src='{% static 'js/jquery-3.1.1.min.js' %}'> </script>
 	<script src='{% static 'js/csrf.js' %}'> </script>
 	<script src='{% static 'js/header_footer.js' %}'> </script>
+	<script src='{% static 'js/index.js' %}'> </script>
 </head>
 
 <body>
@@ -22,7 +23,7 @@
 
 {% if user.is_staff %}
 <a href='/user_list/'> 用户列表 </a> <br/>
-<button> 添加问卷 </button>
+<button id='survey_create'> 添加问卷 </button>
 {% endif %}
 
 <p> 正在进行的问卷 </p>

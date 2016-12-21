@@ -1,25 +1,18 @@
 function refreshUserList(user_list) {
-	$('table#user_list').empty();
-	$('table#user_list').append('\
-		<tr>\
-			<td> </td>\
-			<td align=center> 学号 </td>\
-			<td align=center> 姓名 </td>\
-			<td align=center> 是否为样本 </td>\
-		</tr>\
-	');
+	var tbody = $('table#user_list').children('tbody');
+	$('[type="item"]').remove();
 	for (i in user_list) {
-		var username = user_list[i]['username'];
+		var username = user_list[i]['username']
 		var is_sample = '√';
 		if (user_list[i]['is_sample'] == 0) is_sample = '';
-		$('table#user_list').append('\
-			<tr>\
-				<td> <input type=\'checkbox\' username=\'' + username + '\' /> </td>\
-				<td> ' + username + ' </td>\
-				<td> 佚名 </td>\
-				<td align=center> ' + is_sample + ' </td>\
-			</tr>\
-		');
+		var tr = $('[type="clone"]').clone();
+		tr.attr('type', 'item');
+		tr.find('[type="checkbox"]').attr('username', username);
+		tr.children('[type="username"]').text(username);
+		tr.children('[type="name"]').text('佚名')
+		tr.children('[type="is_sample"]').text(is_sample);
+		tr.show();
+		tbody.append(tr);
 	}
 }
 

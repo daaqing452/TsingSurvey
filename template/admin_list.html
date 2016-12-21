@@ -16,7 +16,23 @@
 <div id='header' uid={{ uid }}> </div>
 
 <h3> 管理员列表 </h3>
-<table id='admin_list'> </table>
+<table id='admin_list'>
+	<tr>
+		<td> </td>
+		<td align=center> 学号 </td>
+		<td align=center> 姓名 </td>
+	</tr>
+	<tr type='clone' style='display:none'>
+		<td> <input type='checkbox' username='' /> </td>
+		<td type='username'> clone </td>
+		<td type='name'> clone </td>
+	</tr>
+	<tr type='item'>
+		<td> <input type='checkbox' username='' /> </td>
+		<td> remove_a </td>
+		<td> remove_b </td>
+	</tr>
+</table>
 <button id='delete'> 删除 </button>
 
 <h3> 添加管理员 </h3>

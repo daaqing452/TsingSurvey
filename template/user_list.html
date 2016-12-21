@@ -14,7 +14,26 @@
 <div id='header' uid={{ uid }}> </div>
 
 <h3> 用户列表 </h3>
-<table id='user_list'> </table>
+<table id='user_list'>
+	<tr>
+		<td> </td>
+		<td align=center> 学号 </td>
+		<td align=center> 姓名 </td>
+		<td align=center> 是否为样本 </td>
+	</tr>
+	<tr type='clone' style='display:none'>
+		<td> <input type='checkbox' username='' /> </td>
+		<td type='username'> clone_a </td>
+		<td type='name'> clone_b </td>
+		<td type='is_sample' align=center> clone_c </td>
+	</tr>
+	<tr type='item'>
+		<td> <input type='checkbox' username='' /> </td>
+		<td> remove_a </td>
+		<td> remove_b </td>
+		<td> remote_c </td>
+	</tr>
+</table>
 <button id='select_all'> 全选 </button>
 <button id='select_none'> 全不选 </button>
 <button id='sample_yes'> 设置为样本 </button>

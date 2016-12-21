@@ -7,6 +7,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
 from SUser.models import SUser
+from Survey.models import Questionaire
 from Utils.views import Utils
 import json
 
@@ -15,7 +16,20 @@ def index(request):
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('/login/')
 	rdata = {}
-	rdata['user'] = request.user
+	rdata['user'] = user = request.user
+
+	# 问卷列表
+	if user.is_staff:
+		questionaire_list = Questionaire.objects.all()
+	else:
+		qid_list = user.qid_list
+		questionaire_list = []
+		for qid in qid_list:
+			questionaires = Questionaire.objects.filter(id=qid)
+			if len(questionaires) > 0:
+				questionaire_list.append(questionaires[0])
+
+	rdata['questionaire_list'] = questionaire_list
 	return render(request, 'index.html', rdata)
 
 def login(request):
@@ -80,9 +94,9 @@ def user_list(request):
 	if op == 'sample_yes':
 		username_list = eval(request.POST.get('username_list'))
 		for username in username_list:
-			suser_list = SUser.objects.filter(username=username)
-			if len(suser_list) > 0:
-				suser = suser_list[0]
+			susers = SUser.objects.filter(username=username)
+			if len(susers) > 0:
+				suser = susers[0]
 				suser.is_sample = 1
 				suser.save()
 		return HttpResponse(json.dumps({'user_list': getSUserList()}))
@@ -91,9 +105,9 @@ def user_list(request):
 	if op == 'sample_no':
 		username_list = eval(request.POST.get('username_list'))
 		for username in username_list:
-			suser_list = SUser.objects.filter(username=username)
-			if len(suser_list) > 0:
-				suser = suser_list[0]
+			susers = SUser.objects.filter(username=username)
+			if len(susers) > 0:
+				suser = susers[0]
 				suser.is_sample = 0
 				suser.save()
 		return HttpResponse(json.dumps({'user_list': getSUserList()}))
@@ -102,13 +116,13 @@ def user_list(request):
 	if op == 'delete':
 		username_list = eval(request.POST.get('username_list'))
 		for username in username_list:
-			suser_list = SUser.objects.filter(username=username)
-			if len(suser_list) > 0:
-				suser = suser_list[0]
+			susers = SUser.objects.filter(username=username)
+			if len(susers) > 0:
+				suser = susers[0]
 				uid = suser.uid
-				user_list = User.objects.filter(id=uid)
-				if len(user_list) > 0:
-					user = user_list[0]
+				users = User.objects.filter(id=uid)
+				if len(users) > 0:
+					user = users[0]
 					suser.delete()
 					user.delete()
 		return HttpResponse(json.dumps({'user_list': getSUserList()}))
@@ -117,8 +131,8 @@ def user_list(request):
 	if op == 'add':
 		username = request.POST.get('username')
 		# 检查username
-		suser_list = SUser.objects.filter(username=username)
-		if len(suser_list) > 0:
+		susers = SUser.objects.filter(username=username)
+		if len(susers) > 0:
 			result = '用户已存在'
 		else:
 			password = Utils.username_to_password(username)
@@ -151,9 +165,9 @@ def admin_list(request):
 	if op == 'delete':
 		username_list = eval(request.POST.get('username_list'))
 		for username in username_list:
-			user_list = User.objects.filter(username=username)
-			if len(user_list) > 0:
-				user = user_list[0]
+			users = User.objects.filter(username=username)
+			if len(users) > 0:
+				user = users[0]
 				user.is_staff = 0
 				user.save()
 		return HttpResponse(json.dumps({'admin_list': getAdminList()}))
@@ -161,9 +175,9 @@ def admin_list(request):
 	# 添加管理员
 	if op == 'add':
 		username = request.POST.get('username')
-		user_list = User.objects.filter(username=username)
-		if len(user_list) > 0:
-			user = user_list[0]
+		users = User.objects.filter(username=username)
+		if len(users) > 0:
+			user = users[0]
 			user.is_staff = 1
 			user.save()
 			result = 'yes'
