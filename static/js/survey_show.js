@@ -83,13 +83,32 @@ function submit(){
 	//put Astring into database
 	var Astring = JSON.stringify(answers);
 	
-	$.ajax({
-		url: window.location.href,
-		type: 'POST',
-		data: {'op': 'submit', 'astring': Astring},
-		success: function(data) {
-			data = JSON.parse(data);
-		}
-	});
+	if (confirm('确认提交？')) {
+		$.ajax({
+			url: window.location.href,
+			type: 'POST',
+			data: {'op': 'submit', 'astring': Astring, 'credit': 10},
+			success: function(data) {
+				data = JSON.parse(data);
+				alert('提交成功');
+				window.location.href = '/bonus/';
+			}
+		});
+	}
+	
+}
+
+function closeup() {
+	if (confirm('确认关闭？')) {
+		$.ajax({
+			url: window.location.href,
+			type: 'POST',
+			data: {'op': 'closeup'},
+			success: function(data) {
+				data = JSON.parse(data);
+				alert('关闭成功');
+			}
+		});
+	}
 }
 

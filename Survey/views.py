@@ -26,6 +26,7 @@ def survey(request, qid):
 	rdata['is_staff'] = request.user.is_staff
 	rdata['viewable'] = 1
 	op = request.POST.get('op')
+	user = request.user
 	status = -1
 
 	def update_questionaire(questionaire, title, qstring):
@@ -47,12 +48,12 @@ def survey(request, qid):
 	else:
 		questionaire = questionaires[0]
 		status = questionaire.status
-		suser = SUser.objects.get(uid=request.user.id)
+		suser = SUser.objects.get(uid=user.id)
 
 		# 问卷修改状态
 		if status == 0:
 			# 修改中管理员可见
-			if not request.user.is_staff:
+			if not user.is_staff:
 				rdata['viewable'] = 0
 				rdata['info'] = '找不到该问卷 00'
 			else:
@@ -83,7 +84,7 @@ def survey(request, qid):
 			# 检验是否可见和是否已经填写
 			permission_submit = 0
 			qid_dict = json.loads(suser.qid_list)
-			if not request.user.is_staff and not qid in qid_dict:
+			if not user.is_staff and not qid in qid_dict:
 				rdata['viewable'] = 0
 				rdata['info'] = '找不到该问卷 10'
 			if qid in qid_dict:
@@ -98,12 +99,28 @@ def survey(request, qid):
 				return HttpResponse(json.dumps({'title': questionaire.title, 'qstring': questionaire.question_list}))
 			# 提交问卷请求
 			if op == 'submit':
-				answeraire = Answeraire.objects.create(qid=qid, uid=request.user.id, update_time=timezone.now())
+				answeraire = Answeraire.objects.create(qid=qid, uid=user.id, update_time=timezone.now(), answer_list=request.POST.get('astring'))
+				answeraire.save()
+				qid_dict[str(qid)] = 1
+				suser.qid_list = json.dumps(qid_dict)
+				suser.credit += int(request.POST.get('credit'));
+				suser.save()
+				return HttpResponse(json.dumps({}))
+			# 关闭问卷请求
+			if op == 'closeup':
+				questionaire.status = 2
+				questionaire.save()
 				return HttpResponse(json.dumps({}))
 
 		# 问卷结束状态（分析）
 		elif status == 2:
-			pass
+			if not user.is_staff:
+				rdata['viewable'] = 0
+				rdata['info'] = '问卷已关闭'
+			else:
+				# 加载问卷请求
+				if op == 'load':
+					return HttpResponse(json.dumps({'title': questionaire.title, 'qstring': questionaire.question_list}))
 
 		# 问卷出错状态
 		else:
@@ -121,18 +138,4 @@ def bonus(request):
 	rdata['uid'] = request.user.id
 	op = request.POST.get('op')
 
-	if op == 'add_credit':
-		credit = request.POST.get('credit')
-		SUser = SUser.objects.get(uid=request.user.id)
-		Suser.credit += credit
-		print('c', credit);
-
 	return render(request, 'bonus.html', rdata)
-
-def design(request):
-	# 设计问卷
-	return render(request,'mydesign.html',{})
-
-def surveypage(request):
-	# 回答问卷页面
-	return render(request,'mysurveypage.html',{})

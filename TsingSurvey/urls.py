@@ -17,8 +17,8 @@ from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
 from SUser.views import index, login, logout, user_list, admin_list, profile
-from Survey.views import survey, bonus, design, surveypage
-from Utils.views import install, install_test
+from Survey.views import survey, bonus
+from Utils.views import install
 import settings
 
 urlpatterns = [
@@ -35,7 +35,4 @@ urlpatterns = [
     url(r'^bonus/', bonus),
 
     url(r'^install/$', install),
-    url(r'^install_test/$', install_test),
-    url(r'^design/',design),
-    url(r'^surveypage/',surveypage)
 ]
