@@ -60,10 +60,16 @@ def survey(request, qid):
 					return HttpResponse(json.dumps({}))
 				# 发布问卷请求
 				elif op == 'release':
-					questionaire.status = 1
+					# questionaire.status = 1
 					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
+					suser_list = SUser.objects.filter(is_sample=1)
+					for suser in suser_list:
+						d = json.loads(suser.qid_list)
+						d[questionaire.id] = 0
+						suser.qid_list = json.dumps(d)
+						suser.save()
 					return HttpResponse(json.dumps({}))
-				# 渲染
+				# ???
 				else:
 					pass
 

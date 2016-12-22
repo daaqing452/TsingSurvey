@@ -17,22 +17,51 @@ def index(request):
 		return HttpResponseRedirect('/login/')
 	rdata = {}
 	rdata['user'] = user = request.user
+	
+	def remake_questionaire(questionaire, qid_dict):
+		r = {}
+		r['id'] = questionaire.id
+		
+		if questionaire.title == '':
+			r['title'] = '（无标题）'
+		else:
+			r['title'] = questionaire.title
+
+		if not str(questionaire.id) in qid_dict:
+			r['fill'] = ''
+		elif qid_dict[str(questionaire.id)] == 0:
+			r['fill'] = '未填写'
+		else:
+			r['fill'] = '已填写'
+		
+		if questionaire.status == 0:
+			r['status'] = '尚未发布'
+		elif questionaire.status == 1:
+			r['status'] = '已发布'
+		elif questionaire.status == 2:
+			r['status'] = '结束'
+		elif questionaire.status == 3:
+			r['status'] = '已生成报告'
+		else:
+			r['status'] = '错误'
+		
+		return r
 
 	# 问卷列表
+	suser = SUser.objects.get(uid=request.user.id)
+	qid_dict = json.loads(suser.qid_list)
+
 	if user.is_staff:
 		questionaire_list = Questionaire.objects.all()
+		rq_list = [remake_questionaire(questionaire, qid_dict) for questionaire in questionaire_list]
 	else:
-		suser = SUser.objects.get(uid=request.user.id)
-		qid_list = suser.qid_list.split(' ')
-		questionaire_list = []
-		for qid in qid_list:
-			if qid == '':
-				continue
+		rq_list = []
+		for qid in qid_dict:
 			questionaires = Questionaire.objects.filter(id=int(qid))
 			if len(questionaires) > 0:
-				questionaire_list.append(questionaires[0])
+				rq_list.append(remake_questionaire(questionaires[0], qid_dict))
 
-	rdata['questionaire_list'] = questionaire_list
+	rdata['questionaire_list'] = rq_list
 	return render(request, 'index.html', rdata)
 
 def login(request):
@@ -86,12 +115,12 @@ def user_list(request):
 	rdata['uid'] = request.user.id
 	op = request.POST.get('op')
 
-	def getSUserList():
+	def get_suser_list():
 		return [{'username': suser_raw.username, 'is_sample': suser_raw.is_sample} for suser_raw in SUser.objects.all()]
 
 	# 加载
 	if op == 'load':
-		return HttpResponse(json.dumps({'user_list': getSUserList()}))
+		return HttpResponse(json.dumps({'user_list': get_suser_list()}))
 
 	# 设置为样本
 	if op == 'sample_yes':
@@ -102,7 +131,7 @@ def user_list(request):
 				suser = susers[0]
 				suser.is_sample = 1
 				suser.save()
-		return HttpResponse(json.dumps({'user_list': getSUserList()}))
+		return HttpResponse(json.dumps({'user_list': get_suser_list()}))
 
 	# 设置为非样本
 	if op == 'sample_no':
@@ -113,7 +142,7 @@ def user_list(request):
 				suser = susers[0]
 				suser.is_sample = 0
 				suser.save()
-		return HttpResponse(json.dumps({'user_list': getSUserList()}))
+		return HttpResponse(json.dumps({'user_list': get_suser_list()}))
 
 	# 删除用户
 	if op == 'delete':
@@ -128,7 +157,7 @@ def user_list(request):
 					user = users[0]
 					suser.delete()
 					user.delete()
-		return HttpResponse(json.dumps({'user_list': getSUserList()}))
+		return HttpResponse(json.dumps({'user_list': get_suser_list()}))
 
 	# 添加用户
 	if op == 'add':
@@ -142,9 +171,9 @@ def user_list(request):
 			user = User.objects.create_user(username=username, password=password)
 			suser = SUser.objects.create(uid=user.id, username=username)
 			result = 'yes'
-		return HttpResponse(json.dumps({'result': result, 'user_list': getSUserList()}))
+		return HttpResponse(json.dumps({'result': result, 'user_list': get_suser_list()}))
 
-	rdata['user_list'] = getSUserList()
+	rdata['user_list'] = get_suser_list()
 	return render(request, 'user_list.html', rdata)
 
 def admin_list(request):
@@ -157,12 +186,12 @@ def admin_list(request):
 	rdata['uid'] = request.user.id
 	op = request.POST.get('op')
 
-	def getAdminList():
+	def get_admin_list():
 		return [{'username': admin_raw.username} for admin_raw in User.objects.filter(is_staff=1).filter(~Q(username='root'))]
 
 	# 加载
 	if op == 'load':
-		return HttpResponse(json.dumps({'admin_list': getAdminList()}));
+		return HttpResponse(json.dumps({'admin_list': get_admin_list()}));
 
 	# 删除管理员
 	if op == 'delete':
@@ -173,7 +202,7 @@ def admin_list(request):
 				user = users[0]
 				user.is_staff = 0
 				user.save()
-		return HttpResponse(json.dumps({'admin_list': getAdminList()}))
+		return HttpResponse(json.dumps({'admin_list': get_admin_list()}))
 
 	# 添加管理员
 	if op == 'add':
@@ -186,9 +215,9 @@ def admin_list(request):
 			result = 'yes'
 		else:
 			result = 'no'
-		return HttpResponse(json.dumps({'result': result, 'admin_list': getAdminList()}))
+		return HttpResponse(json.dumps({'result': result, 'admin_list': get_admin_list()}))
 	
-	rdata['admin_list'] = getAdminList()
+	rdata['admin_list'] = get_admin_list()
 	return render(request, 'admin_list.html', rdata)
 
 def profile(request, uid):

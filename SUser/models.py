@@ -7,4 +7,4 @@ class SUser(models.Model):
 	username = models.CharField(max_length=32)
 	is_sample = models.BooleanField(default=1)
 	credit = models.IntegerField(default=0)
-	qid_list = models.TextField(default='')
+	qid_list = models.TextField(default='[]')

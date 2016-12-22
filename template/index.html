@@ -28,11 +28,22 @@
 
 <p> 正在进行的问卷 </p>
 <table>
+	<tr>
+		<td align=center> 问卷编号 </td>
+		<td align=center> 标题 </td>
+		<td align=center> 是否填写 </td>
+		{% if user.is_staff %}
+		<td align=center> 状态 </td>
+		{% endif %}
+	</tr>
 	{% for questionaire in questionaire_list %}
 	<tr>
-		<td> 问卷 {{ questionaire.id }}: </td>
-		<td> <a href='/survey/{{ questionaire.id }}'> &nbsp; {{ questionaire.title }} &nbsp; </a> </td>
+		<td> {{ questionaire.id }} </td>
+		<td> <a href='/survey/{{ questionaire.id }}'> {{ questionaire.title }} </a> </td>
+		<td>  {{ questionaire.fill }} </td>
+		{% if user.is_staff %}
 		<td> {{ questionaire.status }} </td>
+		{% endif %}
 	</tr>
 	{% endfor %}
 </table>
