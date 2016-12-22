@@ -20,72 +20,77 @@
 <body>
 <div id='header' uid={{ uid }}> </div>
 
+{% ifequal viewable 1 %}
 
 
-{% ifequal status 0 %}
-标题：<input type='text' id='title' value='{{ questionaire.title }}' />
-<br/>
-<button type="button" class="btn" data-toggle="modal" data-target="#myModal" onclick="createSurvey(1)"> 单选题 </button>
-<button type="button" class="btn" data-toggle="modal" data-target="#myModal" onclick="createSurvey(2)"> 多选题 </button>
-<button type="button" class="btn" data-toggle="modal" data-target="#myModal" onclick="createSurvey(3)"> 填空题 </button>
+
+	{% ifequal status 0 %}
+	标题：<input type='text' id='title' value='{{ questionaire.title }}' />
+	<br/>
+	<button type="button" class="btn" data-toggle="modal" data-target="#myModal" onclick="createSurvey(1)"> 单选题 </button>
+	<button type="button" class="btn" data-toggle="modal" data-target="#myModal" onclick="createSurvey(2)"> 多选题 </button>
+	<button type="button" class="btn" data-toggle="modal" data-target="#myModal" onclick="createSurvey(3)"> 填空题 </button>
+	{% endifequal %}
+
+	{% ifequal status 1 %}
+	<br/>
+	<p id='title'> </p>
+	<br/>
+	{% endifequal %}
+
+
+
+	{% ifequal status 0 %}
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title" id="myModalLabel">添加新问题</h4>
+	      </div>
+	      <div class="modal-body" id="myModal_body"> 
+	       
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+	        <button type="button" class="btn btn-primary" onclick="commitS()">保存</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	{% endifequal %}
+
+
+
+	<div style="text-align:left;">
+		<table id="questions" style="width:100%;">
+		</table>
+	</div>
+
+
+
+	{% ifequal status 0 %}
+	<div style="text-align:left;">
+		<button id="save_btn" onclick="save()"> 暂存 </button>
+	<div>
+	<div style="text-align:left;">
+		<button id="release_btn" onclick="release()"> 发布 </button>
+	</div>
+	{% endifequal %}
+
+	{% ifequal status 1 %}
+	<div style="text-align:left;">
+		<button id ="submit_btn" onclick="submit()">提交</button>
+	</div>
+	{% if is_staff %}
+	<button id="close_btn" onlcick="close()"> 关闭问卷 </button>
+	{% endif %}
+	{% endifequal %}
+
+
+
 {% endifequal %}
-
-{% ifequal status 1 %}
-<br/>
-<p id='title'> </p>
-<br/>
-{% endifequal %}
-
-
-
-{% ifequal status 0 %}
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">添加新问题</h4>
-      </div>
-      <div class="modal-body" id="myModal_body"> 
-       
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-        <button type="button" class="btn btn-primary" onclick="commitS()">保存</button>
-      </div>
-    </div>
-  </div>
-</div>
-{% endifequal %}
-
-
-
-<div style="text-align:left;">
-	<table id="questions" style="width:100%;">
-	</table>
-</div>
-
-
-
-{% ifequal status 0 %}
-<div style="text-align:left;">
-	<button id="save_btn" onclick="save()"> 暂存 </button>
-<div>
-<div style="text-align:left;">
-	<button id="release_btn" onclick="release()"> 发布 </button>
-</div>
-{% endifequal %}
-
-{% ifequal status 1 %}
-<div style="text-align:left;">
-	<button id ="submit_btn" onclick="submit()">提交</button>
-</div>
-{% if is_staff %}
-<button id="close_btn" onlcick="close()"> 关闭问卷 </button>
-{% endif %}
-{% endifequal %}
-
 
 <br/>
 {{ info }}

@@ -23,6 +23,8 @@ def survey(request, qid):
 		return HttpResponseRedirect('/login/')
 	rdata = {}
 	rdata['uid'] = request.user.id
+	rdata['is_staff'] = request.user.is_staff
+	rdata['viewable'] = 1
 	op = request.POST.get('op')
 	status = -1
 
@@ -40,16 +42,19 @@ def survey(request, qid):
 
 	questionaires = Questionaire.objects.filter(id=qid)
 	if len(questionaires) == 0:
-		rdata['info'] = '找不到该问卷: 0'
+		rdata['viewable'] = 0
+		rdata['info'] = '找不到该问卷 -1'
 	else:
 		questionaire = questionaires[0]
 		status = questionaire.status
+		suser = Suser.objects.get(uid=request.user.id)
 
 		# 问卷修改状态
 		if status == 0:
 			# 修改中管理员可见
 			if not request.user.is_staff:
-				rdata['info'] = '找不到该问卷: 1'
+				rdata['viewable'] = 0
+				rdata['info'] = '找不到该问卷 00'
 			else:
 				# 加载问卷请求
 				if op == 'load':
@@ -60,13 +65,13 @@ def survey(request, qid):
 					return HttpResponse(json.dumps({}))
 				# 发布问卷请求
 				elif op == 'release':
-					# questionaire.status = 1
+					questionaire.status = 1
 					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
 					suser_list = SUser.objects.filter(is_sample=1)
 					for suser in suser_list:
-						d = json.loads(suser.qid_list)
-						d[questionaire.id] = 0
-						suser.qid_list = json.dumps(d)
+						qid_dict = json.loads(suser.qid_list)
+						qid_dict[questionaire.id] = 0
+						suser.qid_list = json.dumps(qid_dict)
 						suser.save()
 					return HttpResponse(json.dumps({}))
 				# ???
@@ -75,6 +80,13 @@ def survey(request, qid):
 
 		# 问卷填写状态
 		elif status == 1:
+			# 检验是否已经填写
+			if not request.user.is_staff:
+				qid_dict = json.loads(suser.qid_list)
+				if not qid in qid_dict:
+					rdata['viewable'] = 0
+					rdata['info'] = '找不到该问卷 10'
+
 			# 加载问卷请求
 			if op == 'load':
 				return HttpResponse(json.dumps({'title': questionaire.title, 'qstring': questionaire.question_list}))
@@ -85,11 +97,10 @@ def survey(request, qid):
 
 		# 问卷出错状态
 		else:
-			rdata['info'] = '找不到该问卷: 2'
-			return render(request, 'survey_create.html', rdata)
+			rdata['viewable'] = 0
+			rdata['info'] = '找不到该问卷 99'
 		
 	rdata['status'] = status
-	rdata['is_staff'] = request.user.is_staff
 	return render(request, 'survey.html', rdata)
 
 def bonus(request):
