@@ -18,19 +18,33 @@
 <table>
 	<tr>
 		<td align=right> ID: </td>
-		<td> {{ uid }} </td>
+		<td> {{ user.id }} </td>
 	</tr>
 	<tr>
 		<td align=right> 学号: </td>
-		<td> {{ username }} </td>
+		<td> {{ user.username }} </td>
 	</tr>
 	<tr>
 		<td align=right> 积分: </td>
-		<td> 123 </td>
+		<td> {{ suser.credit }} </td>
 	</tr>
 <table>
 
-<a> 已填问卷 </a>
+<p> 历史 </p>
+<table>
+<tr>
+	<td> 问卷编号 </td>
+	<td> 问卷名称 </td>
+	<td> 是否填写 </td>
+</tr>
+{% for rq in rq_list %}
+<tr>
+	<td> {{ rq.questionaire.id }} </td>
+	<td> <a href='/survey/{{ rq.questionaire.id }}'> {{ rq.questionaire.title }} </a> </td>
+	<td> {{ rq.fill }} </td> 
+</tr>
+{% endfor %}
+</table>
 
 <div id='footer'> </div>
 </body>

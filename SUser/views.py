@@ -227,8 +227,18 @@ def profile(request, uid):
 	if (not request.user.is_staff) and (str(request.user.id) != uid):
 		return HttpResponseRedirect('/index/')
 	rdata = {}
-	rdata['uid'] = request.user.id
-	rdata['username'] = request.user.username
+	rdata['uid'] = uid
+	rdata['user'] = user = User.objects.get(id=uid)
+	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
 	op = request.POST.get('op')
+
+	qid_dict = json.loads(suser.qid_list)
+	rq_list = []
+	for qid in qid_dict:
+		questionaires = Questionaire.objects.filter(id=qid)
+		if len(questionaires) > 0:
+			questionaire = questionaires[0]
+			rq_list.append({'questionaire': questionaire, 'fill': qid_dict[qid]})
+	rdata['rq_list'] = rq_list
 
 	return render(request, 'profile.html', rdata)
