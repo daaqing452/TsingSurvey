@@ -27,9 +27,15 @@
 {% endif %}
 
 <p> 正在进行的问卷 </p>
-{% for questionaire in questionaire_list %}
-<a href='/survey/{{ questionaire.id }}'> {{ questionaire.title }} </a>
-{% endfor %}
+<table>
+	{% for questionaire in questionaire_list %}
+	<tr>
+		<td> 问卷 {{ questionaire.id }}: </td>
+		<td> <a href='/survey/{{ questionaire.id }}'> &nbsp; {{ questionaire.title }} &nbsp; </a> </td>
+		<td> {{ questionaire.status }} </td>
+	</tr>
+	{% endfor %}
+</table>
 
 
 <div id='footer'> </div>

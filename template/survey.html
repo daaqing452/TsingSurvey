@@ -6,31 +6,39 @@
 	<title> 问卷 </title>
 	
 	<link href='{% static 'bootstrap/css/bootstrap.min.css' %}' rel="stylesheet">
-	<link href='{% static 'css/designjs.css' %}' rel="stylesheet">
+	<link href='{% static 'css/survey.css' %}' rel="stylesheet">
 
 	<script src='{% static 'js/jquery-3.1.1.min.js' %}'> </script>
 	<script src='{% static 'js/csrf.js' %}'> </script>
 	<script src='{% static 'bootstrap/js/bootstrap.min.js' %}'> </script>
 	<script src='{% static 'js/header_footer.js' %}'> </script>
+	<script src='{% static 'js/survey.js' %}'> </script>
 	<script src='{% static 'js/survey_create.js' %}'> </script>
+	<script src='{% static 'js/survey_show.js' %}'> </script>
 </head>
-
-
-
-
 
 <body>
 <div id='header' uid={{ uid }}> </div>
 
 
 
-
-
 {% ifequal status 0 %}
+标题：<input type='text' id='title' value='{{ questionaire.title }}' />
+<br/>
 <button type="button" class="btn" data-toggle="modal" data-target="#myModal" onclick="createSurvey(1)"> 单选题 </button>
 <button type="button" class="btn" data-toggle="modal" data-target="#myModal" onclick="createSurvey(2)"> 多选题 </button>
 <button type="button" class="btn" data-toggle="modal" data-target="#myModal" onclick="createSurvey(3)"> 填空题 </button>
+{% endifequal %}
 
+{% ifequal status 1 %}
+<br/>
+<p id='title'> </p>
+<br/>
+{% endifequal %}
+
+
+
+{% ifequal status 0 %}
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -49,51 +57,34 @@
     </div>
   </div>
 </div>
+{% endifequal %}
 
-<!-- Survey preview -->
+
+
 <div style="text-align:left;">
 	<table id="questions" style="width:100%;">
 	</table>
 </div>
 
+
+
+{% ifequal status 0 %}
 <div style="text-align:left;">
 	<button id="save_btn" onclick="save()"> 暂存 </button>
 <div>
-
 <div style="text-align:left;">
 	<button id="release_btn" onclick="release()"> 发布 </button>
 </div>
 {% endifequal %}
 
-
-
-
-
 {% ifequal status 1 %}
-<p> 问卷 </p>
-{% for question in question_list %}
-<div>
-	<span> 第 {{ forloop.counter }} 题 </span> <br/>
-	<span> 类型： {{ question.qtype }} </span> <br/>
-	{{ question.content }} <br/>
-	<input type='text' />
+<div style="text-align:left;">
+	<button id ="submit_btn" onclick="submit()">提交</button>
 </div>
-<br/>
-{% endfor %}
-<button id='submit'> 提交 </button>
-<form id='submit_form' method='POST' action='/bonus/'>
-	<input id='submit_form_credit' type='hidden' name='credit' />
-</form>
+{% if is_staff %}
+<button id="close_btn" onlcick="close()"> 关闭问卷 </button>
+{% endif %}
 {% endifequal %}
-
-
-
-
-
-{% ifequal status 2 %}
-{% endifequal %}
-
-
 
 
 <br/>
@@ -101,4 +92,3 @@
 
 <div id='footer'> </div>
 </body>
-</html>

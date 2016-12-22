@@ -5,6 +5,8 @@ var table_title_html = "<thead><tr><td>题目标题</td></tr><tr><td style=\"pad
 var questions = new Array();
 var current_status = {s_type: 0, action: 0, index: 0};
 var n_option_default = 4;
+
+
 function myclick(){
 	alert("success!");
 }
@@ -19,19 +21,31 @@ function save(){
 	//s_type title [n_option [option1..] 
 	//save Qstring into database
 	var Qstring = JSON.stringify(questions);
-	
+	var title = $('input#title').val();
 	$.ajax({
 		url: window.location.pathname,
 		type: 'POST',
-		data: {'op': 'save', 'qstring': Qstring},
+		data: {'op': 'save', 'title': title, 'qstring': Qstring},
 		success: function(data) {
 			data = JSON.parse(data);
+			alert('暂存成功');
 		}
 	});
 }
 
 function release() {
-
+	var Qstring = JSON.stringify(questions);
+	var title = $('input#title').val();
+	$.ajax({
+		url: window.location.pathname,
+		type: 'POST',
+		data: {'op': 'release', 'title': title, 'qstring': Qstring},
+		success: function(data) {
+			data = JSON.parse(data);
+			alert('发布成功');
+			windows.location.reload()
+		}
+	});
 }
 
 function createModal(){

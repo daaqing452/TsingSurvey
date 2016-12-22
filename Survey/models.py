@@ -4,9 +4,10 @@ from django.db import models
 
 class Questionaire(models.Model):
 	status = models.IntegerField(default=0)
-	update_time = models.DateTimeField(default='1970-01-01 00:00:00')
-	title = models.CharField(max_length=64)
+	create_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
+	update_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
 	founder = models.IntegerField(default=-1)
+	title = models.CharField(max_length=128, default='')
 	question_list = models.TextField(default='')
 	comment = models.TextField(default='')
 

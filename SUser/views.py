@@ -22,10 +22,13 @@ def index(request):
 	if user.is_staff:
 		questionaire_list = Questionaire.objects.all()
 	else:
-		qid_list = user.qid_list
+		suser = SUser.objects.get(uid=request.user.id)
+		qid_list = suser.qid_list.split(' ')
 		questionaire_list = []
 		for qid in qid_list:
-			questionaires = Questionaire.objects.filter(id=qid)
+			if qid == '':
+				continue
+			questionaires = Questionaire.objects.filter(id=int(qid))
 			if len(questionaires) > 0:
 				questionaire_list.append(questionaires[0])
 
@@ -88,7 +91,7 @@ def user_list(request):
 
 	# 加载
 	if op == 'load':
-		return HttpResponse(json.dumps({'user_list': getSUserList()}));
+		return HttpResponse(json.dumps({'user_list': getSUserList()}))
 
 	# 设置为样本
 	if op == 'sample_yes':

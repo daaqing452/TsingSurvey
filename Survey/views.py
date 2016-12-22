@@ -8,6 +8,8 @@ from django.template import RequestContext
 from Survey.models import Questionaire, Question, Answer
 from SUser.models import SUser
 import json
+import datetime
+from django.utils import timezone
 
 # 问卷状态
 #	 0 修改中（随时修改）
@@ -24,37 +26,64 @@ def survey(request, qid):
 	op = request.POST.get('op')
 	status = -1
 
-	questionaire_list = Questionaire.objects.filter(id=qid)
-	question_list = []
-	if len(questionaire_list) == 0:
-		rdata['info'] = '找不到该问卷'
+	def update_questionaire(questionaire, title, qstring):
+		questionaire.title = title
+		questionaire.question_list = qstring
+		questionaire.update_time = timezone.now()
+		questionaire.save()
+
+	if op == 'create':
+		now = timezone.now()
+		questionaire = Questionaire.objects.create(status=0, create_time=now, update_time=now, founder=request.user.id)
+		questionaire.save()
+		return HttpResponse(json.dumps({'qid': questionaire.id}));
+
+	questionaires = Questionaire.objects.filter(id=qid)
+	if len(questionaires) == 0:
+		rdata['info'] = '找不到该问卷: 0'
 	else:
-		questionaire = questionaire_list[0]
+		questionaire = questionaires[0]
 		status = questionaire.status
-		# 检查问卷状态
+
+		# 问卷修改状态
 		if status == 0:
 			# 修改中管理员可见
 			if not request.user.is_staff:
-				rdata['info'] = '找不到该问卷'
-			# 修改问卷界面
-			if op == 'save':
-				print(request.POST.get('qstring'))
-			elif op == 'release':
-				pass
+				rdata['info'] = '找不到该问卷: 1'
 			else:
-				pass
-		elif status == 1:
-			# 填写问卷界面
-			tid_list = map(int, questionaire.question_list.split(' '))
-			question_list = [Question.objects.get(id=tid) for tid in tid_list]
-			pass
-		elif status == 2:
-			# 浏览问卷界面，可分析
-			pass
-		else:
-			rdata['info'] = '找不到该问卷'
+				# 加载问卷请求
+				if op == 'load':
+					return HttpResponse(json.dumps({'title': questionaire.title, 'qstring': questionaire.question_list}))
+				# 修改问卷请求
+				if op == 'save':
+					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
+					return HttpResponse(json.dumps({}))
+				# 发布问卷请求
+				elif op == 'release':
+					questionaire.status = 1
+					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
+					return HttpResponse(json.dumps({}))
+				# 渲染
+				else:
+					pass
 
+		# 问卷填写状态
+		elif status == 1:
+			# 加载问卷请求
+			if op == 'load':
+				return HttpResponse(json.dumps({'title': questionaire.title, 'qstring': questionaire.question_list}))
+
+		# 问卷结束状态（分析）
+		elif status == 2:
+			pass
+
+		# 问卷出错状态
+		else:
+			rdata['info'] = '找不到该问卷: 2'
+			return render(request, 'survey_create.html', rdata)
+		
 	rdata['status'] = status
+	rdata['is_staff'] = request.user.is_staff
 	return render(request, 'survey.html', rdata)
 
 def bonus(request):

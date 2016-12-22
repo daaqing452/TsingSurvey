@@ -1,12 +1,11 @@
-var questions = {};
 var answers = new Array();
-$(document).ready(function(){ 
-	//put string from database into Qstring
-	var Qstring = "[{\"s_type\":1,\"title\":\"你所在的班级\",\"n_option\":5,\"options\":[{\"text\":\"计21\",\"image\":\"\"},{\"text\":\"计22\",\"image\":\"\"},{\"text\":\"计23\",\"image\":\"\"},{\"text\":\"计24\",\"image\":\"\"},{\"text\":\"计25\",\"image\":\"\"}]},{\"s_type\":2,\"title\":\"你喜欢的明星\",\"n_option\":3,\"options\":[{\"text\":\"科比\",\"image\":\"\"},{\"text\":\"乔丹\",\"image\":\"\"},{\"text\":\"周杰伦\",\"image\":\"\"}]},{\"s_type\":3,\"title\":\"你对于这个网页的看法\"}]"
-	questions = JSON.parse(Qstring); 
+var questions2 = {};
+
+function show(Qstring) {
+	questions2 = JSON.parse(Qstring); 
 	var q_table = document.getElementById("questions");
-	for(var i = 0; i < questions.length; i++){
-		var q = questions[i];
+	for(var i = 0; i < questions2.length; i++) {
+		var q = questions2[i];
 		switch(q.s_type){
 			case 1:{
 				var new_row = q_table.insertRow(-1);
@@ -57,12 +56,11 @@ $(document).ready(function(){
 			}
 		}
 	}
-
-}); 
+}
 
 function submit(){
-	for(var i = 0; i < questions.length; i++){
-		var q = questions[i];
+	for(var i = 0; i < questions2.length; i++){
+		var q = questions2[i];
 		var a = {s_type:q.s_type};
 		a.title = q.title;
 		if(q.s_type == 1 || q.s_type == 2){
