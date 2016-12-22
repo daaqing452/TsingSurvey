@@ -43,7 +43,7 @@ function release() {
 		success: function(data) {
 			data = JSON.parse(data);
 			alert('发布成功');
-			windows.location.reload()
+			window.location.reload()
 		}
 	});
 }
