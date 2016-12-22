@@ -80,9 +80,11 @@
 	{% endifequal %}
 
 	{% ifequal status 1 %}
+	{% ifequal permission_submit 1 %}
 	<div style="text-align:left;">
 		<button id ="submit_btn" onclick="submit()">提交</button>
 	</div>
+	{% endifequal %}
 	{% if is_staff %}
 	<button id="close_btn" onlcick="close()"> 关闭问卷 </button>
 	{% endif %}

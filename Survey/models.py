@@ -19,7 +19,7 @@ class Question(models.Model):
 class Answeraire(models.Model):
 	qid = models.IntegerField()
 	uid = models.IntegerField()
-	update_time = models.DateTimeField(default='1970-01-01 00:00:00')
+	update_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
 	answer_list = models.TextField()
 
 class Answer(models.Model):

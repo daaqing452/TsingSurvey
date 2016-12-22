@@ -5,11 +5,11 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
-from Survey.models import Questionaire, Question, Answer
+from django.utils import timezone
+from Survey.models import Questionaire, Answeraire
 from SUser.models import SUser
 import json
 import datetime
-from django.utils import timezone
 
 # 问卷状态
 #	 0 修改中（随时修改）
@@ -47,7 +47,7 @@ def survey(request, qid):
 	else:
 		questionaire = questionaires[0]
 		status = questionaire.status
-		suser = Suser.objects.get(uid=request.user.id)
+		suser = SUser.objects.get(uid=request.user.id)
 
 		# 问卷修改状态
 		if status == 0:
@@ -80,16 +80,26 @@ def survey(request, qid):
 
 		# 问卷填写状态
 		elif status == 1:
-			# 检验是否已经填写
-			if not request.user.is_staff:
-				qid_dict = json.loads(suser.qid_list)
-				if not qid in qid_dict:
-					rdata['viewable'] = 0
-					rdata['info'] = '找不到该问卷 10'
+			# 检验是否可见和是否已经填写
+			permission_submit = 0
+			qid_dict = json.loads(suser.qid_list)
+			if not request.user.is_staff and not qid in qid_dict:
+				rdata['viewable'] = 0
+				rdata['info'] = '找不到该问卷 10'
+			if qid in qid_dict:
+				if qid_dict[str(qid)] == 1:
+					rdata['info'] = '已填写该问卷'
+				else:
+					permission_submit = 1
+			rdata['permission_submit'] = permission_submit
 
 			# 加载问卷请求
 			if op == 'load':
 				return HttpResponse(json.dumps({'title': questionaire.title, 'qstring': questionaire.question_list}))
+			# 提交问卷请求
+			if op == 'submit':
+				answeraire = Answeraire.objects.create(qid=qid, uid=request.user.id, update_time=timezone.now())
+				return HttpResponse(json.dumps({}))
 
 		# 问卷结束状态（分析）
 		elif status == 2:
