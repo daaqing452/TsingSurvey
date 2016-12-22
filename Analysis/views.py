@@ -10,3 +10,6 @@ import json
 
 def analysis(request):
 	pass
+
+def search(request):
+	pass

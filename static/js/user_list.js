@@ -2,13 +2,15 @@ function refreshUserList(user_list) {
 	var tbody = $('table#user_list').children('tbody');
 	$('[type="item"]').remove();
 	for (i in user_list) {
-		var username = user_list[i]['username']
+		var uid = user_list[i]['uid'];
+		var username = user_list[i]['username'];
 		var is_sample = '√';
 		if (user_list[i]['is_sample'] == 0) is_sample = '';
 		var tr = $('[type="clone"]').clone();
 		tr.attr('type', 'item');
 		tr.find('[type="checkbox"]').attr('username', username);
-		tr.children('[type="username"]').text(username);
+		tr.find('[type="username"]').text(username);
+		tr.find('[type="username"]').attr('href', '/profile/' + uid + '/');
 		tr.children('[type="name"]').text('佚名')
 		tr.children('[type="is_sample"]').text(is_sample);
 		tr.show();

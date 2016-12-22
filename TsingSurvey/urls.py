@@ -18,12 +18,14 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from SUser.views import index, login, logout, user_list, admin_list, profile
 from Survey.views import survey, bonus
+from Analysis.views import analysis, search
 from Utils.views import install
 import settings
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     
+    url(r'^$', index),
     url(r'^login/$', login),
     url(r'^logout/$', logout),
     url(r'^index/$', index),
@@ -33,6 +35,8 @@ urlpatterns = [
 
     url(r'^survey/(\d{1,10})/$', survey),
     url(r'^bonus/', bonus),
+
+    url(r'^search/$', search),
 
     url(r'^install/$', install),
 ]

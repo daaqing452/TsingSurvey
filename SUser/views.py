@@ -116,7 +116,7 @@ def user_list(request):
 	op = request.POST.get('op')
 
 	def get_suser_list():
-		return [{'username': suser_raw.username, 'is_sample': suser_raw.is_sample} for suser_raw in SUser.objects.all()]
+		return [{'uid': suser_raw.uid, 'username': suser_raw.username, 'is_sample': suser_raw.is_sample} for suser_raw in SUser.objects.all()]
 
 	# 加载
 	if op == 'load':
@@ -187,7 +187,7 @@ def admin_list(request):
 	op = request.POST.get('op')
 
 	def get_admin_list():
-		return [{'username': admin_raw.username} for admin_raw in User.objects.filter(is_staff=1).filter(~Q(username='root'))]
+		return [{'uid': admin_raw.id, 'username': admin_raw.username} for admin_raw in User.objects.filter(is_staff=1).filter(~Q(username='root'))]
 
 	# 加载
 	if op == 'load':

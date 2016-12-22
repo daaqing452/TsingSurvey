@@ -9,10 +9,10 @@ from Survey.models import Questionaire, Question
 
 class Utils:
 	ROOT_PASSWORD = '123'
-
 	@staticmethod
 	def username_to_password(username):
 		return str((hash(username) ^ 3968766407) % 104939997)
+
 
 def add_user(username, password, is_superuser, is_staff):
 	user = auth.authenticate(username=username, password=password)
