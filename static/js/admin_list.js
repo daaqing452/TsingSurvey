@@ -9,7 +9,7 @@ function refreshAdminList(admin_list) {
 		tr.find('[type="checkbox"]').attr('username', username);
 		tr.find('[type="username"]').text(username);
 		tr.find('[type="username"]').attr('href', '/profile/' + uid + '/');
-		tr.children('[type="name"]').text('佚名')
+		tr.find('[type="name"]').text('佚名')
 		tr.show();
 		tbody.append(tr);
 	}

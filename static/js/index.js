@@ -1,5 +1,5 @@
 $(document).ready(function(){
-	$('button#survey_create').click(function(){
+	$('#survey_create').click(function(){
 		$.ajax({
 			url: '/survey/00000/',
 			type: 'POST',

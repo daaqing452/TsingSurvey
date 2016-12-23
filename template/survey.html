@@ -23,6 +23,7 @@
 {% ifequal viewable 1 %}
 
 
+	<p> 问卷编号：{{ qid }} </p>
 
 	{% ifequal status 0 %}
 	标题：<input type='text' id='title' value='{{ questionaire.title }}' />
@@ -33,6 +34,12 @@
 	{% endifequal %}
 
 	{% ifequal status 1 %}
+	<br/>
+	<p id='title'> </p>
+	<br/>
+	{% endifequal %}
+
+	{% ifequal status 2 %}
 	<br/>
 	<p id='title'> </p>
 	<br/>

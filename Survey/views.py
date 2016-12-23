@@ -24,6 +24,7 @@ def survey(request, qid):
 	rdata = {}
 	rdata['user'] = user = request.user
 	rdata['viewable'] = 1
+	rdata['qid'] = qid
 	op = request.POST.get('op')
 	status = -1
 

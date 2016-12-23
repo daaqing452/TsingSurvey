@@ -11,8 +11,8 @@ function refreshUserList(user_list) {
 		tr.find('[type="checkbox"]').attr('username', username);
 		tr.find('[type="username"]').text(username);
 		tr.find('[type="username"]').attr('href', '/profile/' + uid + '/');
-		tr.children('[type="name"]').text('佚名')
-		tr.children('[type="is_sample"]').text(is_sample);
+		tr.find('[type="name"]').text('佚名')
+		tr.find('[type="is_sample"]').text(is_sample);
 		tr.show();
 		tbody.append(tr);
 	}
