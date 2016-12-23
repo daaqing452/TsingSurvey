@@ -18,7 +18,7 @@
 </head>
 
 <body>
-<div id='header' uid={{ uid }}> </div>
+<div id='header' uid={{ user.id }}> </div>
 
 {% ifequal viewable 1 %}
 
@@ -85,7 +85,7 @@
 		<button id ="submit_btn" onclick="submit()">提交</button>
 	</div>
 	{% endifequal %}
-	{% if is_staff %}
+	{% if user.is_staff %}
 	<button id="close_btn" onclick="closeup()"> 关闭问卷 </button>
 	{% endif %}
 	{% endifequal %}

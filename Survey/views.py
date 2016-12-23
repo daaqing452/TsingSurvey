@@ -22,11 +22,9 @@ def survey(request, qid):
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('/login/')
 	rdata = {}
-	rdata['uid'] = request.user.id
-	rdata['is_staff'] = request.user.is_staff
+	rdata['user'] = user = request.user
 	rdata['viewable'] = 1
 	op = request.POST.get('op')
-	user = request.user
 	status = -1
 
 	def update_questionaire(questionaire, title, qstring):
@@ -135,7 +133,7 @@ def bonus(request):
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('../login/')
 	rdata = {}
-	rdata['uid'] = request.user.id
+	rdata['user'] = request.user
 	op = request.POST.get('op')
 
 	return render(request, 'bonus.html', rdata)

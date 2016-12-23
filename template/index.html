@@ -11,7 +11,7 @@
 </head>
 
 <body>
-<div id='header' uid={{ user.uid }}> </div>
+<div id='header' uid={{ user.id }}> </div>
 
 <h3> 首页 </h3>
 <b><i> {{ user.username }} </i></b>
@@ -36,13 +36,13 @@
 		<td align=center> 状态 </td>
 		{% endif %}
 	</tr>
-	{% for questionaire in questionaire_list %}
+	{% for rq in rq_list %}
 	<tr>
-		<td> {{ questionaire.id }} </td>
-		<td> <a href='/survey/{{ questionaire.id }}'> {{ questionaire.title }} </a> </td>
-		<td>  {{ questionaire.fill }} </td>
+		<td> {{ rq.id }} </td>
+		<td> <a href='/survey/{{ rq.id }}'> {{ rq.title }} </a> </td>
+		<td>  {{ rq.fill }} </td>
 		{% if user.is_staff %}
-		<td> {{ questionaire.status }} </td>
+		<td> {{ rq.status }} </td>
 		{% endif %}
 	</tr>
 	{% endfor %}

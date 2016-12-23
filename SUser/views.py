@@ -17,35 +17,6 @@ def index(request):
 		return HttpResponseRedirect('/login/')
 	rdata = {}
 	rdata['user'] = user = request.user
-	
-	def remake_questionaire(questionaire, qid_dict):
-		r = {}
-		r['id'] = questionaire.id
-		
-		if questionaire.title == '':
-			r['title'] = '（无标题）'
-		else:
-			r['title'] = questionaire.title
-
-		if not str(questionaire.id) in qid_dict:
-			r['fill'] = ''
-		elif qid_dict[str(questionaire.id)] == 0:
-			r['fill'] = '未填写'
-		else:
-			r['fill'] = '已填写'
-		
-		if questionaire.status == 0:
-			r['status'] = '尚未发布'
-		elif questionaire.status == 1:
-			r['status'] = '已发布'
-		elif questionaire.status == 2:
-			r['status'] = '结束'
-		elif questionaire.status == 3:
-			r['status'] = '已生成报告'
-		else:
-			r['status'] = '错误'
-		
-		return r
 
 	# 问卷列表
 	suser = SUser.objects.get(uid=request.user.id)
@@ -53,15 +24,15 @@ def index(request):
 
 	if user.is_staff:
 		questionaire_list = Questionaire.objects.all()
-		rq_list = [remake_questionaire(questionaire, qid_dict) for questionaire in questionaire_list]
+		rq_list = [Utils.remake_questionaire(questionaire, qid_dict) for questionaire in questionaire_list]
 	else:
 		rq_list = []
 		for qid in qid_dict:
 			questionaires = Questionaire.objects.filter(id=int(qid))
 			if len(questionaires) > 0:
-				rq_list.append(remake_questionaire(questionaires[0], qid_dict))
+				rq_list.append(Utils.remake_questionaire(questionaires[0], qid_dict))
 
-	rdata['questionaire_list'] = rq_list
+	rdata['rq_list'] = rq_list
 	return render(request, 'index.html', rdata)
 
 def login(request):
@@ -112,7 +83,7 @@ def user_list(request):
 	if not request.user.is_staff:
 		return HttpResponseRedirect('/index/')
 	rdata = {}
-	rdata['uid'] = request.user.id
+	rdata['user'] = user = request.user
 	op = request.POST.get('op')
 
 	def get_suser_list():
@@ -183,7 +154,7 @@ def admin_list(request):
 	if not request.user.is_superuser:
 		return HttpResponseRedirect('/index/')
 	rdata = {}
-	rdata['uid'] = request.user.id
+	rdata['user'] = user = request.user
 	op = request.POST.get('op')
 
 	def get_admin_list():
@@ -227,18 +198,18 @@ def profile(request, uid):
 	if (not request.user.is_staff) and (str(request.user.id) != uid):
 		return HttpResponseRedirect('/index/')
 	rdata = {}
-	rdata['uid'] = uid
-	rdata['user'] = user = User.objects.get(id=uid)
-	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
+	rdata['user'] = user = request.user
+	rdata['puser'] = puser = User.objects.get(id=uid)
+	rdata['psuser'] = psuser = SUser.objects.get(uid=puser.id)
 	op = request.POST.get('op')
 
-	qid_dict = json.loads(suser.qid_list)
+	qid_dict = json.loads(psuser.qid_list)
 	rq_list = []
 	for qid in qid_dict:
 		questionaires = Questionaire.objects.filter(id=qid)
 		if len(questionaires) > 0:
 			questionaire = questionaires[0]
-			rq_list.append({'questionaire': questionaire, 'fill': qid_dict[qid]})
+			rq_list.append(Utils.remake_questionaire(questionaire, qid_dict))
 	rdata['rq_list'] = rq_list
 
 	return render(request, 'profile.html', rdata)

@@ -11,36 +11,36 @@
 </head>
 
 <body>
-<div id='header' uid={{ uid }}> </div>
+<div id='header' uid={{ user.id }}> </div>
 
 <img src='{% static 'dog.jpeg' %}'> </img>
 
 <table>
 	<tr>
 		<td align=right> ID: </td>
-		<td> {{ user.id }} </td>
+		<td> {{ puser.id }} </td>
 	</tr>
 	<tr>
 		<td align=right> 学号: </td>
-		<td> {{ user.username }} </td>
+		<td> {{ puser.username }} </td>
 	</tr>
 	<tr>
 		<td align=right> 积分: </td>
-		<td> {{ suser.credit }} </td>
+		<td> {{ psuser.credit }} </td>
 	</tr>
 <table>
 
 <p> 历史 </p>
 <table>
 <tr>
-	<td> 问卷编号 </td>
+	<td> 编号 </td>
 	<td> 问卷名称 </td>
 	<td> 是否填写 </td>
 </tr>
 {% for rq in rq_list %}
 <tr>
-	<td> {{ rq.questionaire.id }} </td>
-	<td> <a href='/survey/{{ rq.questionaire.id }}'> {{ rq.questionaire.title }} </a> </td>
+	<td> {{ rq.id }} </td>
+	<td> <a href='/survey/{{ rq.id }}'> {{ rq.title }} </a> </td>
 	<td> {{ rq.fill }} </td> 
 </tr>
 {% endfor %}

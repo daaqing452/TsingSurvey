@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+{% load static %}
+<head>
+	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title> 搜索 </title>
+	<script src='{% static 'js/jquery-3.1.1.min.js' %}'> </script>
+	<script src='{% static 'js/csrf.js' %}'> </script>
+	<script src='{% static 'js/header_footer.js' %}'> </script>
+	<script src='{% static 'js/search.js' %}'> </script>
+</head>
+
+<body>
+<div id='header' uid={{ user.id }}> </div>
+
+<p> 搜索 </p>
+<input type='text' id='keyword' />
+<button id='search'> 搜索 </button>
+<table id='result'>
+	<tr>
+		<td> 编号 </td>
+		<td> 问卷标题 </td>
+		<td> 时间 </td>
+		<td> 上下文 </td>
+	</tr>
+	<tr type='clone' style='display:none'>
+		<td type='qid'> clone_a </td>
+		<td> <a type='title'> clone_b </a> </td>
+		<td type='update_time'> clone_c </td>
+		<td type='context'> clone_d </td>
+	</tr>
+</table>
+
+<div id='footer'> </div>
+</body>
+</html>
