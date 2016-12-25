@@ -11,7 +11,7 @@ import math
 
 
 def analysis(request):
-	pass
+	return render(request, 'analysis.html', {})
 
 def search(request):
 	# 验证身份
