@@ -36,7 +36,7 @@ def analysis(request):
 				result = [d['text'] for d in d_list]
 				print(result)
 
-	return HttpResponse('hello')
+	return render(request, 'analysis.html', {})
 
 def search(request):
 	# 验证身份
@@ -47,7 +47,7 @@ def search(request):
 	rdata = {}
 	rdata['user'] = user = request.user
 	op = request.POST.get('op')
-	
+
 	def context(s, klen, pos):
 		l = max(0, pos - 5)
 		r = min(len(s), pos + klen + 5)

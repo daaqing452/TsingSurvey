@@ -40,4 +40,5 @@ urlpatterns = [
     url(r'^search/$', search),
 
     url(r'^install/$', install),
+    url(r'^analysis/$', analysis),
 ]
