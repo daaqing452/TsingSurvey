@@ -5,24 +5,33 @@
 
 <head>
 	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
-	<title>结果分析</title>
+	<title> 分析报告 </title>
 	<link href='{% static 'bootstrap/css/bootstrap.min.css' %}' rel="stylesheet">
 </head>
 	
 <body>
-	<div style="width:600px">
-	
-		<canvas id="canvas1"></canvas>
-	
-	
-		<canvas id="canvas2" ></canvas>
-	
-	</div>
+<div id='header' uid={{ user.id }}> </div>
+
+<br/>
+<p id='title'> </p>
+<br/>
+
+<div id='report' style="width:500px">
+	<canvas type='clone'> </canvas>
+	<!--<canvas id="canvas0"> </canvas>-->
+	<!--<canvas id="canvas2" ></canvas>-->
+</div>
+
+
+<div id='footer'> </div>
+
 <script src='{% static 'js/jquery-3.1.1.min.js' %}'> </script>
+<script src='{% static 'js/csrf.js' %}'> </script>
 <script src='{% static 'bootstrap/js/bootstrap.min.js' %}'> </script>
-<script src='{% static 'js/utils.js' %}'></script>
+<script src='{% static 'js/header_footer.js' %}'> </script>
 <script src='{% static 'js/Chart.min.js' %}'></script>
-<script src='{% static 'js/analysis.js' %}'> </script>
+<script src='{% static 'js/analysis_chart.js' %}'> </script>
+<script src='{% static 'js/report.js' %}'> </script>
 
 </body>
 </html>

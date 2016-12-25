@@ -18,7 +18,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from SUser.views import index, login, logout, user_list, admin_list, profile
 from Survey.views import survey, bonus
-from Analysis.views import analysis, search
+from Analysis.views import analysis, search, report
 from Utils.views import install
 import settings
 
@@ -38,6 +38,7 @@ urlpatterns = [
 
     url(r'^analysis/$', analysis),
     url(r'^search/$', search),
+    url(r'^report/(\d{1,10})/$', report),
 
     url(r'^install/$', install),
     url(r'^analysis/$', analysis),

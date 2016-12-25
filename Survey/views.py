@@ -111,7 +111,7 @@ def survey(request, qid):
 				questionaire.save()
 				return HttpResponse(json.dumps({}))
 
-		# 问卷结束状态（分析）
+		# 问卷结束状态（待分析）
 		elif status == 2:
 			if not user.is_staff:
 				rdata['viewable'] = 0
@@ -120,6 +120,10 @@ def survey(request, qid):
 				# 加载问卷请求
 				if op == 'load':
 					return HttpResponse(json.dumps({'title': questionaire.title, 'qstring': questionaire.question_list}))
+
+		# 报告生成状态
+		elif status == 3:
+			return HttpResponseRedirect('/report/' + qid + '/')
 
 		# 问卷出错状态
 		else:

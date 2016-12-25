@@ -27,3 +27,8 @@ class Answer(models.Model):
 	uid = models.IntegerField()
 	tid = models.IntegerField()
 	answer = models.TextField()
+
+class Report(models.Model):
+	qid = models.IntegerField()
+	title = models.TextField()
+	report = models.TextField()

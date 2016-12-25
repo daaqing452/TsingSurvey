@@ -1,14 +1,32 @@
 var color = Chart.helpers.color;
+
+window.chartColors = {
+    red: 'rgb(255, 99, 132)',
+    orange: 'rgb(255, 159, 64)',
+    yellow: 'rgb(255, 205, 86)',
+    green: 'rgb(75, 192, 192)',
+    blue: 'rgb(54, 162, 235)',
+    purple: 'rgb(153, 102, 255)',
+    grey: 'rgb(231,233,237)'
+};
+
+window.randomScalingFactor = function() {
+    return (Math.random() > 0.5 ? 1.0 : -1.0) * Math.round(Math.random() * 100);
+}
+
 function drawBar(myID,mytitle,mylabels,mylabel,mydata){
     var barChartData = {
     labels: mylabels,
     datasets: [{
         label: mylabel,
         backgroundColor:[
-        '#ff6384',
-        '#ff6384',
-        '#ff6384',
-        '#ff6384'
+            window.chartColors.red,
+            window.chartColors.yellow,
+            window.chartColors.green,
+            window.chartColors.blue,
+            window.chartColors.purple,
+            window.chartColors.orange,
+            window.chartColors.grey,
         ], 
         borderColor: window.chartColors.white,
         borderWidth: 2,
@@ -39,9 +57,13 @@ function drawDoughnut(myID,mytitle,mylabels,mylabel,mydata){
     datasets: [{
         label: mylabel,
         backgroundColor:[
-        "#FF6384",
-        "#36A2EB",
-        "#FFCE56"
+            window.chartColors.red,
+            window.chartColors.yellow,
+            window.chartColors.green,
+            window.chartColors.blue,
+            window.chartColors.purple,
+            window.chartColors.orange,
+            window.chartColors.grey,
         ], 
         borderColor: window.chartColors.white,
         borderWidth: 2,
@@ -63,26 +85,4 @@ function drawDoughnut(myID,mytitle,mylabels,mylabel,mydata){
             }
         }
     });
-
 }
-$(document).ready(function(){
-	//第一题
-    var ID = "canvas1"
-    var labels = ["计21班", "计23班", "计24班", "计25班"];
-    var label = "人数";
-    var data = [1,2,3,4];
-    var title = "1、你所在的班级是";
-	drawBar(ID,title,labels,label,data);
-
-    
-
-    //第二题
-    var ID = "canvas2"
-    var labels = ["周杰伦", "谢晓晖", "鲁逸沁", "江雨晨"];
-    var label = "人数";
-    var data = [4,10,3,5];
-    var title = "2、你最喜欢的电影明星";
-    drawDoughnut(ID,title,labels,label,data);
-    
-	
-});

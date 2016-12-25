@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
-from Survey.models import Questionaire, Answeraire
+from Survey.models import Questionaire, Answeraire, Report
 import Analysis.statistic as Stat
 import json
 import math
@@ -20,21 +20,38 @@ def analysis(request):
 	op = request.POST.get('op')
 
 	if op == 'analysis':
+		# 获取问卷
 		qid = int(request.POST.get('qid'))
 		questionaire = Questionaire.objects.get(id=qid)
+		qdict_list = json.loads(questionaire.question_list)
+		# 获取答案
 		answeraire_list = Answeraire.objects.filter(qid=qid)
-		astring_list = [json.loads(answeraire.answer_list) for answeraire in answeraire_list]
-		qnum = len(astring_list[0])
+		adict_list = [json.loads(answeraire.answer_list) for answeraire in answeraire_list]
+		qnum = len(adict_list[0])
+
+		# 枚举每道题
+		report = []
 		for i in range(qnum):
-			d_list = [astring[i] for astring in astring_list]
-			t = d_list[0]['s_type']
-			if t == 1 or t == 2:
-				answer_list = [d['select'] for d in d_list]
-				result = Stat.count(answer_list)
-				print(result)
-			elif t == 3:
-				result = [d['text'] for d in d_list]
-				print(result)
+			adicti_list = [adict[i] for adict in adict_list]
+			s_type = adicti_list[0]['s_type']
+			d = {}
+			# 获取统计信息
+			if s_type == 1 or s_type == 2:
+				d['options'] = [option['text'] for option in qdict_list[i]['options']]
+				answer_list = [adicti['select'] for adicti in adicti_list]
+				d['result'] = Stat.count(answer_list, len(qdict_list[i]['options']))
+			elif s_type == 3:
+				d['result'] = [adicti['text'] for adicti in adicti_list]
+			# 生成报告字典
+			d['title'] = qdict_list[i]['title']
+			d['s_type'] = s_type
+			report.append(d)
+		
+		report = Report.objects.create(qid=qid, title=questionaire.title, report=json.dumps(report))
+		report.save()
+		questionaire.status = 3
+		questionaire.save()
+		return HttpResponse(json.dumps({}))
 
 	return render(request, 'analysis.html', {})
 
@@ -83,3 +100,21 @@ def search(request):
 		return HttpResponse(json.dumps({'result': result}))
 
 	return render(request, 'search.html', rdata)
+
+def report(request, qid):
+	# 验证身份
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/login/')
+	rdata = {}
+	rdata['user'] = user = request.user
+	op = request.POST.get('op')
+
+	if op == 'load':
+		reports = Report.objects.filter(qid=qid)
+		if len(reports) == 0:
+			rdata['info'] = '找不到该报告'
+		else:
+			report = reports[0]
+			return HttpResponse(json.dumps({'qid': report.qid, 'title': report.title, 'report': report.report}))
+
+	return render(request, 'report.html', rdata)

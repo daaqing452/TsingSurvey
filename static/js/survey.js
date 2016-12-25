@@ -23,7 +23,8 @@ function analysis() {
 		data: {'op': 'analysis', 'qid': qid},
 		success: function(data) {
 			data = JSON.parse(data);
-			
+			alert('生成报告成功！');
+			window.location.href = '/report/' + qid + '/';
 		}
 	});
 }
