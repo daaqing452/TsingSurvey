@@ -23,7 +23,7 @@
 {% ifequal viewable 1 %}
 
 
-	<p> 问卷编号：{{ qid }} </p>
+	<p id='qid' qid='{{ qid }}'> 问卷编号：{{ qid }} </p>
 
 	{% ifequal status 0 %}
 	标题：<input type='text' id='title' value='{{ questionaire.title }}' />

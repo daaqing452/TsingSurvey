@@ -5,13 +5,38 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
-from Survey.models import Questionaire
+from Survey.models import Questionaire, Answeraire
+import Analysis.statistic as Stat
 import json
 import math
 
 
 def analysis(request):
-	pass
+	# 验证身份
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/login/')
+	if not request.user.is_staff:
+		return HttpResponseRedirect('/index/')
+	op = request.POST.get('op')
+
+	if op == 'analysis':
+		qid = int(request.POST.get('qid'))
+		questionaire = Questionaire.objects.get(id=qid)
+		answeraire_list = Answeraire.objects.filter(qid=qid)
+		astring_list = [json.loads(answeraire.answer_list) for answeraire in answeraire_list]
+		qnum = len(astring_list[0])
+		for i in range(qnum):
+			d_list = [astring[i] for astring in astring_list]
+			t = d_list[0]['s_type']
+			if t == 1 or t == 2:
+				answer_list = [d['select'] for d in d_list]
+				result = Stat.count(answer_list)
+				print(result)
+			elif t == 3:
+				result = [d['text'] for d in d_list]
+				print(result)
+
+	return HttpResponse('hello')
 
 def search(request):
 	# 验证身份

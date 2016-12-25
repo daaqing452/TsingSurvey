@@ -7,7 +7,6 @@ $(document).ready(function(){
 			data = JSON.parse(data);
 			title = data['title'];
 			qstring = data['qstring'];
-
 			$('input#title').val(title);
 			$('p#title').html(title)
 			show(qstring);
@@ -15,3 +14,16 @@ $(document).ready(function(){
 		}
 	});
 });
+
+function analysis() {
+	var qid = $('p#qid').attr('qid');
+	$.ajax({
+		url: '/analysis/',
+		type: 'POST',
+		data: {'op': 'analysis', 'qid': qid},
+		success: function(data) {
+			data = JSON.parse(data);
+			
+		}
+	});
+}

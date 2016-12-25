@@ -36,6 +36,7 @@ urlpatterns = [
     url(r'^survey/(\d{1,10})/$', survey),
     url(r'^bonus/', bonus),
 
+    url(r'^analysis/$', analysis),
     url(r'^search/$', search),
 
     url(r'^install/$', install),

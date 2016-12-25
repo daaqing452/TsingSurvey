@@ -107,6 +107,7 @@ function closeup() {
 			success: function(data) {
 				data = JSON.parse(data);
 				alert('关闭成功');
+				window.location.reload()
 			}
 		});
 	}
