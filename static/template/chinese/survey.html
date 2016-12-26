@@ -3,7 +3,7 @@
 <head>
 	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title> Survey </title>
+	<title> 问卷 </title>
 	
 	<link href='{% static 'bootstrap/css/bootstrap.min.css' %}' rel="stylesheet">
 	<link href='{% static 'css/survey.css' %}' rel="stylesheet">
@@ -34,16 +34,16 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li class="active"><a href='/index/'> Index </a></li>
-  		<li ><a href='/profile/{{ user.id }}'> Profile </a></li>
+        <li class="active"><a href='/index/'> 首页 </a></li>
+  		<li ><a href='/profile/{{ user.id }}'>个人页面 </a></li>
   		{% if user.is_superuser %}
-		<li ><a href='/admin_list/'> Administrators </a> </li>
+		<li ><a href='/admin_list/'> 管理员列表 </a> </li>
   		{% endif %}
   		{% if user.is_staff %}
-    	<li ><a href='/user_list/'> Users </a> </li>
-    	<li ><a href='/search/'> Search </a></li>
+    	<li ><a href='/user_list/'> 用户列表 </a> </li>
+    	<li ><a href='/search/'> 搜索 </a></li>
   		{% endif %}
-  		<li ><a href='/logout/'> Logout </a> </li>
+  		<li ><a href='/logout/'> 登出 </a> </li>
   	
       </ul>
     </div><!-- /.navbar-collapse -->
@@ -69,9 +69,9 @@
     </div>
     </br>
     <div class="btn-group">
-	<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"  onclick="createSurvey(1)"> Single Choice </button>
-	<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="createSurvey(2)"> Multiple Choise </button>
-	<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="createSurvey(3)"> Blank </button>
+	<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"  onclick="createSurvey(1)"> 单选题 </button>
+	<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="createSurvey(2)"> 多选题 </button>
+	<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="createSurvey(3)"> 填空题 </button>
 	</div>
 
 	{% endifequal %}
@@ -97,14 +97,14 @@
 	    <div class="modal-content">
 	      <div class="modal-header">
 	        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-	        <h4 class="modal-title" id="myModalLabel"> Add </h4>
+	        <h4 class="modal-title" id="myModalLabel">添加新问题</h4>
 	      </div>
 	      <div class="modal-body" id="myModal_body"> 
 	       
 	      </div>
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default " data-dismiss="modal"> Close </button>
-	        <button type="button" class="btn btn-primary" onclick="commitS()">Save </button>
+	        <button type="button" class="btn btn-default " data-dismiss="modal">关闭</button>
+	        <button type="button" class="btn btn-primary" onclick="commitS()">保存</button>
 	      </div>
 	    </div>
 	  </div>
@@ -121,24 +121,24 @@
 
 
 	{% ifequal status 0 %}
-		<button id="save_btn" class="btn btn-success btn-sm" onclick="save()" style="float:right"> Save </button>
+		<button id="save_btn" class="btn btn-success btn-sm" onclick="save()" style="float:right"> 暂存 </button>
 
-		<button id="release_btn" class="btn btn-success btn-sm" onclick="release()" style="float:right"> Release </button>
+		<button id="release_btn" class="btn btn-success btn-sm" onclick="release()" style="float:right"> 发布 </button>
 	{% endifequal %}
 
 	{% ifequal status 1 %}
 	{% ifequal permission_submit 1 %}
 	<div style="text-align:left;">
-		<button id ="submit_btn" class="btn btn-success btn-sm" onclick="submit()" style="float:right"> Submit </button>
+		<button id ="submit_btn" class="btn btn-success btn-sm" onclick="submit()" style="float:right">提交</button>
 	</div>
 	{% endifequal %}
 	{% if user.is_staff %}
-	<button id="close_btn" class="btn btn-success btn-sm" onclick="closeup()" style="float:right"> Close </button>
+	<button id="close_btn" class="btn btn-success btn-sm" onclick="closeup()" style="float:right"> 关闭问卷 </button>
 	{% endif %}
 	{% endifequal %}
 
 	{% ifequal status 2 %}
-	<button id="analysis_btn" class="btn btn-success btn-sm" onclick="analysis()" style="float:right"> Generate the Report </button>
+	<button id="analysis_btn" class="btn btn-success btn-sm" onclick="analysis()" style="float:right"> 生成报告 </button>
 	{% endifequal %}
 
 		</div>
