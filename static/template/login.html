@@ -4,18 +4,26 @@
 	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title> 登录 </title>
+
+	<link href='{% static 'bootstrap/css/bootstrap.min.css' %}' rel="stylesheet">
 </head>
 
-<body>
-<h3>登录</h3>
-<form method='post' enctype='multipart/form-data'>
-	{% csrf_token %}
-	<input type='text' name='username' />
-	<br />
-	<input type='password' name='password' />
-	<br />
-	<input type='submit' value='登录' />
-</form>
-{{ info }}
+<body style="background-color:#EEDC82;">
+<div class="row">
+	<div class="col-md-4"></div>
+	<div class="col-md-4">
+	<h1 class="text-center" style="color:#A0522D"><span class="glyphicon glyphicon-search"> </span>TsingSurvey</h1>
+	<form method='post' enctype='multipart/form-data'>
+		{% csrf_token %}
+		<input type='text' name='username' class="form-control" placeholder="username" />
+		<br />
+		<input type='password' name='password' class="form-control" placeholder="password"/>
+		<br />
+		<input type='submit' value='登录' class="btn btn-primary btn-lg btn-block" />
+	</form>
+	{{ info }}
+	</div>
+	<div class="col-md-4"></div>
+</div>
 </body>
 </html>
