@@ -12,7 +12,7 @@
 	<script src='{% static 'bootstrap/js/bootstrap.min.js' %}'> </script>
 </head>
 
-<body style="background-color:#F5FFFA;">
+<body style="background-color:#F5FFFA; text-align:center;">
 <nav class="navbar navbar-default" role="navigation">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
@@ -48,12 +48,12 @@
 
 
 
+<div class="col-md-offset-1 col-md-10 ">
 
 
-<table class="table table-hover">
-
-	<h3 class="text-center">正在进行的问卷</h>  
-	<tr>
+<h3 class="text-center">正在进行的问卷</h3> 
+<table class="table table-hover"> 
+	<tr >
 		<td align=center> 问卷编号 </td>
 		<td align=center> 标题 </td>
 		<td align=center> 是否填写 </td>
@@ -76,7 +76,7 @@
 <button id='survey_create' class="btn btn-success " style="float:right"> 添加问卷 </button> <br/>
 {% endif %}
 
-
+</div>
 
 <div id='footer'> </div>
 </body>

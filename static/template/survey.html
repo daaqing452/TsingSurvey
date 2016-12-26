@@ -17,7 +17,7 @@
 	<script src='{% static 'js/survey_show.js' %}'> </script>
 </head>
 
-<body>
+<body style="background-color:#F5FFFA;text-align:center;">
 <nav class="navbar navbar-default" role="navigation">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
@@ -51,8 +51,8 @@
 </nav>
 
 {% ifequal viewable 1 %}
-
-	<div class="panel panel-info">
+<div class="col-md-offset-2 col-md-8 ">
+	<div class="panel panel-primary">
     	<div class="panel-heading">
         	
         	<p id='qid' qid='{{ qid }}' class="panel-title"> 问卷编号：{{ qid }} </p>
@@ -68,20 +68,23 @@
       <input type='text' id='title' value='{{ questionaire.title }}' />
     </div>
     </br>
-	<button type="button" class="btn" data-toggle="modal" data-target="#myModal" onclick="createSurvey(1)"> 单选题 </button>
-	<button type="button" class="btn" data-toggle="modal" data-target="#myModal" onclick="createSurvey(2)"> 多选题 </button>
-	<button type="button" class="btn" data-toggle="modal" data-target="#myModal" onclick="createSurvey(3)"> 填空题 </button>
+    <div class="btn-group">
+	<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"  onclick="createSurvey(1)"> 单选题 </button>
+	<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="createSurvey(2)"> 多选题 </button>
+	<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="createSurvey(3)"> 填空题 </button>
+	</div>
+
 	{% endifequal %}
 
 	{% ifequal status 1 %}
 	<br/>
-	<p id='title'> </p>
+	<p class = "h2" id='title'> </p>
 	<br/>
 	{% endifequal %}
 
 	{% ifequal status 2 %}
 	<br/>
-	<p id='title'> </p>
+	<p class = "h2" id='title'> </p>
 	<br/>
 	{% endifequal %}
 
@@ -100,7 +103,7 @@
 	       
 	      </div>
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+	        <button type="button" class="btn btn-default " data-dismiss="modal">关闭</button>
 	        <button type="button" class="btn btn-primary" onclick="commitS()">保存</button>
 	      </div>
 	    </div>
@@ -118,30 +121,28 @@
 
 
 	{% ifequal status 0 %}
-	<div style="text-align:left;">
-		<button id="save_btn" onclick="save()"> 暂存 </button>
-	<div>
-	<div style="text-align:left;">
-		<button id="release_btn" onclick="release()"> 发布 </button>
-	</div>
+		<button id="save_btn" class="btn btn-success btn-sm" onclick="save()" style="float:right"> 暂存 </button>
+
+		<button id="release_btn" class="btn btn-success btn-sm" onclick="release()" style="float:right"> 发布 </button>
 	{% endifequal %}
 
 	{% ifequal status 1 %}
 	{% ifequal permission_submit 1 %}
 	<div style="text-align:left;">
-		<button id ="submit_btn" onclick="submit()">提交</button>
+		<button id ="submit_btn" class="btn btn-success btn-sm" onclick="submit()" style="float:right">提交</button>
 	</div>
 	{% endifequal %}
 	{% if user.is_staff %}
-	<button id="close_btn" onclick="closeup()"> 关闭问卷 </button>
+	<button id="close_btn" class="btn btn-success btn-sm" onclick="closeup()" style="float:right"> 关闭问卷 </button>
 	{% endif %}
 	{% endifequal %}
 
 	{% ifequal status 2 %}
-	<button id="analysis_btn" onclick="analysis()"> 生成报告 </button>
+	<button id="analysis_btn" class="btn btn-success btn-sm" onclick="analysis()" style="float:right"> 生成报告 </button>
 	{% endifequal %}
 
 		</div>
+	</div>
 	</div>
 
 {% endifequal %}
