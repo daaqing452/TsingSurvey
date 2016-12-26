@@ -4,6 +4,7 @@ function refreshUserList(user_list) {
 	for (i in user_list) {
 		var uid = user_list[i]['uid'];
 		var username = user_list[i]['username'];
+		var name = user_list[i]['name'];
 		var is_sample = '√';
 		if (user_list[i]['is_sample'] == 0) is_sample = '';
 		var tr = $('[type="clone"]').clone();
@@ -11,7 +12,7 @@ function refreshUserList(user_list) {
 		tr.find('[type="checkbox"]').attr('username', username);
 		tr.find('[type="username"]').text(username);
 		tr.find('[type="username"]').attr('href', '/profile/' + uid + '/');
-		tr.find('[type="name"]').text('佚名')
+		tr.find('[type="name"]').text(name);
 		tr.find('[type="is_sample"]').text(is_sample);
 		tr.show();
 		tbody.append(tr);

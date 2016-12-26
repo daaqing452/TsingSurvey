@@ -43,7 +43,7 @@ def survey(request, qid):
 	questionaires = Questionaire.objects.filter(id=qid)
 	if len(questionaires) == 0:
 		rdata['viewable'] = 0
-		rdata['info'] = '找不到该问卷 -1'
+		rdata['info'] = 'Not found -1'
 	else:
 		questionaire = questionaires[0]
 		status = questionaire.status
@@ -54,7 +54,7 @@ def survey(request, qid):
 			# 修改中管理员可见
 			if not user.is_staff:
 				rdata['viewable'] = 0
-				rdata['info'] = '找不到该问卷 00'
+				rdata['info'] = 'Not found 00'
 			else:
 				# 加载问卷请求
 				if op == 'load':
@@ -85,10 +85,10 @@ def survey(request, qid):
 			qid_dict = json.loads(suser.qid_list)
 			if not user.is_staff and not qid in qid_dict:
 				rdata['viewable'] = 0
-				rdata['info'] = '找不到该问卷 10'
+				rdata['info'] = 'Not found 10'
 			if qid in qid_dict:
 				if qid_dict[str(qid)] == 1:
-					rdata['info'] = '已填写该问卷'
+					rdata['info'] = 'Already filled'
 				else:
 					permission_submit = 1
 			rdata['permission_submit'] = permission_submit
@@ -115,7 +115,7 @@ def survey(request, qid):
 		elif status == 2:
 			if not user.is_staff:
 				rdata['viewable'] = 0
-				rdata['info'] = '问卷已关闭'
+				rdata['info'] = 'Closed'
 			else:
 				# 加载问卷请求
 				if op == 'load':
@@ -128,7 +128,7 @@ def survey(request, qid):
 		# 问卷出错状态
 		else:
 			rdata['viewable'] = 0
-			rdata['info'] = '找不到该问卷 99'
+			rdata['info'] = 'Not found 99'
 		
 	rdata['status'] = status
 	return render(request, 'survey.html', rdata)

@@ -49,7 +49,7 @@ def login(request):
 	if username is not None and password is not None:
 		users = User.objects.filter(username=username)
 		if len(users) == 0:
-			rdata['info'] = '用户名不存在'
+			rdata['info'] = 'Username not exist'
 		else:
 			# 如果不是root进行清华验证
 			if username != 'root':
@@ -65,7 +65,7 @@ def login(request):
 				auth.login(request, user)
 				login = True
 			else:
-				rdata['info'] = '密码错误'
+				rdata['info'] = 'Wrong password'
 
 	if login:
 		return HttpResponseRedirect('/index/')
@@ -87,7 +87,7 @@ def user_list(request):
 	op = request.POST.get('op')
 
 	def get_suser_list():
-		return [{'uid': suser_raw.uid, 'username': suser_raw.username, 'is_sample': suser_raw.is_sample} for suser_raw in SUser.objects.all()]
+		return [{'uid': suser_raw.uid, 'username': suser_raw.username, 'name': suser_raw.name, 'is_sample': suser_raw.is_sample} for suser_raw in SUser.objects.all()]
 
 	# 加载
 	if op == 'load':
@@ -136,7 +136,7 @@ def user_list(request):
 		# 检查username
 		susers = SUser.objects.filter(username=username)
 		if len(susers) > 0:
-			result = '用户已存在'
+			result = 'Username already exist'
 		else:
 			password = Utils.username_to_password(username)
 			user = User.objects.create_user(username=username, password=password)
@@ -158,7 +158,7 @@ def admin_list(request):
 	op = request.POST.get('op')
 
 	def get_admin_list():
-		return [{'uid': admin_raw.id, 'username': admin_raw.username} for admin_raw in User.objects.filter(is_staff=1).filter(~Q(username='root'))]
+		return [{'uid': admin_raw.id, 'username': admin_raw.username, 'name': SUser.objects.get(uid=admin_raw.id).name} for admin_raw in User.objects.filter(is_staff=1).filter(~Q(username='root'))]
 
 	# 加载
 	if op == 'load':

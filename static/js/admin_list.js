@@ -4,12 +4,13 @@ function refreshAdminList(admin_list) {
 	for (i in admin_list) {
 		var uid = admin_list[i]['uid'];
 		var username = admin_list[i]['username'];
+		var name = admin_list[i]['name'];
 		var tr = $('[type="clone"]').clone();
 		tr.attr('type', 'item');
 		tr.find('[type="checkbox"]').attr('username', username);
 		tr.find('[type="username"]').text(username);
 		tr.find('[type="username"]').attr('href', '/profile/' + uid + '/');
-		tr.find('[type="name"]').text('佚名')
+		tr.find('[type="name"]').text(name);
 		tr.show();
 		tbody.append(tr);
 	}
@@ -29,7 +30,7 @@ $(document).ready(function(){
 
 	//	删除管理员
 	$('button#delete').click(function(){
-		if (confirm('确实要删除管理员?')) {
+		if (confirm('Do you want to delete these administrators?')) {
 			username_list = new Array();
 			$('input[username]:checked').each(function(){
 				username_list.push($(this).attr('username'));
@@ -58,9 +59,9 @@ $(document).ready(function(){
 				if (data['result'] == 'yes') {
 					refreshAdminList(data['admin_list']);
 					$('input#add').val('');
-					alert('添加成功');
+					alert('Add successful');
 				} else {
-					alert('不存在此用户');
+					alert('No that user');
 				}
 			}
 		});
