@@ -90,7 +90,7 @@ function submit(){
 			data: {'op': 'submit', 'astring': Astring, 'credit': 10},
 			success: function(data) {
 				data = JSON.parse(data);
-				alert('提交成功');
+				alert('Submit succesful');
 				window.location.href = '/bonus/';
 			}
 		});
@@ -99,14 +99,14 @@ function submit(){
 }
 
 function closeup() {
-	if (confirm('确认关闭？')) {
+	if (confirm('Do you comfirm to close?')) {
 		$.ajax({
 			url: window.location.href,
 			type: 'POST',
 			data: {'op': 'closeup'},
 			success: function(data) {
 				data = JSON.parse(data);
-				alert('关闭成功');
+				alert('Close successful');
 				window.location.reload()
 			}
 		});

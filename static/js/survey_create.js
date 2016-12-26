@@ -28,7 +28,7 @@ function save(){
 		data: {'op': 'save', 'title': title, 'qstring': Qstring},
 		success: function(data) {
 			data = JSON.parse(data);
-			alert('暂存成功');
+			alert('Save successful');
 		}
 	});
 }
@@ -42,7 +42,7 @@ function release() {
 		data: {'op': 'release', 'title': title, 'qstring': Qstring},
 		success: function(data) {
 			data = JSON.parse(data);
-			alert('发布成功');
+			alert('Release successful');
 			window.location.reload()
 		}
 	});
@@ -204,7 +204,7 @@ function delOption(b)
 	var op_table = document.getElementById("options");
 	if(current_index == 1 && op_table.rows.length == 2)
 	{
-		alert("至少要有一个选项！");
+		alert("At least one option");
 		return;
 	}
 	op_table.deleteRow(current_index);

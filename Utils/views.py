@@ -19,27 +19,27 @@ class Utils:
 		d['id'] = questionaire.id
 		
 		if questionaire.title == '':
-			d['title'] = '（无标题）'
+			d['title'] = '（No title）'
 		else:
 			d['title'] = questionaire.title
 
 		if not str(questionaire.id) in qid_dict:
 			d['fill'] = ''
 		elif qid_dict[str(questionaire.id)] == 0:
-			d['fill'] = '未填写'
+			d['fill'] = 'Not filled'
 		else:
-			d['fill'] = '已填写'
+			d['fill'] = 'Filled'
 		
 		if questionaire.status == 0:
-			d['status'] = '尚未发布'
+			d['status'] = 'Not released'
 		elif questionaire.status == 1:
-			d['status'] = '已发布'
+			d['status'] = 'Released'
 		elif questionaire.status == 2:
-			d['status'] = '结束'
+			d['status'] = 'Finish'
 		elif questionaire.status == 3:
-			d['status'] = '已生成报告'
+			d['status'] = 'Report'
 		else:
-			d['status'] = '错误'
+			d['status'] = 'Error'
 		
 		return d
 

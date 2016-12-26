@@ -23,7 +23,7 @@ function analysis() {
 		data: {'op': 'analysis', 'qid': qid},
 		success: function(data) {
 			data = JSON.parse(data);
-			alert('生成报告成功！');
+			alert('Generate report successful');
 			window.location.href = '/report/' + qid + '/';
 		}
 	});
