@@ -18,16 +18,56 @@
 </head>
 
 <body>
-<div id='header' uid={{ user.id }}> </div>
+<nav class="navbar navbar-default" role="navigation">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href=""><span class="glyphicon glyphicon-search"> </span>TsingSurvey</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href='/index/'> 首页 </a></li>
+  		<li ><a href='/profile/{{ user.id }}'>{{ user.username }}的个人页面 </a></li>
+  		{% if user.is_superuser %}
+		<li ><a href='/admin_list/'> 管理员列表 </a> </li>
+  		{% endif %}
+  		{% if user.is_staff %}
+    	<li ><a href='/user_list/'> 用户列表 </a> </li>
+    	<li ><a href='/search/'> 搜索 </a></li>
+  		{% endif %}
+  		<li ><a href='/logout/'> 登出 </a> </li>
+  	
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
 
 {% ifequal viewable 1 %}
 
+	<div class="panel panel-info">
+    	<div class="panel-heading">
+        	
+        	<p id='qid' qid='{{ qid }}' class="panel-title"> 问卷编号：{{ qid }} </p>
+    	</div>
+    	<div class="panel-body">
+        	
+    
 
-	<p id='qid' qid='{{ qid }}'> 问卷编号：{{ qid }} </p>
 
 	{% ifequal status 0 %}
-	标题：<input type='text' id='title' value='{{ questionaire.title }}' />
-	<br/>
+	<div class="input-group">
+      <div class="input-group-addon">标题</div>
+      <input type='text' id='title' value='{{ questionaire.title }}' />
+    </div>
+    </br>
 	<button type="button" class="btn" data-toggle="modal" data-target="#myModal" onclick="createSurvey(1)"> 单选题 </button>
 	<button type="button" class="btn" data-toggle="modal" data-target="#myModal" onclick="createSurvey(2)"> 多选题 </button>
 	<button type="button" class="btn" data-toggle="modal" data-target="#myModal" onclick="createSurvey(3)"> 填空题 </button>
@@ -101,7 +141,8 @@
 	<button id="analysis_btn" onclick="analysis()"> 生成报告 </button>
 	{% endifequal %}
 
-
+		</div>
+	</div>
 
 {% endifequal %}
 
