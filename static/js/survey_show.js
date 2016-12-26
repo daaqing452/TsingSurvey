@@ -10,7 +10,7 @@ function show(Qstring) {
 			case 1:{
 				var new_row = q_table.insertRow(-1);
 				HTMLContent = "";
-				HTMLContent += "<td id=\"Q_"+i.toString()+"\"><p>" +(i+1).toString()+". "+ q.title + "</p>";
+				HTMLContent += "<td id=\"Q_"+i.toString()+"\"  ><p class=\"h3\"> " +(i+1).toString()+". "+ q.title + "</p>";
 				HTMLContent += "<form>";
 				var options = q.options;
 				for(var j = 0; j < q.n_option; j++){
@@ -28,7 +28,7 @@ function show(Qstring) {
 			case 2:{
 				var new_row = q_table.insertRow(-1);
 				HTMLContent = "";
-				HTMLContent += "<td id=\"Q_"+i.toString()+"\"><p>" +(i+1).toString()+". "+ q.title + "</p>";
+				HTMLContent += "<td id=\"Q_"+i.toString()+"\"><p class=\"h3\">" +(i+1).toString()+". "+ q.title + "</p>";
 				HTMLContent += "<form>";
 				var options = q.options;
 				for(var j = 0; j < q.n_option; j++){
@@ -46,7 +46,7 @@ function show(Qstring) {
 			case 3:{
 				var new_row = q_table.insertRow(-1);
 				HTMLContent = "";
-				HTMLContent += "<td id=\"Q_"+i.toString()+"\"><p>" +(i+1).toString()+". "+ q.title + "</p>";
+				HTMLContent += "<td id=\"Q_"+i.toString()+"\"><p class=\"h3\">" +(i+1).toString()+". "+ q.title + "</p>";
 				HTMLContent += "<form>";
 				HTMLContent += "<p ><input type=\"text\"" 
 								+"id=\"Q_"+i.toString()+"_0\"></p>";

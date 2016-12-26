@@ -127,7 +127,7 @@ function createHtml(){
 			var q = {s_type:2};
 			var HTMLContent = "<td>";
 			var index = current_status.index;
-			HTMLContent += "<div>"+(index + 1).toString() + "." + document.getElementById("s_title").value+"</div>";
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + document.getElementById("s_title").value+"</div>";
 			var rows = document.getElementById("options").rows;
 			q.title = document.getElementById("s_title").value;
 			q.n_option = rows.length-1;
@@ -152,7 +152,7 @@ function createHtml(){
 			var q = {s_type:3};
 			var HTMLContent = "<td>";
 			var index = current_status.index;
-			HTMLContent += "<div>"+(index + 1).toString() + "." + document.getElementById("s_title").value+"</div>";
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + document.getElementById("s_title").value+"</div>";
 			q.title = document.getElementById("s_title").value;
 			HTMLContent += "<form>";
 			HTMLContent += "<p class=\"q_item\"><input type=\"text\"></p>";
