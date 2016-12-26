@@ -7,31 +7,65 @@
 	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
 	<title> Report </title>
 	<link href='{% static 'bootstrap/css/bootstrap.min.css' %}' rel="stylesheet">
-</head>
-	
-<body>
-<div id='header' uid={{ user.id }}> </div>
-
-<br/>
-<p id='title'> </p>
-<br/>
-
-<div id='report' style="width:500px">
-	<canvas type='clone'> </canvas>
-	<!--<canvas id="canvas0"> </canvas>-->
-	<!--<canvas id="canvas2" ></canvas>-->
-</div>
-
-
-<div id='footer'> </div>
-
-<script src='{% static 'js/jquery-3.1.1.min.js' %}'> </script>
+	<script src='{% static 'js/jquery-3.1.1.min.js' %}'> </script>
 <script src='{% static 'js/csrf.js' %}'> </script>
 <script src='{% static 'bootstrap/js/bootstrap.min.js' %}'> </script>
 <script src='{% static 'js/header_footer.js' %}'> </script>
 <script src='{% static 'js/Chart.min.js' %}'></script>
 <script src='{% static 'js/analysis_chart.js' %}'> </script>
 <script src='{% static 'js/report.js' %}'> </script>
+
+</head>
+	
+<body style="background-color:#F5FFFA;">
+<nav class="navbar navbar-default" role="navigation">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href=""><span class="glyphicon glyphicon-search"> </span>TsingSurvey</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li ><a href='/index/'> Index </a></li>
+  		<li ><a href='/profile/{{ user.id }}'> Profile </a></li>
+  		{% if user.is_superuser %}
+		<li ><a href='/admin_list/'> Administrators </a> </li>
+  		{% endif %}
+  		{% if user.is_staff %}
+    	<li ><a href='/user_list/'> Users </a> </li>
+    	<li ><a href='/search/'> Search </a></li>
+  		{% endif %}
+  		<li class="active"><a href=''> Report </a> </li>
+  		<li ><a href='/logout/'> Logout </a> </li>
+  	
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<div class="col-md-offset-2 col-md-8 ">
+<p class="h2" id='title'> </p>
+<br/>
+
+<div id='report' >
+	<canvas type='clone'> </canvas>
+	<!--<canvas id="canvas0"> </canvas>-->
+	<!--<canvas id="canvas2" ></canvas>-->
+	<img  class="img-responsive" src='{% static 'img/wordCloud.png' %}'></img>
+</div>
+</div>
+
+<div id='footer'> </div>
+
+
 
 </body>
 </html>
