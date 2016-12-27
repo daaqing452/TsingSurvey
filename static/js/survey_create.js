@@ -6,6 +6,11 @@ var questions = new Array();
 var current_status = {s_type: 0, action: 0, index: 0};
 var n_option_default = 4;
 
+function getindex(Qstring){
+	var q_table = document.getElementById("questions");
+	current_status.index = document.getElementById('questions').rows.length;
+	
+}
 
 function myclick(){
 	alert("success!");
