@@ -83,7 +83,7 @@ function submit(){
 	//put Astring into database
 	var Astring = JSON.stringify(answers);
 	
-	if (confirm('确认提交？')) {
+	if (confirm('Do you confirm to submit?')) {
 		$.ajax({
 			url: window.location.href,
 			type: 'POST',
