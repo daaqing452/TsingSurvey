@@ -17,7 +17,10 @@ $(document).ready(function(){
                     var canvas_id = 'canvas' + i;
                     canvas.attr('type', 'item_canvas');
                     canvas.attr('id', canvas_id);
+                    canvas.show();
                     div.append(canvas);
+                    div.append('<br/>');
+                    div.append('<br/>');
                     drawDoughnut(canvas_id, item['title'], item['options'], '', item['result']);
                 } else
                 // 多选，柱状图
@@ -26,7 +29,10 @@ $(document).ready(function(){
                     var canvas_id = 'canvas' + i;
                     canvas.attr('type', 'item_canvas');
                     canvas.attr('id', canvas_id);
+                    canvas.show();
                     div.append(canvas);
+                    div.append('<br/>');
+                    div.append('<br/>');
                     drawBar(canvas_id, item['title'], item['options'], '', item['result']);
                 } else
                 // 填空
@@ -41,6 +47,8 @@ $(document).ready(function(){
                     img.attr('src', '/static/img/wordCloud.png');
                     img.show();
                     div.append(img);
+                    div.append('<br/>');
+                    div.append('<br/>');
                 }
             }
         }
