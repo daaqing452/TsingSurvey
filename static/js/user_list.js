@@ -81,7 +81,7 @@ $(document).ready(function(){
 
 	//	删除用户
 	$('button#delete').click(function(){
-		if (confirm('确实要删除用户?')) {
+		if (confirm('Do you confirm to delete?')) {
 			var username_list = new Array();
 			$('input[username]:checked').each(function(){
 				username_list.push($(this).attr('username'));
@@ -110,7 +110,7 @@ $(document).ready(function(){
 				if (data['result'] == 'yes') {
 					refreshUserList(data['user_list']);
 					$('input#add').val('');
-					alert('添加成功');
+					alert('Add successful');
 				} else {
 					alert(data['result']);
 				}
