@@ -7,7 +7,7 @@ $(document).ready(function(){
         success: function(data) {
             data = JSON.parse(data);
             report = JSON.parse(data['report']);
-            $('p#title').text(data['title']);
+            $('p#title').text("Title:"+data['title']);
             var div = $('div#report');
             for (i in report) {
                 var item = report[i];

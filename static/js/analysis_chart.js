@@ -31,7 +31,9 @@ function drawBar(myID,mytitle,mylabels,mylabel,mydata){
         borderColor: window.chartColors.white,
         borderWidth: 2,
         data: mydata
-    }]
+    }
+        
+    ]   
     };
     var ctx = document.getElementById(myID).getContext("2d");
     window.myBar = new Chart(ctx, {
@@ -44,8 +46,18 @@ function drawBar(myID,mytitle,mylabels,mylabel,mydata){
             },
             title: {
                 display: true,
-                text: mytitle
-            }
+                text: mytitle,
+                fontSize : 48,
+            },
+            scales: {
+                yAxes: [{
+                display: true,
+                ticks: {
+                    beginAtZero: true   
+                }
+                }]
+            },
+            
         }
     });
 
@@ -76,13 +88,15 @@ function drawDoughnut(myID,mytitle,mylabels,mylabel,mydata){
         data: barChartData,
         options: {
             responsive: true,
+
             legend: {
                 position: 'top',
             },
             title: {
                 display: true,
-                text: mytitle
-            }
+                text: mytitle,
+                fontSize : 48,
+            },
         }
     });
 }
