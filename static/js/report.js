@@ -33,7 +33,7 @@ $(document).ready(function(){
                     div.append(canvas);
                     div.append('<br/>');
                     div.append('<br/>');
-                    drawBar(canvas_id, item['title'], item['options'], '', item['result']);
+                    drawBar(canvas_id, item['title'], item['options'], 'Number of people', item['result']);
                 } else
                 // 填空
                 if (item['s_type'] == 3) {

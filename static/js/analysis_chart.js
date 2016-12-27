@@ -41,19 +41,27 @@ function drawBar(myID,mytitle,mylabels,mylabel,mydata){
         data: barChartData,
         options: {
             responsive: true,
+            
             legend: {
                 position: 'top',
             },
             title: {
                 display: true,
                 text: mytitle,
-                fontSize : 48,
+                fontSize : 19,
             },
             scales: {
+
+                xAxes: [{
+                    barThickness:35,
+                }],
                 yAxes: [{
                 display: true,
                 ticks: {
-                    beginAtZero: true   
+                    beginAtZero: true,
+                    stepSize:1,
+                    barThickness:20,
+
                 }
                 }]
             },
@@ -95,7 +103,7 @@ function drawDoughnut(myID,mytitle,mylabels,mylabel,mydata){
             title: {
                 display: true,
                 text: mytitle,
-                fontSize : 48,
+                fontSize : 19,
             },
         }
     });

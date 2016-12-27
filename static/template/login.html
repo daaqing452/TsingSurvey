@@ -12,14 +12,14 @@
 <div class="row">
 	<div class="col-md-4"></div>
 	<div class="col-md-4">
-	<h1 class="text-center" style="color:#A0522D"><span class="glyphicon glyphicon-search"> </span>TsingSurvey</h1>
+	<p class="text-center" style="color:#A0522D; font-size:40px; margin:100px 0px 50px 0px"><span class="glyphicon glyphicon-search"> </span>TsingSurvey</p>
 	<form method='post' enctype='multipart/form-data'>
 		{% csrf_token %}
-		<input type='text' name='username' class="form-control" placeholder="username" />
+		<input type='text' name='username' class="form-control" placeholder="Username" />
 		<br />
-		<input type='password' name='password' class="form-control" placeholder="password"/>
+		<input type='password' name='password' class="form-control" placeholder="Password"/>
 		<br />
-		<input type='submit' value='登录' class="btn btn-primary btn-lg btn-block" />
+		<input type='submit' value='Login' class="btn btn-primary btn-lg btn-block" />
 	</form>
 	{{ info }}
 	</div>
