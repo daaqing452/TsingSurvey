@@ -10,6 +10,7 @@ $(document).ready(function(){
 			$('input#title').val(title);
 			$('p#title').html(title)
 			show(qstring);
+			getindex(qstring);
 			questions = JSON.parse(qstring);
 		}
 	});
