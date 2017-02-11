@@ -1,0 +1,21 @@
+1）brew install mysql
+2）pip install MySQL-python
+3）修改系统路径，将mysql/bin添加到系统路径中
+5）mysql.server start
+4）mysql -u root -p 默认密码为空
+5)mysql> CREATE DATABASE ***;
+6) 在django项目的settings.py中进行如下修改：
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': ‘***’,     #为之前create的数据库名字    
+        'USER': 'root',
+        'PASSWORD': '',    
+        'HOST': '127.0.0.1',
+    }
+}
+7）测试是否配置完成
+python manage.py shell
+>>> from django.db import connection
+>>> cursot=connection.cursor()
+不报错

@@ -1,10 +1,11 @@
 //for design website
-var option_html = "<td><input type=\"text\" class=\"form-control input-sm\"></td><td><input type=\"file\" accept=\"image/*\" id=\"image\" onchange=\"uploadImage(this)\"><input type=\"hidden\" id=\"image_fn\"><label id=\"fn_display\"></label></td><td><span class=\"glyphicon glyphicon-plus\" onclick=\"addOption(this)\"></span><span class=\"glyphicon glyphicon-minus\" onclick=\"delOption(this)\"></span></td>"
+var option_html = "<td><input type=\"text\" class=\"form-control input-sm\"></td><td><input type=\"file\" id=\"image\" onchange=\"uploadImage(this)\"><input type=\"hidden\" id=\"image_fn\"><label id=\"fn_display\"></label></td><td><span class=\"glyphicon glyphicon-plus\" onclick=\"addOption(this)\"></span><span class=\"glyphicon glyphicon-minus\" onclick=\"delOption(this)\"></span></td>"
 var table_html = "<table class=\"table table-condensed\"></table>";
 var table_title_html = "<thead><tr><td>题目标题</td></tr><tr><td style=\"padding:0 0 0 0;\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"请输入标题\" style=\"width:100%;\" id=\"s_title\"></td></tr></thead>"
 var questions = new Array();
 var current_status = {s_type: 0, action: 0, index: 0};
 var n_option_default = 4;
+var image_size_lim = 4096 * 1024;
 
 function getindex(Qstring){
 	var q_table = document.getElementById("questions");
@@ -220,4 +221,37 @@ function delOption(b)
 	multi_min.remove(len - 1);
 	multi_max.remove(len - 1);
 	*/
+}
+
+function uploadImage(x)
+{
+	alert(x.value);
+	var tmp = x.value.lastIndexOf('.');
+	if(tmp == -1){
+		alert("必须是图片文件！");
+		clearInput(x);
+		return;
+	}
+	else{
+		var suffix = x.value.substring(tmp, x.value.length).toLowerCase();
+		if(suffix != ".jpeg" && suffix != ".jpg" && suffix != ".png" && suffix != ".bmp")
+		{
+			alert("必须是图片文件！");
+			clearInput(x);
+			return;
+		}
+	}
+	if(x.files[0].size > image_size_lim)
+	{
+		alert("图片最大不能超过4M!");
+		clearInput(x);
+		return;
+	}
+
+	
+}
+
+function clearInput(input)
+{
+	input.outerHTML = input.outerHTML;
 }

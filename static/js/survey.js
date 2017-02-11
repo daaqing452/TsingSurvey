@@ -8,7 +8,10 @@ $(document).ready(function(){
 			title = data['title'];
 			qstring = data['qstring'];
 			$('input#title').val(title);
-			$('p#title').html(title)
+			$('p#title').html(title);
+			if(qstring == ""){
+				return;
+			}
 			show(qstring);
 			getindex(qstring);
 			questions = JSON.parse(qstring);
