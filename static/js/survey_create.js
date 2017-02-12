@@ -1,5 +1,5 @@
 //for design website
-var option_html = "<td><input type=\"text\" class=\"form-control input-sm\"></td><td><input type=\"file\" id=\"image\" onchange=\"uploadImage(this)\"><input type=\"hidden\" id=\"image_fn\"><label id=\"fn_display\"></label></td><td><span class=\"glyphicon glyphicon-plus\" onclick=\"addOption(this)\"></span><span class=\"glyphicon glyphicon-minus\" onclick=\"delOption(this)\"></span></td>"
+var option_html = "<td><input type=\"text\" class=\"form-control input-sm\"></td><td><input type=\"file\" id=\"image\" onchange=\"uploadImage(this)\"><input type=\"hidden\" id=\"image_fn\"><label id=\"fn_display\"></label></td><td><input type=\"checkbox\" name=\"single\"></td><td><span class=\"glyphicon glyphicon-plus\" onclick=\"addOption(this)\"></span><span class=\"glyphicon glyphicon-minus\" onclick=\"delOption(this)\"></span></td>"
 var table_html = "<table class=\"table table-condensed\"></table>";
 var table_title_html = "<thead><tr><td>题目标题</td></tr><tr><td style=\"padding:0 0 0 0;\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"请输入标题\" style=\"width:100%;\" id=\"s_title\"></td></tr></thead>"
 var questions = new Array();
@@ -68,7 +68,8 @@ function createModal(){
 			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
 			var single_table_title = "<tr><td class=\"text_col\">选项文字</td>"
 										+"<td class=\"img_col\">图片</td>"
-										+"<td class=\"op_col\">操作</td>";
+										+"<td class=\"fill_col\">允许填空</td>"
+										+"<td class=\"op_col\">操作</td></tr>";
 			$mymodal_tbody.append(single_table_title);
 			$mymodal_tbody.append("<tr>"+option_html+"</tr>");
 			//alert(s_modal.innerHTML);
@@ -86,7 +87,8 @@ function createModal(){
 			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
 			var single_table_title = "<tr><td class=\"text_col\">选项文字</td>"
 										+"<td class=\"img_col\">图片</td>"
-										+"<td class=\"op_col\">操作</td>";
+										+"<td class=\"fill_col\">允许填空</td>"
+										+"<td class=\"op_col\">操作</td></tr>";
 			$mymodal_tbody.append(single_table_title);
 			$mymodal_tbody.append("<tr>"+option_html+"</tr>");
 			//alert(s_modal.innerHTML);
@@ -120,9 +122,16 @@ function createHtml(){
 				var cols = rows[i].children;
 				options.index = i-1;
 				option.text = cols[0].children[0].value;
-				option.image = cols[1].children[1].value;
+				option.image = cols[1].children[0].value;
+				option.allow_filled = cols[2].children[0].checked;
 				q.options.push(option);
-				HTMLContent += "<p class=\"q_item\"><input type=\"radio\" name=\"single\"> "+String.fromCharCode(i + 64)+". "+option.text+"</p>";
+				HTMLContent += "<p class=\"q_item\"><input type=\"radio\" name=\"single\"> "+String.fromCharCode(i + 64)+". "+option.text;
+				if(option.allow_filled == true){
+					HTMLContent += "<input type=\"text\"></p>";
+				}
+				else{
+					HTMLContent += "</p>";
+				}
 			}
 			HTMLContent += "</form></div></td>";
 			questions.push(q);
@@ -145,9 +154,16 @@ function createHtml(){
 				var cols = rows[i].children;
 				options.index = i-1;
 				option.text = cols[0].children[0].value;
-				option.image = cols[1].children[1].value;
+				option.image = cols[1].children[0].value;
+				option.allow_filled = cols[2].children[0].checked;
 				q.options.push(option);
-				HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" name=\"single\"> "+String.fromCharCode(i + 64)+". "+option.text+"</p>";
+				HTMLContent += "<p class=\"q_item\"><input type=\"radio\" name=\"single\"> "+String.fromCharCode(i + 64)+". "+option.text;
+				if(option.allow_filled == true){
+					HTMLContent += "<input type=\"text\"></p>";
+				}
+				else{
+					HTMLContent += "</p>";
+				}
 			}
 			HTMLContent += "</form></div></td>";
 			questions.push(q);
