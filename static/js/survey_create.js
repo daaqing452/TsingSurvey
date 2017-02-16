@@ -15,7 +15,7 @@ function getindex(Qstring){
 }
 
 function myclick(){
-	alert("success!");
+	alert(JSON.stringify(questions));
 }
 
 function createSurvey(s_type){
@@ -250,7 +250,7 @@ function createHtml(){
 			break;
 		}
 		case 4:{
-			var q = {s_type:3};
+			var q = {s_type:4};
 			var HTMLContent = "<td>";
 			var index = current_status.index;
 			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + document.getElementById("s_title").value+"</div>";
@@ -258,7 +258,7 @@ function createHtml(){
 			var rows = document.getElementById("options").rows;
 			q.n_option = rows.length-1;
 			q.options = [];
-			HTMLContent += "<div><form>";
+			HTMLContent += "<div><select><option value = \"\">--请选择--</option>";
 			for(var i = 1; i < rows.length; i ++)
 			{
 				var option = {}
@@ -266,9 +266,9 @@ function createHtml(){
 				options.index = i-1;
 				option.text = cols[0].children[0].value;
 				q.options.push(option);
-				HTMLContent += "<p class=\"q_item\"><input type=\"radio\" name=\"single\"> "+String.fromCharCode(i + 64)+". "+option.text;
+				HTMLContent += "<option value=\""+i.toString()+"\">"+option.text+"</option>";
 			}
-			HTMLContent += "</form></div></td>";
+			HTMLContent += "</select></div></td>";
 			questions.push(q);
 			return HTMLContent;
 			break;
