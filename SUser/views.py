@@ -9,7 +9,9 @@ from django.template import RequestContext
 from SUser.models import SUser
 from Survey.models import Questionaire
 from Utils.views import Utils
+import codecs
 import json
+import time
 
 def index(request):
 	# 验证身份
@@ -144,6 +146,36 @@ def user_list(request):
 			result = 'yes'
 		return HttpResponse(json.dumps({'result': result, 'user_list': get_suser_list()}))
 
+	# 导入用户名单
+	upload = request.FILES.get('upload', None)
+	if not upload is None:
+		# 导入文件到本地
+		f_path = 'temp/' + time.strftime('%Y%m%d%H%M%S') + '-' + upload.name
+		f = open(f_path, 'wb')
+		for chunk in upload.chunks():
+			f.write(chunk)
+		f.close()
+		# 读入每一行
+		f = codecs.open(f_path, 'r', 'gbk')
+		line_no = -1
+		while True:
+			line_no += 1
+			line = f.readline()
+			if len(line) == 0: break
+			if line_no == 0: continue
+			a = line.split(',')
+			username = a[0]
+			users = User.objects.filter(username=username)
+			if len(users) > 0:
+				# 修改用户信息
+				suser = SUser.objects.filter(username=username).update(name=a[1], name_english=a[2], student_type_code=a[3], student_type=a[4], gender_code=a[5], gender=a[6], birthday=a[7], ethnic_code=a[8], ethnic=a[9], nationality_code=a[10], nationality=a[11], political_status_code=a[12], political_status=a[13], certificate_type_code=a[14], certificate_type=a[15], certificate_number=a[16], marital_status_code=a[17], marital_status=a[18], original_education_code=a[19], original_education=a[20], bachelor_school=a[21], bachelor_school_code=a[22], bachelor_major=a[23], bachelor_major_code=a[24], bachelor_graduate_time=a[25], master_school=a[26], master_school_code=a[27], master_major=a[28], master_major_code=a[29], master_graduate_time=a[30], master_degree_date=a[31], department_number=a[32], department=a[33], secondary_subject_code=a[34], secondary_subject=a[35], advisor_certificate_number=a[36], enrollment_time=a[37], scheme_time=a[38], enrollment_mode_code=a[39], enrollment_mode=a[40], admission_type_code=a[41], admission_type=a[42], targeted_area_type_code=a[43], targeted_area_type=a[44], student_source_code=a[45], student_source=a[46], examination_ticket_number=a[47], bachelor_student_number=a[48], master_student_number=a[49], origin_place_code=a[50], origin_place=a[51], dormitory_address=a[52], dormitory_telephone=a[53], original_unit=a[54], client_unit=a[55], email=a[56], if_bed=a[57], if_socialized_madicine=a[58], if_resident_migration=a[59], if_internal_school_roll=a[60], if_national_school_roll=a[61], if_school_roll_abnormity=a[62], if_international_student=a[63], estimated_graduate_date=a[64], defense_date=a[65], completion_date=a[66], if_graduate=a[67], completion_mode_code=a[68], completion_mode=a[69], graduate_certificate_number=a[70], degree_confer_date=a[71], degree_confer_mode_code=a[72], degree_confer_mode=a[73], training_type_code=a[74], training_type=a[75], training_direction_code=a[76], training_direction=a[77], disciplines_field_code=a[78], disciplines_field=a[79], major_code=a[80], major=a[81], diploma_number=a[82], school_roll_status_code=a[83], campus_code=a[84], campus=a[85], remark=a[86], advisor_name=a[87], special_condition_code=a[88], special_condition=a[89], if_primary_subject=a[90], origin_province_code=a[91], origin_province=a[92], origin_city_code=a[93], origin_city=a[94], address_province_code=a[95], address_province=a[96], client_unit_city_code=a[97], client_unit_city=a[98], original_student_number=a[99], abnormity_type_code=a[100], abnormity_type=a[101], alteration_date=a[102])
+			else:
+				# 新建用户信息
+				password = Utils.username_to_password(username)
+				user = User.objects.create_user(username=username, password=password)
+				suser = SUser.objects.create(uid=user.id, username=a[0], name=a[1], name_english=a[2], student_type_code=a[3], student_type=a[4], gender_code=a[5], gender=a[6], birthday=a[7], ethnic_code=a[8], ethnic=a[9], nationality_code=a[10], nationality=a[11], political_status_code=a[12], political_status=a[13], certificate_type_code=a[14], certificate_type=a[15], certificate_number=a[16], marital_status_code=a[17], marital_status=a[18], original_education_code=a[19], original_education=a[20], bachelor_school=a[21], bachelor_school_code=a[22], bachelor_major=a[23], bachelor_major_code=a[24], bachelor_graduate_time=a[25], master_school=a[26], master_school_code=a[27], master_major=a[28], master_major_code=a[29], master_graduate_time=a[30], master_degree_date=a[31], department_number=a[32], department=a[33], secondary_subject_code=a[34], secondary_subject=a[35], advisor_certificate_number=a[36], enrollment_time=a[37], scheme_time=a[38], enrollment_mode_code=a[39], enrollment_mode=a[40], admission_type_code=a[41], admission_type=a[42], targeted_area_type_code=a[43], targeted_area_type=a[44], student_source_code=a[45], student_source=a[46], examination_ticket_number=a[47], bachelor_student_number=a[48], master_student_number=a[49], origin_place_code=a[50], origin_place=a[51], dormitory_address=a[52], dormitory_telephone=a[53], original_unit=a[54], client_unit=a[55], email=a[56], if_bed=a[57], if_socialized_madicine=a[58], if_resident_migration=a[59], if_internal_school_roll=a[60], if_national_school_roll=a[61], if_school_roll_abnormity=a[62], if_international_student=a[63], estimated_graduate_date=a[64], defense_date=a[65], completion_date=a[66], if_graduate=a[67], completion_mode_code=a[68], completion_mode=a[69], graduate_certificate_number=a[70], degree_confer_date=a[71], degree_confer_mode_code=a[72], degree_confer_mode=a[73], training_type_code=a[74], training_type=a[75], training_direction_code=a[76], training_direction=a[77], disciplines_field_code=a[78], disciplines_field=a[79], major_code=a[80], major=a[81], diploma_number=a[82], school_roll_status_code=a[83], campus_code=a[84], campus=a[85], remark=a[86], advisor_name=a[87], special_condition_code=a[88], special_condition=a[89], if_primary_subject=a[90], origin_province_code=a[91], origin_province=a[92], origin_city_code=a[93], origin_city=a[94], address_province_code=a[95], address_province=a[96], client_unit_city_code=a[97], client_unit_city=a[98], original_student_number=a[99], abnormity_type_code=a[100], abnormity_type=a[101], alteration_date=a[102])
+		f.close()
+	
 	rdata['user_list'] = get_suser_list()
 	return render(request, 'user_list.html', rdata)
 
