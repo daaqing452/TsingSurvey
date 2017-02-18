@@ -1,5 +1,6 @@
 //for design website
-var option_html = "<td><input type=\"text\" class=\"form-control input-sm\"></td><td><input type=\"file\" id=\"image\" onchange=\"uploadImage(this)\"><input type=\"hidden\" id=\"image_fn\"><label id=\"fn_display\"></label></td><td><span class=\"glyphicon glyphicon-plus\" onclick=\"addOption(this)\"></span><span class=\"glyphicon glyphicon-minus\" onclick=\"delOption(this)\"></span></td>"
+var option_html = "<td><input type=\"text\" class=\"form-control input-sm\"></td><td><input type=\"file\" id=\"image\" onchange=\"uploadImage(this)\"><input type=\"hidden\" id=\"image_fn\"><label id=\"fn_display\"></label></td><td><input type=\"checkbox\" name=\"single\"></td><td><span class=\"glyphicon glyphicon-plus\" onclick=\"addOption(this)\"></span><span class=\"glyphicon glyphicon-minus\" onclick=\"delOption(this)\"></span></td>"
+var option_html_text = "<td><input type=\"text\" class=\"form-control input-sm\"></td><td><span class=\"glyphicon glyphicon-plus\" onclick=\"addOption(this)\"></span><span class=\"glyphicon glyphicon-minus\" onclick=\"delOption(this)\"></span></td>";
 var table_html = "<table class=\"table table-condensed\"></table>";
 var table_title_html = "<thead><tr><td>题目标题</td></tr><tr><td style=\"padding:0 0 0 0;\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"请输入标题\" style=\"width:100%;\" id=\"s_title\"></td></tr></thead>"
 var questions = new Array();
@@ -14,7 +15,7 @@ function getindex(Qstring){
 }
 
 function myclick(){
-	alert("success!");
+	alert(JSON.stringify(questions));
 }
 
 function createSurvey(s_type){
@@ -68,7 +69,8 @@ function createModal(){
 			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
 			var single_table_title = "<tr><td class=\"text_col\">选项文字</td>"
 										+"<td class=\"img_col\">图片</td>"
-										+"<td class=\"op_col\">操作</td>";
+										+"<td class=\"fill_col\">允许填空</td>"
+										+"<td class=\"op_col\">操作</td></tr>";
 			$mymodal_tbody.append(single_table_title);
 			$mymodal_tbody.append("<tr>"+option_html+"</tr>");
 			//alert(s_modal.innerHTML);
@@ -86,7 +88,8 @@ function createModal(){
 			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
 			var single_table_title = "<tr><td class=\"text_col\">选项文字</td>"
 										+"<td class=\"img_col\">图片</td>"
-										+"<td class=\"op_col\">操作</td>";
+										+"<td class=\"fill_col\">允许填空</td>"
+										+"<td class=\"op_col\">操作</td></tr>";
 			$mymodal_tbody.append(single_table_title);
 			$mymodal_tbody.append("<tr>"+option_html+"</tr>");
 			//alert(s_modal.innerHTML);
@@ -99,7 +102,72 @@ function createModal(){
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
 		}
+		case 4:{
+			$("#myModal_body").empty();
+			$("#myModal_body").append(table_html,table_html,table_html);
+			var $mymodal_table = $("#myModal_body").children(".table");
+			$mymodal_table.eq(0).append(table_title_html);
+			$mymodal_table.eq(1).addClass("table-striped");
+			$mymodal_table.eq(1).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
+			$mymodal_tbody.append("<tr><td><input type=\"radio\" name=\"single\" onclick=\"buildBox(1)\">性别</td>"+
+									"<td><input type=\"radio\" name=\"single\" onclick=\"buildBox(2)\">院系</td>"+
+									"<td><input type=\"radio\" name=\"single\" onclick=\"buildBox(3)\">就读学位</td>"+
+									"<td><input type=\"radio\" name=\"single\" onclick=\"buildBox(4)\">年级</td>"+
+									"<td><input type=\"radio\" name=\"single\" onclick=\"buildBox(5)\">自定义</td>"+
+									"</tr>");
+			$mymodal_table.eq(2).attr("id","options");
+			$mymodal_table.eq(2).addClass("table-striped");
+			$mymodal_table.eq(2).append("<tbody></tbody>");
+		}
 	}
+}
+
+function buildBox(box_type){
+	var $mymodal_table = $("#myModal_body").children(".table");
+	$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
+	$mymodal_tbody.empty();
+	$mymodal_tbody.append("<tr><td class=\"text_col\">选项文字</td>"
+							+"<td class=\"op_col\">操作</td></tr>");
+	switch(box_type){
+		case 1:{
+			var content = ["男","女"];
+			for(var i = 0; i < content.length; i++){
+			$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
+			$('.option_text').eq(i).children().eq(0).children().eq(0).attr("value",content[i]);
+			}
+			break;
+		}
+		case 2:{
+			var content = ["建筑","土木","水利","环境","机械","精仪","热能","汽车","电机","电子","计算机","自动化","工物","航院","化工","材料","数学","物理","化学","生命","经管","公管","人文","社科","马院","法学院","美院","核研院","微纳电子","工业工程","医学院","软件","新闻","教研院","地学中心","金融","深研院","交叉信息学院","高等研究院"];
+			for(var i = 0; i < content.length; i++){
+			$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
+			$('.option_text').eq(i).children().eq(0).children().eq(0).attr("value",content[i]);
+			}
+			break;
+		}
+		case 3:{
+			var content = ["硕士","直博","普博"];
+			for(var i = 0; i < content.length; i++){
+			$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
+			$('.option_text').eq(i).children().eq(0).children().eq(0).attr("value",content[i]);
+			}
+			break;
+		}
+		case 4:{
+			var content = ["一年级","二年级","三年级","四年级","五年级","以上"];
+			for(var i = 0; i < content.length; i++){
+			$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
+			$('.option_text').eq(i).children().eq(0).children().eq(0).attr("value",content[i]);
+			}
+			break;
+		}
+		case 5:{
+			$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
+			break;
+		}
+	}
+
 }
 
 function createHtml(){
@@ -120,9 +188,16 @@ function createHtml(){
 				var cols = rows[i].children;
 				options.index = i-1;
 				option.text = cols[0].children[0].value;
-				option.image = cols[1].children[1].value;
+				option.image = cols[1].children[0].value;
+				option.allow_filled = cols[2].children[0].checked;
 				q.options.push(option);
-				HTMLContent += "<p class=\"q_item\"><input type=\"radio\" name=\"single\"> "+String.fromCharCode(i + 64)+". "+option.text+"</p>";
+				HTMLContent += "<p class=\"q_item\"><input type=\"radio\" name=\"single\"> "+String.fromCharCode(i + 64)+". "+option.text;
+				if(option.allow_filled == true){
+					HTMLContent += "<input type=\"text\"></p>";
+				}
+				else{
+					HTMLContent += "</p>";
+				}
 			}
 			HTMLContent += "</form></div></td>";
 			questions.push(q);
@@ -145,9 +220,16 @@ function createHtml(){
 				var cols = rows[i].children;
 				options.index = i-1;
 				option.text = cols[0].children[0].value;
-				option.image = cols[1].children[1].value;
+				option.image = cols[1].children[0].value;
+				option.allow_filled = cols[2].children[0].checked;
 				q.options.push(option);
-				HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" name=\"single\"> "+String.fromCharCode(i + 64)+". "+option.text+"</p>";
+				HTMLContent += "<p class=\"q_item\"><input type=\"radio\" name=\"single\"> "+String.fromCharCode(i + 64)+". "+option.text;
+				if(option.allow_filled == true){
+					HTMLContent += "<input type=\"text\"></p>";
+				}
+				else{
+					HTMLContent += "</p>";
+				}
 			}
 			HTMLContent += "</form></div></td>";
 			questions.push(q);
@@ -167,6 +249,30 @@ function createHtml(){
 			return HTMLContent;
 			break;
 		}
+		case 4:{
+			var q = {s_type:4};
+			var HTMLContent = "<td>";
+			var index = current_status.index;
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + document.getElementById("s_title").value+"</div>";
+			q.title = document.getElementById("s_title").value;
+			var rows = document.getElementById("options").rows;
+			q.n_option = rows.length-1;
+			q.options = [];
+			HTMLContent += "<div><select><option value = \"\">--请选择--</option>";
+			for(var i = 1; i < rows.length; i ++)
+			{
+				var option = {}
+				var cols = rows[i].children;
+				options.index = i-1;
+				option.text = cols[0].children[0].value;
+				q.options.push(option);
+				HTMLContent += "<option value=\""+i.toString()+"\">"+option.text+"</option>";
+			}
+			HTMLContent += "</select></div></td>";
+			questions.push(q);
+			return HTMLContent;
+			break;
+		}
 	}
 }
 
@@ -181,10 +287,16 @@ function commitS(){
 function addOption(b)
 {
 	var current_row = b.parentNode.parentNode;
+	var row_type = current_row.getAttribute("class");
 	var current_index = current_row.rowIndex;
 	var op_table = document.getElementById("options");
 	var new_row = op_table.insertRow(current_index + 1);
-	new_row.innerHTML = option_html;
+	if(row_type == "option_text"){
+		new_row.innerHTML = option_html_text;
+	}
+	else{
+		new_row.innerHTML = option_html;
+	}
 	/*
 	if(current_status.qtype == 41)
 		new_row.innerHTML = mat_option_html;
