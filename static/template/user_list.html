@@ -14,45 +14,6 @@
 
 <body style="background-color:#F5FFFA;">
 
-<br/>
-<form enctype='multipart/form-data' action='/user_list/' method='post'>
-	{% csrf_token %}
-	<input type='file' name='upload'/>
-	<input type='submit' value='upload' />
-	{% csrf_token %}
-</form>
-<br/>
-<br/>
-<br/>
-<button id='add_statistic'> 样本统计 </button>
-<div id='statistic'>
-	<div type='clone' style='display:none'>
-		<select> </select>
-		<button id='show_statistic' onclick='show_statistic(this)'> 显示统计 </button>
-		<span> </span>
-	</div>
-</div>
-<br/>
-<br/>
-<br/>
-<button id='add_constraint'> 添加筛选样本条件 </button>
-<button id='auto_sample'> 自动筛选 </button>
-<br/>
-样本数上限 <input type='text' id='upperbound'/>
-<div id='constraint'>
-	<div type='clone' style='display:none'>
-		<select onchange='constraint_select_change(this)'>
-			<option value='-1'> </option>
-		</select>
-		<input type='checkbox' name='checkbox_clone' style='display:none'/>
-		<span name='span_clone' style='display:none'> </span>
-	</div>
-</div>
-<br/>
-<br/>
-{{ debug }}
-<br/>
-
 <nav class="navbar navbar-default" role="navigation">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
@@ -106,21 +67,61 @@
 		<td> remote_c </td>
 	</tr>
 </table>
-<input type='text' id='add' name='username' placeholder="Enter student ID" />
-<button class="btn btn-info btn-sm" id='add'> Add </button>
+
+<input type='text' id='add' name='username' placeholder="Enter student ID" disabled='disabled' />
+<button class="btn btn-info btn-sm" id='add' disabled='disabled'> Add </button>
+
 <div class="btn-group btn-sm" style="float: right;">
-
-<button class="btn btn-success" id='select_all'> Select All </button>
-<button class="btn btn-success" id='select_none'> Select None </button>
-<button class="btn btn-success" id='sample_yes'> Set as Sample </button>
-<button class="btn btn-success" id='sample_no'> Set as not Sample </button>
-<button class="btn btn-danger" id='delete'> Delete </button>
-
+	<button class="btn btn-success" id='select_all'> Select All </button>
+	<button class="btn btn-success" id='select_none'> Select None </button>
+	<button class="btn btn-success" id='sample_yes'> Set as Sample </button>
+	<button class="btn btn-success" id='sample_no'> Set as not Sample </button>
+	<button class="btn btn-danger" id='delete'> Delete </button>
 </div>
 
 
+<br/>
+<br/>
+<br/>
+<form enctype='multipart/form-data' action='/user_list/' method='post'>
+	{% csrf_token %}
+	<input type='file' name='upload'/>
+	<input type='submit' value='上传名单' />
+	{% csrf_token %}
+</form>
+<br/>
+<br/>
+<br/>
+<button id='add_statistic'> 样本统计 </button>
+<div id='statistic'>
+	<div type='clone' style='display:none'>
+		<select> </select>
+		<button id='show_statistic' onclick='show_statistic(this)'> 显示统计 </button>
+		<span> </span>
+	</div>
+</div>
+<br/>
+<br/>
+<br/>
+<button id='add_constraint'> 添加筛选样本条件 </button>
+<button id='auto_sample'> 自动筛选 </button>
+<br/>
+样本数上限 <input type='text' id='upperbound'/>
+<div id='constraint'>
+	<div type='clone' style='display:none'>
+		<select onchange='constraint_select_change(this)'>
+			<option value='-1'> </option>
+		</select>
+		<input type='checkbox' name='checkbox_clone' style='display:none'/>
+		<span name='span_clone' style='display:none'> </span>
+	</div>
+</div>
+<br/>
+<br/>
+<br/>
+{{ debug }}
 
-<!--<button id='load_file'> 批量添加 </button>-->
+
 </div>
 <div id='footer'> </div>
 </body>
