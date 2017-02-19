@@ -22,6 +22,21 @@
 	{% csrf_token %}
 </form>
 <br/>
+<br/>
+<br/>
+<button id='add_statistic'> 添加统计 </button>
+<div id='statistic'>
+	<div type='clone2' style='display:none'>
+		<select> </select>
+		<button id='show_statistic' onclick='show_statistic(this)'> 显示统计 </button>
+		<span> </span>
+	</div>
+</div>
+<br/>
+<br/>
+<br/>
+{{ debug }}
+<br/>
 
 <nav class="navbar navbar-default" role="navigation">
   <div class="container-fluid">

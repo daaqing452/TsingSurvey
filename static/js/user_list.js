@@ -1,13 +1,13 @@
 function refreshUserList(user_list) {
 	var tbody = $('table#user_list').children('tbody');
-	$('[type="item"]').remove();
+	tbody.find('[type="item"]').remove();
 	for (i in user_list) {
 		var uid = user_list[i]['uid'];
 		var username = user_list[i]['username'];
 		var name = user_list[i]['name'];
 		var is_sample = '√';
 		if (user_list[i]['is_sample'] == 0) is_sample = '';
-		var tr = $('[type="clone"]').clone();
+		var tr = tbody.find('[type="clone"]').clone();
 		tr.attr('type', 'item');
 		tr.find('[type="checkbox"]').attr('username', username);
 		tr.find('[type="username"]').text(username);
@@ -17,6 +17,21 @@ function refreshUserList(user_list) {
 		tr.show();
 		tbody.append(tr);
 	}
+}
+
+function show_statistic(obj) {
+	var that = $(obj);
+	var select = that.parent().children('select');
+	var option = select.find('option:selected');
+	$.ajax({
+		url: window.location.pathname,
+		type: 'POST',
+		data: {'op': 'show_statistic', 'index': option.val()},
+		success: function(data) {
+			data = JSON.parse(data);
+			that.parent().children('span').text(JSON.stringify(data['result']));
+		}
+	});
 }
 
 $(document).ready(function(){
@@ -114,6 +129,28 @@ $(document).ready(function(){
 				} else {
 					alert(data['result']);
 				}
+			}
+		});
+	});
+
+	//	添加统计
+	$('button#add_statistic').click(function(){
+		$.ajax({
+			url: window.location.pathname,
+			type: 'POST',
+			data: {'op': 'add_statistic'},
+			success: function(data) {
+				data = JSON.parse(data);
+				options = data['options'];
+				var div = $('div#statistic');
+				var subdiv = div.find('[type="clone2"]').clone();
+				subdiv.attr('type', 'item2');
+				var select = subdiv.find('select');
+				for (i in options) {
+					select.append('<option value="' + i + '">' + options[i] + '</option>');
+				}
+				subdiv.show();
+				div.append(subdiv);
 			}
 		});
 	});
