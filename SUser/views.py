@@ -12,6 +12,7 @@ from Utils.views import Utils
 import Analysis.statistic as Stat
 import codecs
 import json
+import random
 import time
 
 def index(request):
@@ -98,7 +99,7 @@ def user_list(request):
 
 	# 设置为样本
 	if op == 'sample_yes':
-		username_list = eval(request.POST.get('username_list'))
+		username_list = json.loads(request.POST.get('username_list'))
 		for username in username_list:
 			susers = SUser.objects.filter(username=username)
 			if len(susers) > 0:
@@ -109,7 +110,7 @@ def user_list(request):
 
 	# 设置为非样本
 	if op == 'sample_no':
-		username_list = eval(request.POST.get('username_list'))
+		username_list = json.loads(request.POST.get('username_list'))
 		for username in username_list:
 			susers = SUser.objects.filter(username=username)
 			if len(susers) > 0:
@@ -120,7 +121,7 @@ def user_list(request):
 
 	# 删除用户
 	if op == 'delete':
-		username_list = eval(request.POST.get('username_list'))
+		username_list = json.loads(request.POST.get('username_list'))
 		for username in username_list:
 			susers = SUser.objects.filter(username=username)
 			if len(susers) > 0:
@@ -179,17 +180,62 @@ def user_list(request):
 	
 	# 添加统计
 	if op == 'add_statistic':
-		return HttpResponse(json.dumps({'options': SUser.__nlc__}))
+		return HttpResponse(json.dumps({'options': SUser.__var_chinese__}))
 
 	# 显示统计
 	if op == 'show_statistic':
 		index = int(request.POST.get('index'))
-		varname = SUser.__nlv__[index]
+		varname = SUser.__var_name__[index]
 		susers = SUser.objects.filter(is_sample=1)
-		attrs = [suser.__dict__[varname] for suser in susers]
-		result = Stat.count(attrs)
+		values = [suser.__dict__[varname] for suser in susers]
+		result = Stat.count(values)
 		return HttpResponse(json.dumps({'result': result}))
 
+	# 添加样本筛选条件
+	if op == 'add_constraint':
+		return HttpResponse(json.dumps({'options': SUser.__var_chinese__}))
+
+	# 更改样本筛选条件
+	if op == 'constraint_select_change':
+		index = int(request.POST.get('index'))
+		values = []
+		if index != -1:
+			varname = SUser.__var_name__[index]
+			susers = SUser.objects.filter(~Q(username='root'))
+			values = [suser.__dict__[varname] for suser in susers]
+			values = Stat.count(values).keys()
+		return HttpResponse(json.dumps({'index': index, 'values': values}))
+
+	# 自动样本生成
+	if op == 'auto_sample':
+		# 构造命令
+		constraints = json.loads(request.POST.get('constraints'));
+		command = 'SUser.objects.filter(~Q(username="root"))'
+		for index in constraints:
+			var = SUser.__var_name__[int(index)]
+			options = constraints[index]
+			command += '.filter('
+			for i in range(len(options)):
+				command += 'Q(' + var + '="' + options[i] + '")'
+				if i < len(options) - 1:
+					command += '|'
+			command += ')'
+		# 获取符合要求的id
+		susers = eval(command)
+		ids = [suser.id for suser in susers]
+		# 抽样
+		upperbound = request.POST.get('upperbound')
+		try:
+			upperbound = min(int(upperbound), len(susers))
+		except:
+			upperbound = len(susers)
+		sample_ids = set(random.sample(ids, upperbound))
+		# 修改is_sample
+		susers = SUser.objects.filter(~Q(username='root'))
+		for suser in susers:
+			suser.is_sample = int(suser.id in sample_ids)
+			suser.save()
+		return HttpResponse(json.dumps({'user_list': get_suser_list()}))
 
 	rdata['user_list'] = get_suser_list()
 	return render(request, 'user_list.html', rdata)
@@ -213,7 +259,7 @@ def admin_list(request):
 
 	# 删除管理员
 	if op == 'delete':
-		username_list = eval(request.POST.get('username_list'))
+		username_list = json.loads(request.POST.get('username_list'))
 		for username in username_list:
 			users = User.objects.filter(username=username)
 			if len(users) > 0:

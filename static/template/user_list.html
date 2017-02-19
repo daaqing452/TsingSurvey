@@ -24,15 +24,30 @@
 <br/>
 <br/>
 <br/>
-<button id='add_statistic'> 添加统计 </button>
+<button id='add_statistic'> 样本统计 </button>
 <div id='statistic'>
-	<div type='clone2' style='display:none'>
+	<div type='clone' style='display:none'>
 		<select> </select>
 		<button id='show_statistic' onclick='show_statistic(this)'> 显示统计 </button>
 		<span> </span>
 	</div>
 </div>
 <br/>
+<br/>
+<br/>
+<button id='add_constraint'> 添加筛选样本条件 </button>
+<button id='auto_sample'> 自动筛选 </button>
+<br/>
+样本数上限 <input type='text' id='upperbound'/>
+<div id='constraint'>
+	<div type='clone' style='display:none'>
+		<select onchange='constraint_select_change(this)'>
+			<option value='-1'> </option>
+		</select>
+		<input type='checkbox' name='checkbox_clone' style='display:none'/>
+		<span name='span_clone' style='display:none'> </span>
+	</div>
+</div>
 <br/>
 <br/>
 {{ debug }}

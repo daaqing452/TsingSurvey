@@ -20,8 +20,8 @@ function refreshUserList(user_list) {
 }
 
 function show_statistic(obj) {
-	var that = $(obj);
-	var select = that.parent().children('select');
+	var button = $(obj);
+	var select = button.parent().children('select');
 	var option = select.find('option:selected');
 	$.ajax({
 		url: window.location.pathname,
@@ -29,7 +29,37 @@ function show_statistic(obj) {
 		data: {'op': 'show_statistic', 'index': option.val()},
 		success: function(data) {
 			data = JSON.parse(data);
-			that.parent().children('span').text(JSON.stringify(data['result']));
+			button.parent().children('span').text(JSON.stringify(data['result']));
+		}
+	});
+}
+
+function constraint_select_change(obj) {
+	var select = $(obj);
+	var option = select.find('option:selected');
+	$.ajax({
+		url: window.location.pathname,
+		type: 'POST',
+		data: {'op': 'constraint_select_change', 'index': option.val()},
+		success: function(data) {
+			data = JSON.parse(data);
+			var values = data['values'];
+			var div = select.parent();
+			div.attr('value', data['index']);
+			div.children('[name="item"]').remove();
+			for (i in values) {
+				var input = div.children('[name="checkbox_clone"]').clone();
+				input.attr('name', 'item');
+				input.val(values[i]);
+				input.show();
+				var span = div.children('[name="span_clone"]').clone();
+				span.attr('name', 'item');
+				span.append(values[i]);
+				span.append('&nbsp;&nbsp;&nbsp;');
+				span.show();
+				div.append(input);
+				div.append(span);
+			}
 		}
 	});
 }
@@ -143,14 +173,62 @@ $(document).ready(function(){
 				data = JSON.parse(data);
 				options = data['options'];
 				var div = $('div#statistic');
-				var subdiv = div.find('[type="clone2"]').clone();
-				subdiv.attr('type', 'item2');
-				var select = subdiv.find('select');
+				var subdiv = div.children('[type="clone"]').clone();
+				subdiv.attr('type', 'item');
+				var select = subdiv.children('select');
 				for (i in options) {
 					select.append('<option value="' + i + '">' + options[i] + '</option>');
 				}
 				subdiv.show();
 				div.append(subdiv);
+			}
+		});
+	});
+
+	//	添加样本限制条件
+	$('button#add_constraint').click(function(){
+		$.ajax({
+			url: window.location.pathname,
+			type: 'POST',
+			data: {'op': 'add_constraint'},
+			success: function(data) {
+				data = JSON.parse(data);
+				options = data['options'];
+				var div = $('div#constraint');
+				var subdiv = div.children('[type="clone"]').clone();
+				subdiv.attr('type', 'item');
+				subdiv.attr('value', -1);
+				var select = subdiv.children('select');
+				for (i in options) {
+					select.append('<option value="' + i + '">' + options[i] + '</option>');
+				}
+				subdiv.show();
+				div.append(subdiv);
+			}
+		});
+	});
+
+	//	自动筛选
+	$('button#auto_sample').click(function() {
+		var constraints = {};
+		var div = $('div#constraint');
+		var childrens = div.children('[type="item"]');
+		div.children('[type="item"]').each(function() {
+			var value = $(this).attr('value');
+			if (value == -1) return;
+			var item = new Array();
+			$(this).children('input:checkbox:checked').each(function() {
+				item.push($(this).val());
+			});
+			constraints[value] = item;
+		});
+		$.ajax({
+			url: window.location.pathname,
+			type: 'POST',
+			data: {'op': 'auto_sample', 'constraints': JSON.stringify(constraints), 'upperbound': $('input#upperbound').val()},
+			success: function(data) {
+				data = JSON.parse(data);
+				refreshUserList(data['user_list']);
 			}
 		});
 	});
