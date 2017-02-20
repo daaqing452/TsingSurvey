@@ -38,6 +38,13 @@ hr
 {
 	text-align: right;
 }
+
+li
+{
+	list-style-type:none;
+	margin-bottom:0;
+}
+
 .q_header
 {
 	margin-bottom: 6px;
