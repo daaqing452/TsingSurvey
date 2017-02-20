@@ -7,6 +7,8 @@ var questions = new Array();
 var current_status = {s_type: 0, action: 0, index: 0};
 var n_option_default = 4;
 var image_size_lim = 4096 * 1024;
+var q_table = document.getElementById("questions");
+var operate_index = current_status.index;
 
 function getindex(Qstring){
 	var q_table = document.getElementById("questions");
@@ -101,6 +103,7 @@ function createModal(){
 			$("#myModal_body").append(table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
+			break;
 		}
 		case 4:{
 			$("#myModal_body").empty();
@@ -119,6 +122,21 @@ function createModal(){
 			$mymodal_table.eq(2).attr("id","options");
 			$mymodal_table.eq(2).addClass("table-striped");
 			$mymodal_table.eq(2).append("<tbody></tbody>");
+			break;
+		}
+		case 5:{
+			$("#myModal_body").empty();
+			$("#myModal_body").append(table_html,table_html);
+			var $mymodal_table = $("#myModal_body").children(".table");
+			$mymodal_table.eq(0).append(table_title_html);
+			$mymodal_table.eq(1).attr("id","options");
+			$mymodal_table.eq(1).addClass("table-striped");
+			$mymodal_table.eq(1).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
+			$mymodal_tbody.append("<tr><td class=\"text_col\">选项文字</td>"
+							+"<td class=\"op_col\">操作</td></tr>");
+			$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
+
 		}
 	}
 }
@@ -170,118 +188,220 @@ function buildBox(box_type){
 
 }
 
-function createHtml(){
+
+function getQFromModal(){
 	switch(current_status.s_type){
 		case 1:{
 			var q = {s_type:1};
-			var HTMLContent = "<td>";
-			var index = current_status.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + document.getElementById("s_title").value+"</div>";
+			q.index = operate_index;
 			var rows = document.getElementById("options").rows;
 			q.title = document.getElementById("s_title").value;
 			q.n_option = rows.length-1;
 			q.options = [];
-			HTMLContent += "<div><form>";
 			for(var i = 1; i < rows.length; i ++)
 			{
 				var option = {}
 				var cols = rows[i].children;
-				options.index = i-1;
+				option.index = i-1;
 				option.text = cols[0].children[0].value;
 				option.image = cols[1].children[0].value;
 				option.allow_filled = cols[2].children[0].checked;
 				q.options.push(option);
-				HTMLContent += "<p class=\"q_item\"><input type=\"radio\" name=\"single\"> "+String.fromCharCode(i + 64)+". "+option.text;
-				if(option.allow_filled == true){
-					HTMLContent += "<input type=\"text\"></p>";
-				}
-				else{
-					HTMLContent += "</p>";
-				}
 			}
-			HTMLContent += "</form></div></td>";
-			questions.push(q);
-			return HTMLContent;
+			return q;
 			break;
 		}
 		case 2:{
 			var q = {s_type:2};
-			var HTMLContent = "<td>";
-			var index = current_status.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + document.getElementById("s_title").value+"</div>";
+			q.index = operate_index;
 			var rows = document.getElementById("options").rows;
 			q.title = document.getElementById("s_title").value;
 			q.n_option = rows.length-1;
 			q.options = [];
-			HTMLContent += "<div><form>";
 			for(var i = 1; i < rows.length; i ++)
 			{
 				var option = {}
 				var cols = rows[i].children;
-				options.index = i-1;
+				option.index = i-1;
 				option.text = cols[0].children[0].value;
 				option.image = cols[1].children[0].value;
 				option.allow_filled = cols[2].children[0].checked;
 				q.options.push(option);
-				HTMLContent += "<p class=\"q_item\"><input type=\"radio\" name=\"single\"> "+String.fromCharCode(i + 64)+". "+option.text;
-				if(option.allow_filled == true){
-					HTMLContent += "<input type=\"text\"></p>";
-				}
-				else{
-					HTMLContent += "</p>";
-				}
 			}
-			HTMLContent += "</form></div></td>";
-			questions.push(q);
-			return HTMLContent;
+			return q;
 			break;
 		}
 		case 3:{
 			var q = {s_type:3};
-			var HTMLContent = "<td>";
-			var index = current_status.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + document.getElementById("s_title").value+"</div>";
+			q.index = operate_index;
 			q.title = document.getElementById("s_title").value;
-			HTMLContent += "<form>";
-			HTMLContent += "<p class=\"q_item\"><input type=\"text\"></p>";
-			HTMLContent += "</form></div></td>";
-			questions.push(q);
-			return HTMLContent;
+			return q;
 			break;
 		}
 		case 4:{
 			var q = {s_type:4};
-			var HTMLContent = "<td>";
-			var index = current_status.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + document.getElementById("s_title").value+"</div>";
+			q.index = operate_index;
 			q.title = document.getElementById("s_title").value;
 			var rows = document.getElementById("options").rows;
 			q.n_option = rows.length-1;
 			q.options = [];
-			HTMLContent += "<div><select><option value = \"\">--请选择--</option>";
 			for(var i = 1; i < rows.length; i ++)
 			{
 				var option = {}
 				var cols = rows[i].children;
-				options.index = i-1;
+				option.index = i-1;
 				option.text = cols[0].children[0].value;
 				q.options.push(option);
-				HTMLContent += "<option value=\""+i.toString()+"\">"+option.text+"</option>";
 			}
-			HTMLContent += "</select></div></td>";
-			questions.push(q);
-			return HTMLContent;
+			return q;
+			break;
+		}
+		case 5:{
+			var q = {s_type:5};
+			q.index = operate_index;
+			q.title = document.getElementById("s_title").value;
+			var rows = document.getElementById("options").rows;
+			q.n_option = rows.length-1;
+			q.options = [];
+			for(var i = 1; i < rows.length; i ++)
+			{
+				var option = {}
+				var cols = rows[i].children;
+				option.index = i-1;
+				option.text = cols[0].children[0].value;
+				q.options.push(option);
+			}
+			return q;
 			break;
 		}
 	}
 }
 
+function createHtml(q){
+	var HTMLContent = "<td>";
+	switch(q.s_type){
+		case 1:{
+			var index = q.index;
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title+"</div>";
+			HTMLContent += "<div><form>";
+			for(var i = 0; i < q.n_option; i ++)
+			{
+				var option = q.options[i];
+				HTMLContent += "<p class=\"q_item\"><input type=\"radio\" name=\"single\"> "+String.fromCharCode(i + 65)+". "+option.text;
+				if(option.allow_filled == true){
+					HTMLContent += "<input type=\"text\"></p>";
+				}
+				else{
+					HTMLContent += "</p>";
+				}
+			}
+			HTMLContent += "</form></div>";
+			break;
+		}
+		case 2:{
+			var index = q.index;
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." +q.title+"</div>";
+			HTMLContent += "<div><form>";
+			for(var i = 0; i < q.n_option; i ++)
+			{
+				var option = q.options[i];
+				HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" name=\"single\"> "+String.fromCharCode(i + 65)+". "+option.text;
+				if(option.allow_filled == true){
+					HTMLContent += "<input type=\"text\"></p>";
+				}
+				else{
+					HTMLContent += "</p>";
+				}
+			}
+			HTMLContent += "</form></div>";
+			break;
+		}
+		case 3:{
+			var index = q.index;
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title+"</div>";
+			HTMLContent += "<form>";
+			HTMLContent += "<p class=\"q_item\"><input type=\"text\"></p>";
+			HTMLContent += "</form></div>";
+			break;
+		}
+		case 4:{
+			var index = q.index;
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title+"</div>";
+			HTMLContent += "<div><select><option value = \"\">--请选择--</option>";
+			for(var i = 0; i < q.n_option; i ++)
+			{
+				var option = q.options[i];
+				HTMLContent += "<option value=\""+i.toString()+"\">"+option.text+"</option>";
+			}
+			HTMLContent += "</select></div>";
+			break;
+		}
+		case 5:{
+			var index = q.index;
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title+"</div>";
+			HTMLContent += "<ul style=\"float:left;margin:0px;padding:0px;\">";
+			for(var i = 0; i < q.n_option; i++){
+				var option = q.options[i];
+				HTMLContent += "<li><input type=\"checkbox\" name=\"single\">"+option.text+"</li>";
+			}
+			HTMLContent += "</ul>";
+			var sort_table = "<table><tbody>"+
+			"<tr><td><div style=\"margin-left:10px\"><select size=\"6\" style=\'width:200px;background:#ffffff;overflow:auto;height:120px;\'></select></div></td>"+
+			"<td><ul><li><button class=\"btn btn-warning btn-sm\" onclick=\"sort(1)\">移至最前</li>"+
+			"<li><button class=\"btn btn-success btn-sm\" onclick=\"sort(2)\">上移一位</li>"+
+			"<li><button class=\"btn btn-success btn-sm\" onclick=\"sort(3)\">下移一位</li>"+
+			"<li><button class=\"btn btn-warning btn-sm\" onclick=\"sort(4)\">移至最后</li>"+
+			"</ul></td></tr></tbody></table>";
+			HTMLContent += sort_table;
+			break;
+		}
+	}
+	HTMLContent += "<br><div><button class=\"btn btn-primary btn-sm\" onclick=\"addQAfter("+q.index.toString()+")\">插入</button><button class=\"btn btn-danger btn-sm\" onclick=\"deleteQ("+q.index.toString()+")\">删除</button></div><hr>";
+	HTMLContent += "</td>";
+	return HTMLContent;
+}
+
+function addQAfter(index){
+	alert("请在上方选择题型");
+	operate_index = index+1;
+}
+
+function deleteQ(index){
+	current_status.index --;
+	q_table.deleteRow(index);
+	questions.splice(index, 1);
+	var rows = q_table.rows;
+	for(var i = index; i < questions.length; i ++)
+	{
+		questions[i].index --;
+		rows[i].innerHTML = createHtml(questions[i]);
+	}
+}
+
 function commitS(){
+	var q = getQFromModal();
+	if(!q) return;
 	$("#myModal").modal('hide');
-	var q_table = document.getElementById("questions");
-	var new_row = q_table.insertRow(-1);
-	new_row.innerHTML = createHtml();
-	current_status.index ++;
+	if(operate_index == current_status.index){
+		questions.push(q);
+		var new_row = q_table.insertRow(-1);
+		new_row.innerHTML = createHtml(q);
+		current_status.index ++;
+		operate_index = current_status.index;
+	}
+	else{
+		questions.splice(operate_index,0,q);
+		var new_row = q_table.insertRow(operate_index);
+		new_row.innerHTML = createHtml(q);
+		var rows = q_table.rows;
+		for(var i = operate_index+1; i < questions.length; i ++)
+		{
+			questions[i].index ++;
+			rows[i].innerHTML = createHtml(questions[i]);
+		}
+		current_status.index ++;
+		operate_index = current_status.index;
+	}
 }
 
 function addOption(b)
@@ -293,6 +413,7 @@ function addOption(b)
 	var new_row = op_table.insertRow(current_index + 1);
 	if(row_type == "option_text"){
 		new_row.innerHTML = option_html_text;
+		new_row.setAttribute("class","option_text");
 	}
 	else{
 		new_row.innerHTML = option_html;
