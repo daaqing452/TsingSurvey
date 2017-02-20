@@ -482,7 +482,7 @@ function uploadImage(x)
 	var formData = new FormData();
 	formData.append("image", x.files[0]);
     $.ajax({
-        url: 'load_image/',
+        url: '/load_file/',
         type: 'POST',
         data: formData,
         cache: false,
