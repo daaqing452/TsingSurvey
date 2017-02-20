@@ -8,6 +8,7 @@ from django.template import RequestContext
 from django.utils import timezone
 from Survey.models import Questionaire, Answeraire
 from SUser.models import SUser
+import SUser.utils as Utils
 import json
 import datetime
 
@@ -31,7 +32,7 @@ def survey(request, qid):
 
 	def update_questionaire(questionaire, title, qstring):
 		questionaire.title = title
-		questionaire.question_list = qstring
+		questionaire.questions = qstring
 		questionaire.update_time = timezone.now()
 
 	if op == 'create':
@@ -58,7 +59,7 @@ def survey(request, qid):
 			else:
 				# 加载问卷请求
 				if op == 'load':
-					return HttpResponse(json.dumps({'title': questionaire.title, 'qstring': questionaire.question_list}))
+					return HttpResponse(json.dumps({'title': questionaire.title, 'qstring': questionaire.questions}))
 				# 修改问卷请求
 				if op == 'save':
 					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
@@ -98,10 +99,10 @@ def survey(request, qid):
 
 			# 加载问卷请求
 			if op == 'load':
-				return HttpResponse(json.dumps({'title': questionaire.title, 'qstring': questionaire.question_list}))
+				return HttpResponse(json.dumps({'title': questionaire.title, 'qstring': questionaire.questions}))
 			# 提交问卷请求
 			if op == 'submit':
-				answeraire = Answeraire.objects.create(qid=qid, uid=user.id, update_time=timezone.now(), answer_list=request.POST.get('astring'))
+				answeraire = Answeraire.objects.create(qid=qid, uid=user.id, update_time=timezone.now(), answers=request.POST.get('astring'))
 				answeraire.save()
 				qid_dict[str(qid)] = 1
 				suser.qid_list = json.dumps(qid_dict)
@@ -123,7 +124,7 @@ def survey(request, qid):
 			else:
 				# 加载问卷请求
 				if op == 'load':
-					return HttpResponse(json.dumps({'title': questionaire.title, 'qstring': questionaire.question_list}))
+					return HttpResponse(json.dumps({'title': questionaire.title, 'qstring': questionaire.questions}))
 
 		# 报告生成状态
 		elif status == 3:
@@ -146,3 +147,15 @@ def bonus(request):
 	op = request.POST.get('op')
 
 	return render(request, 'bonus.html', rdata)
+
+def upload_file(request):
+	# 验证身份
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/login/')
+	
+	f = request.FILES.get('file', None)
+	if not f is None:
+		f_path = Utils.upload_file(f)
+		return HttpResponse(json.dumps({'status': 'yes', 'url': f_path}))
+	else:
+		return HttpResponse(json.dumps({'status': 'no'}));

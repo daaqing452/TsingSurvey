@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-
+import time
 
 def username_to_password(username):
 	return str((hash(username) ^ 3968766407) % 104939997)
-
 
 def remake_questionaire(questionaire, qid_dict):
 	d = {}
@@ -33,3 +32,11 @@ def remake_questionaire(questionaire, qid_dict):
 		d['status'] = 'Error'
 	
 	return d
+
+def upload_file(raw):
+	f_path = 'temp/' + time.strftime('%Y%m%d%H%M%S') + '-' + raw.name
+	f = open(f_path, 'wb')
+	for chunk in raw.chunks():
+		f.write(chunk)
+	f.close()
+	return f_path

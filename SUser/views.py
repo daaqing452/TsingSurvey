@@ -13,7 +13,6 @@ import SUser.utils as Utils
 import codecs
 import json
 import random
-import time
 
 def index(request):
 	# 验证身份
@@ -149,14 +148,9 @@ def user_list(request):
 		return HttpResponse(json.dumps({'result': result, 'user_list': get_suser_list()}))
 
 	# 导入用户名单
-	upload = request.FILES.get('upload', None)
-	if not upload is None:
-		# 导入文件到本地
-		f_path = 'temp/' + time.strftime('%Y%m%d%H%M%S') + '-' + upload.name
-		f = open(f_path, 'wb')
-		for chunk in upload.chunks():
-			f.write(chunk)
-		f.close()
+	f = request.FILES.get('upload', None)
+	if not f is None:
+		f_path = Utils.upload_file(f)
 		# 读入每一行
 		f = codecs.open(f_path, 'r', 'gbk')
 		line_no = -1

@@ -10,25 +10,16 @@ class Questionaire(models.Model):
 	close_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
 	founder = models.IntegerField(default=-1)
 	title = models.CharField(max_length=128, default='')
-	question_list = models.TextField(default='')
+	questions = models.TextField(default='')
 	comment = models.TextField(default='')
-
-class Question(models.Model):
-	qid = models.IntegerField()
-	qtype = models.IntegerField()
-	content = models.TextField()
 
 class Answeraire(models.Model):
 	qid = models.IntegerField()
 	uid = models.IntegerField()
+	create_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
 	update_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
-	answer_list = models.TextField()
-
-class Answer(models.Model):
-	aid = models.IntegerField()
-	uid = models.IntegerField()
-	tid = models.IntegerField()
-	answer = models.TextField()
+	submit_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
+	answers = models.TextField(default='')
 
 class Report(models.Model):
 	qid = models.IntegerField()
