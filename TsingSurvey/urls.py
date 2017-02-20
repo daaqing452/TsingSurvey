@@ -16,10 +16,9 @@ Including another URLconf
 from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
-from SUser.views import index, login, logout, user_list, admin_list, profile
+from SUser.views import index, login, logout, user_list, admin_list, profile, install
 from Survey.views import survey, bonus
 from Analysis.views import analysis, search, report
-from Utils.views import install
 import settings
 
 urlpatterns = [

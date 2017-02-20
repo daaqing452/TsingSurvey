@@ -15,6 +15,7 @@ import datetime
 #	 0 修改中（随时修改）
 #	 1 发布中
 #	 2 已结束（随时可分析）
+#	 3 已生成报告
 #	-1 用户不可见
 
 def survey(request, qid):
@@ -32,7 +33,6 @@ def survey(request, qid):
 		questionaire.title = title
 		questionaire.question_list = qstring
 		questionaire.update_time = timezone.now()
-		questionaire.save()
 
 	if op == 'create':
 		now = timezone.now()
@@ -62,11 +62,14 @@ def survey(request, qid):
 				# 修改问卷请求
 				if op == 'save':
 					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
+					questionaire.save()
 					return HttpResponse(json.dumps({}))
 				# 发布问卷请求
 				elif op == 'release':
 					questionaire.status = 1
+					questionaire.release_time = timezone.now()
 					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
+					questionaire.save()
 					suser_list = SUser.objects.filter(is_sample=1)
 					for suser in suser_list:
 						qid_dict = json.loads(suser.qid_list)
@@ -107,6 +110,7 @@ def survey(request, qid):
 				return HttpResponse(json.dumps({}))
 			# 关闭问卷请求
 			if op == 'closeup':
+				questionaire.close_time = timezone.now()
 				questionaire.status = 2
 				questionaire.save()
 				return HttpResponse(json.dumps({}))

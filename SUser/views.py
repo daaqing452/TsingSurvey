@@ -8,8 +8,8 @@ from django.shortcuts import render
 from django.template import RequestContext
 from SUser.models import SUser
 from Survey.models import Questionaire
-from Utils.views import Utils
 import Analysis.statistic as Stat
+import SUser.utils as Utils
 import codecs
 import json
 import random
@@ -306,3 +306,16 @@ def profile(request, uid):
 	rdata['rq_list'] = rq_list
 
 	return render(request, 'profile.html', rdata)
+
+def install(request):
+	html = ''
+	username = 'root'
+	password = '123'
+	user = auth.authenticate(username=username, password=password)
+	if user is None:
+		user = User.objects.create_user(username=username, password=password, is_superuser=1, is_staff=1)
+		suser = SUser.objects.create(username=username, uid=user.id, is_sample=0)
+		html += 'add ' + username + ' successful <br/>'
+	else:
+		html += ' already exists <br/>'
+	return HttpResponse(html)
