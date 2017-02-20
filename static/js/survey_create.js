@@ -458,7 +458,6 @@ function delOption(b)
 
 function uploadImage(x)
 {
-	alert(x.value);
 	var tmp = x.value.lastIndexOf('.');
 	if(tmp == -1){
 		alert("必须是图片文件！");
@@ -480,6 +479,35 @@ function uploadImage(x)
 		clearInput(x);
 		return;
 	}
+	var formData = new FormData();
+	formData.append("image", x.files[0]);
+    $.ajax({
+        url: 'load_image/',
+        type: 'POST',
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function(returndata) {
+        	if(returndata.status == "yes")
+        	{
+        		x.parentNode.children[1].value = returndata.url;
+        		var label = x.parentNode.children[2];
+				label.style.display = "block";
+				label.innerHTML = "已选择图片" + x.value;
+				alert(returndata.url);
+        	}
+        	else
+        	{
+        		alert("上传失败！");
+        		clearInput(x);
+        	}
+        },
+        error: function(returndata) {
+            alert("出错了！");
+            clearInput(x);
+        }
+    });
 
 	
 }
