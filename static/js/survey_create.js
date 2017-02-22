@@ -585,7 +585,7 @@ function uploadImage(x)
         	returndata = JSON.parse(returndata);
         	if(returndata.status == "yes")
         	{
-        		x.parentNode.children[1].value = returndata.url;
+        		x.parentNode.children[1].value = '/' + returndata.url;
         	}
         	else
         	{
