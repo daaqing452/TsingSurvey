@@ -353,7 +353,7 @@ function createHtml(q){
 					HTMLContent += option.text;
 				}
 				if(option.option_type==1){
-					HTMLContent += "<img src=\"" + option.image + "\">";
+					HTMLContent += "<img src=\"" + option.image + "\" width=\"20%\">";
 				}
 				if(option.allow_filled == true){
 					HTMLContent += "<input type=\"text\"></p>";
@@ -469,6 +469,7 @@ function deleteQ(index){
 		questions[i].index --;
 		rows[i].innerHTML = createHtml(questions[i]);
 	}
+	operate_index = current_status.index;
 }
 
 function commitS(){
