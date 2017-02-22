@@ -225,7 +225,7 @@ function getQFromModal(){
 				var cols = rows[i].children;
 				option.index = i-1;
 				option.text = cols[0].children[0].value;
-				option.image = cols[1].children[0].value;
+				option.image = cols[1].children[1].value;
 				option.allow_filled = cols[2].children[0].checked;
 				if(option.image != ""){
 					option.option_type = 1;
@@ -251,7 +251,7 @@ function getQFromModal(){
 				var cols = rows[i].children;
 				option.index = i-1;
 				option.text = cols[0].children[0].value;
-				option.image = cols[1].children[0].value;
+				option.image = cols[1].children[1].value;
 				option.allow_filled = cols[2].children[0].checked;
 				if(option.image != null){
 					option.option_type = 1;
