@@ -23,7 +23,7 @@ import settings
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    
+
     url(r'^$', index),
     url(r'^login/$', login),
     url(r'^logout/$', logout),
@@ -42,4 +42,4 @@ urlpatterns = [
 
     url(r'^install/$', install),
     url(r'^analysis/$', analysis),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
