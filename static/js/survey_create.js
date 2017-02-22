@@ -136,7 +136,28 @@ function createModal(){
 			$mymodal_tbody.append("<tr><td class=\"text_col\">选项文字</td>"
 							+"<td class=\"op_col\">操作</td></tr>");
 			$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
-
+			break;
+		}
+		case 6:{
+			$("#myModal_body").empty();
+			$("#myModal_body").append(table_html,table_html,table_html);
+			var $mymodal_table = $("#myModal_body").children(".table");
+			$mymodal_table.eq(0).append(table_title_html);
+			$mymodal_table.eq(1).attr("id","options_row");
+			$mymodal_table.eq(1).addClass("table-striped");
+			$mymodal_table.eq(1).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
+			$mymodal_tbody.append("<tr><td class=\"text_col\">行标题</td>"
+							+"<td class=\"op_col\">操作</td></tr>");
+			$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
+			$mymodal_table.eq(2).attr("id","options_col");
+			$mymodal_table.eq(2).addClass("table-striped");
+			$mymodal_table.eq(2).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
+			$mymodal_tbody.append("<tr><td class=\"text_col\">列标题</td>"
+							+"<td class=\"op_col\">操作</td></tr>");
+			$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
+			break;
 		}
 	}
 }
@@ -206,6 +227,12 @@ function getQFromModal(){
 				option.text = cols[0].children[0].value;
 				option.image = cols[1].children[0].value;
 				option.allow_filled = cols[2].children[0].checked;
+				if(option.image != ""){
+					option.option_type = 1;
+				}
+				else{
+					option.option_type = 0;
+				}
 				q.options.push(option);
 			}
 			return q;
@@ -226,6 +253,12 @@ function getQFromModal(){
 				option.text = cols[0].children[0].value;
 				option.image = cols[1].children[0].value;
 				option.allow_filled = cols[2].children[0].checked;
+				if(option.image != null){
+					option.option_type = 1;
+				}
+				else{
+					option.option_type = 0;
+				}
 				q.options.push(option);
 			}
 			return q;
@@ -251,6 +284,8 @@ function getQFromModal(){
 				var cols = rows[i].children;
 				option.index = i-1;
 				option.text = cols[0].children[0].value;
+				option.image = "";
+				option.option_type = 0;
 				q.options.push(option);
 			}
 			return q;
@@ -265,11 +300,37 @@ function getQFromModal(){
 			q.options = [];
 			for(var i = 1; i < rows.length; i ++)
 			{
-				var option = {}
+				var option = {};
 				var cols = rows[i].children;
 				option.index = i-1;
 				option.text = cols[0].children[0].value;
+				option.image = "";
+				option.option_type = 0;
 				q.options.push(option);
+			}
+			return q;
+			break;
+		}
+		case 6:{
+			var q = {s_type:6};
+			q.index = operate_index;
+			q.title = document.getElementById("s_title").value;
+			var rows = document.getElementById("options_row").rows;
+			var cols = document.getElementById("options_col").rows;
+			q.n_option = (rows.length - 1) * (cols.length - 1);
+			q.n_set = rows.length-1;
+			q.options = [];
+			for(var i = 1; i < rows.length; i++){
+				for(var j = 1; j < cols.length; j++){
+					var option = {}
+					option.index = (i -1) * (cols.length-1) + j-1;
+					//text refer to row title
+					option.text = rows[i].children[0].children[0].value;
+					//image refer to col title
+					option.image = cols[j].children[0].children[0].value;
+					option.option_type = 0;
+					q.options.push(option);
+				}
 			}
 			return q;
 			break;
@@ -287,7 +348,13 @@ function createHtml(q){
 			for(var i = 0; i < q.n_option; i ++)
 			{
 				var option = q.options[i];
-				HTMLContent += "<p class=\"q_item\"><input type=\"radio\" name=\"single\"> "+String.fromCharCode(i + 65)+". "+option.text;
+				HTMLContent += "<p class=\"q_item\"><input type=\"radio\" name=\"single\"> "+String.fromCharCode(i + 65)+". ";
+				if(option.option_type==0){
+					HTMLContent += option.text;
+				}
+				if(option.option_type==1){
+					HTMLContent += "<img src=\"" + option.image + "\">";
+				}
 				if(option.allow_filled == true){
 					HTMLContent += "<input type=\"text\"></p>";
 				}
@@ -305,7 +372,13 @@ function createHtml(q){
 			for(var i = 0; i < q.n_option; i ++)
 			{
 				var option = q.options[i];
-				HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" name=\"single\"> "+String.fromCharCode(i + 65)+". "+option.text;
+				HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" name=\"single\"> "+String.fromCharCode(i + 65)+". ";
+				if(option.option_type==0){
+					HTMLContent += option.text;
+				}
+				if(option.option_type==1){
+					HTMLContent += "<img src=\"" + option.image + "\">";
+				}
 				if(option.allow_filled == true){
 					HTMLContent += "<input type=\"text\"></p>";
 				}
@@ -353,6 +426,26 @@ function createHtml(q){
 			"<li><button class=\"btn btn-warning btn-sm\" onclick=\"sort(4)\">移至最后</li>"+
 			"</ul></td></tr></tbody></table>";
 			HTMLContent += sort_table;
+			break;
+		}
+		case 6:{
+			var index = q.index;
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title+"</div>";
+			HTMLContent += "<table class=\"table \"><tbody><tr><td></td>";
+			var n_col = q.n_option / q.n_set;
+			var n_row = q.n_set;
+			for(var i = 0; i < n_col; i++){
+				HTMLContent += "<td>" + q.options[i].image + "</td>";
+			}
+			HTMLContent += "</tr>";
+			for(var i = 0; i < n_row; i++){
+				HTMLContent += "<tr><td>" + q.options[i*n_col].text +"</td>";
+				for(var j = 0; j < n_col; j++){
+					HTMLContent += "<td><input type=\"radio\" name=\"single"+ i.toString() +"\"></td>";
+				}
+				HTMLContent += "</tr>";
+			}
+			HTMLContent += "</tbody></table>";
 			break;
 		}
 	}
@@ -409,7 +502,7 @@ function addOption(b)
 	var current_row = b.parentNode.parentNode;
 	var row_type = current_row.getAttribute("class");
 	var current_index = current_row.rowIndex;
-	var op_table = document.getElementById("options");
+	var op_table = b.parentNode.parentNode.parentNode;
 	var new_row = op_table.insertRow(current_index + 1);
 	if(row_type == "option_text"){
 		new_row.innerHTML = option_html_text;
@@ -440,7 +533,7 @@ function delOption(b)
 {
 	var current_row = b.parentNode.parentNode;
 	var current_index = current_row.rowIndex;
-	var op_table = document.getElementById("options");
+	var op_table = b.parentNode.parentNode.parentNode;
 	if(current_index == 1 && op_table.rows.length == 2)
 	{
 		alert("At least one option");
@@ -480,22 +573,19 @@ function uploadImage(x)
 		return;
 	}
 	var formData = new FormData();
-	formData.append("image", x.files[0]);
+	formData.append("file", x.files[0]);
     $.ajax({
-        url: '/load_file/',
+        url: '/upload_file/',
         type: 'POST',
         data: formData,
         cache: false,
         contentType: false,
         processData: false,
         success: function(returndata) {
+        	returndata = JSON.parse(returndata);
         	if(returndata.status == "yes")
         	{
         		x.parentNode.children[1].value = returndata.url;
-        		var label = x.parentNode.children[2];
-				label.style.display = "block";
-				label.innerHTML = "已选择图片" + x.value;
-				alert(returndata.url);
         	}
         	else
         	{
