@@ -34,7 +34,7 @@ def remake_questionaire(questionaire, qid_dict):
 	return d
 
 def upload_file(raw):
-	f_path = 'temp/' + time.strftime('%Y%m%d%H%M%S') + '-' + raw.name
+	f_path = 'media/' + time.strftime('%Y%m%d%H%M%S') + '-' + raw.name
 	f = open(f_path, 'wb')
 	for chunk in raw.chunks():
 		f.write(chunk)

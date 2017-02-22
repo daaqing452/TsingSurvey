@@ -78,7 +78,6 @@ def survey(request, qid):
 						suser.qid_list = json.dumps(qid_dict)
 						suser.save()
 					return HttpResponse(json.dumps({}))
-				# ???
 				else:
 					pass
 
@@ -152,7 +151,7 @@ def upload_file(request):
 	# 验证身份
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('/login/')
-	
+
 	f = request.FILES.get('file', None)
 	if not f is None:
 		f_path = Utils.upload_file(f)
