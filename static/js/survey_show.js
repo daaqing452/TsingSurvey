@@ -3,6 +3,7 @@ var questions2 = {};
 
 function show(Qstring) {
 	questions2 = JSON.parse(Qstring); 
+	alert(Qstring);
 	var q_table = document.getElementById("questions");
 	for(var i = 0; i < questions2.length; i++) {
 		var q = questions2[i];

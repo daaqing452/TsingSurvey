@@ -3,6 +3,7 @@ var option_html = "<td><input type=\"text\" class=\"form-control input-sm\"></td
 var option_html_text = "<td><input type=\"text\" class=\"form-control input-sm\"></td><td><span class=\"glyphicon glyphicon-plus\" onclick=\"addOption(this)\"></span><span class=\"glyphicon glyphicon-minus\" onclick=\"delOption(this)\"></span></td>";
 var table_html = "<table class=\"table table-condensed\"></table>";
 var table_title_html = "<thead><tr><td>题目标题</td></tr><tr><td style=\"padding:0 0 0 0;\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"请输入标题\" style=\"width:100%;\" id=\"s_title\"></td></tr></thead>"
+var condition_html = "<tr><td id=\"must_answer\"><input type=\"checkbox\"> 必答</td><td id=\"jump_to\" ><input type=\"checkbox\" onclick=\"jump(1)\"> 无条件跳题</td><td id=\"jump_from\" ><input type=\"checkbox\" onclick=\"jump(2)\"> 关联逻辑</td><tr>";
 var questions = new Array();
 var current_status = {s_type: 0, action: 0, index: 0};
 var n_option_default = 4;
@@ -62,7 +63,7 @@ function createModal(){
 		case 1:{
 			//single choice
 			$("#myModal_body").empty();
-			$("#myModal_body").append(table_html,table_html);
+			$("#myModal_body").append(table_html,table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
 			$mymodal_table.eq(1).attr("id","options");
@@ -75,13 +76,17 @@ function createModal(){
 										+"<td class=\"op_col\">操作</td></tr>";
 			$mymodal_tbody.append(single_table_title);
 			$mymodal_tbody.append("<tr>"+option_html+"</tr>");
+			$mymodal_table.eq(2).attr("id","conditions");
+			$mymodal_table.eq(2).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
+			$mymodal_tbody.append(condition_html);
 			//alert(s_modal.innerHTML);
 			break;
 		}
 		case 2:{
 			//multiple choice
 			$("#myModal_body").empty();
-			$("#myModal_body").append(table_html,table_html);
+			$("#myModal_body").append(table_html,table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
 			$mymodal_table.eq(1).attr("id","options");
@@ -94,20 +99,33 @@ function createModal(){
 										+"<td class=\"op_col\">操作</td></tr>";
 			$mymodal_tbody.append(single_table_title);
 			$mymodal_tbody.append("<tr>"+option_html+"</tr>");
+			$mymodal_table.eq(2).attr("id","conditions");
+			$mymodal_table.eq(2).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
+			var condition_multi_html = "<tr><td id=\"must_answer\"><input type=\"checkbox\"> 必答</td>"+
+			                           "<td id=\"jump_to\"><input type=\"checkbox\" onclick=\"jump(1)\"> 无条件跳题</td>"+
+			                           "<td id=\"jump_from\"><input type=\"checkbox\" onclick=\"jump(2)\"> 关联逻辑</td>"+
+			                           "<td id=\"min_select\">至少选<input type=\"text\" style=\"width:40px\">项</td>"+
+			                           "<td id=\"max_select\">至多选<input type=\"text\" style=\"width:40px\">项</td><tr>";
+			$mymodal_tbody.append(condition_multi_html);
 			//alert(s_modal.innerHTML);
 			break;
 		}
 		case 3:{
 			//completion
 			$("#myModal_body").empty();
-			$("#myModal_body").append(table_html);
+			$("#myModal_body").append(table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
+			$mymodal_table.eq(1).attr("id","conditions");
+			$mymodal_table.eq(1).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
+			$mymodal_tbody.append(condition_html);
 			break;
 		}
 		case 4:{
 			$("#myModal_body").empty();
-			$("#myModal_body").append(table_html,table_html,table_html);
+			$("#myModal_body").append(table_html,table_html,table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
 			$mymodal_table.eq(1).addClass("table-striped");
@@ -122,11 +140,15 @@ function createModal(){
 			$mymodal_table.eq(2).attr("id","options");
 			$mymodal_table.eq(2).addClass("table-striped");
 			$mymodal_table.eq(2).append("<tbody></tbody>");
+			$mymodal_table.eq(3).attr("id","conditions");
+			$mymodal_table.eq(3).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(3).children().eq(0);
+			$mymodal_tbody.append(condition_html);
 			break;
 		}
 		case 5:{
 			$("#myModal_body").empty();
-			$("#myModal_body").append(table_html,table_html);
+			$("#myModal_body").append(table_html,table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
 			$mymodal_table.eq(1).attr("id","options");
@@ -136,11 +158,15 @@ function createModal(){
 			$mymodal_tbody.append("<tr><td class=\"text_col\">选项文字</td>"
 							+"<td class=\"op_col\">操作</td></tr>");
 			$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
+			$mymodal_table.eq(2).attr("id","conditions");
+			$mymodal_table.eq(2).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
+			$mymodal_tbody.append(condition_html);
 			break;
 		}
 		case 6:{
 			$("#myModal_body").empty();
-			$("#myModal_body").append(table_html,table_html,table_html);
+			$("#myModal_body").append(table_html,table_html,table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
 			$mymodal_table.eq(1).attr("id","options_row");
@@ -157,10 +183,40 @@ function createModal(){
 			$mymodal_tbody.append("<tr><td class=\"text_col\">列标题</td>"
 							+"<td class=\"op_col\">操作</td></tr>");
 			$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
+			$mymodal_table.eq(3).attr("id","conditions");
+			$mymodal_table.eq(3).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(3).children().eq(0);
+			$mymodal_tbody.append(condition_html);
 			break;
 		}
 	}
 }
+
+function jump(index){
+	if(index == 1){
+		var $jump_to_html = $("#jump_to");
+		var $check = $jump_to_html.children().eq(0);
+		if($check.prop("checked")==false){
+			$jump_to_html.empty();
+			$jump_to_html.append("<input type=\"checkbox\" onclick=\"jump(1)\"> 无条件跳题");
+		}
+		else{
+			$jump_to_html.append("<input type=\"text\" style=\"width:40px\"> 题");
+		}
+	}
+	else{
+		var $jump_from_html = $("#jump_from");
+		var $check = $jump_from_html.children().eq(0);
+		if($check.prop("checked")==false){
+			$jump_from_html.empty();
+			$jump_from_html.append("<input type=\"checkbox\" onclick=\"jump(2)\"> 关联逻辑");
+		}
+		else{
+			$jump_from_html.append("<input type=\"text\" style=\"width:40px\"> 题 <input type=\"text\" style=\"width:40px\"> 项");
+		}
+	}
+}
+
 
 function buildBox(box_type){
 	var $mymodal_table = $("#myModal_body").children(".table");
@@ -217,6 +273,11 @@ function getQFromModal(){
 			q.index = operate_index;
 			var rows = document.getElementById("options").rows;
 			q.title = document.getElementById("s_title").value;
+			if(rows[1].children[0].children[0].value == "" & rows[1].children[1].children[1].value == ""){
+				q.n_option = 0;
+				q.options = [];
+			}
+			else{
 			q.n_option = rows.length-1;
 			q.options = [];
 			for(var i = 1; i < rows.length; i ++)
@@ -235,6 +296,25 @@ function getQFromModal(){
 				}
 				q.options.push(option);
 			}
+			}
+
+			//conditions 必答 跳转 依赖关系
+			var rows = document.getElementById("conditions").rows;
+			var cols = rows[0].children;
+			q.must_answer = cols[0].children[0].checked;
+			if(cols[1].children[0].checked == true){
+				q.jump_to = Number(cols[1].children[1].value);
+			}
+			else{
+				q.jump_to = false;
+			}
+			if(cols[2].children[0].checked == true){
+				q.jump_from = [Number(cols[2].children[1].value),Number(cols[2].children[2].value)];
+			}
+			else{
+				q.jump_from = false;
+			}
+
 			return q;
 			break;
 		}
@@ -243,6 +323,11 @@ function getQFromModal(){
 			q.index = operate_index;
 			var rows = document.getElementById("options").rows;
 			q.title = document.getElementById("s_title").value;
+			if(rows[1].children[0].children[0].value == "" & rows[1].children[1].children[1].value == ""){
+				q.n_option = 0;
+				q.options = [];
+			}
+			else{
 			q.n_option = rows.length-1;
 			q.options = [];
 			for(var i = 1; i < rows.length; i ++)
@@ -253,7 +338,7 @@ function getQFromModal(){
 				option.text = cols[0].children[0].value;
 				option.image = cols[1].children[1].value;
 				option.allow_filled = cols[2].children[0].checked;
-				if(option.image != null){
+				if(option.image != ""){
 					option.option_type = 1;
 				}
 				else{
@@ -261,6 +346,27 @@ function getQFromModal(){
 				}
 				q.options.push(option);
 			}
+			}
+
+			//conditions 必答 跳转 依赖关系 至少 至多填写数量
+			var rows = document.getElementById("conditions").rows;
+			var cols = rows[0].children;
+			q.must_answer = cols[0].children[0].checked;
+			if(cols[1].children[0].checked == true){
+				q.jump_to = Number(cols[1].children[1].value);
+			}
+			else{
+				q.jump_to = false;
+			}
+			if(cols[2].children[0].checked == true){
+				q.jump_from = [Number(cols[2].children[1].value),Number(cols[2].children[2].value)];
+			}
+			else{
+				q.jump_from = false;
+			}
+			q.min_select = cols[3].children[0].value;
+			q.max_select = cols[4].children[0].value;
+
 			return q;
 			break;
 		}
@@ -268,6 +374,24 @@ function getQFromModal(){
 			var q = {s_type:3};
 			q.index = operate_index;
 			q.title = document.getElementById("s_title").value;
+
+			//conditions 必答 跳转 依赖关系
+			var rows = document.getElementById("conditions").rows;
+			var cols = rows[0].children;
+			q.must_answer = cols[0].children[0].checked;
+			if(cols[1].children[0].checked == true){
+				q.jump_to = Number(cols[1].children[1].value);
+			}
+			else{
+				q.jump_to = false;
+			}
+			if(cols[2].children[0].checked == true){
+				q.jump_from = [Number(cols[2].children[1].value),Number(cols[2].children[2].value)];
+			}
+			else{
+				q.jump_from = false;
+			}
+
 			return q;
 			break;
 		}
@@ -276,6 +400,15 @@ function getQFromModal(){
 			q.index = operate_index;
 			q.title = document.getElementById("s_title").value;
 			var rows = document.getElementById("options").rows;
+			if(rows == null){
+				q.n_option = 0;
+				q.options = [];
+			}
+			else if(rows != null & rows[1].children[0].children[0].value == ""){
+				q.n_option = 0;
+				q.options = [];
+			}
+			else{
 			q.n_option = rows.length-1;
 			q.options = [];
 			for(var i = 1; i < rows.length; i ++)
@@ -288,6 +421,25 @@ function getQFromModal(){
 				option.option_type = 0;
 				q.options.push(option);
 			}
+			}
+
+			//conditions 必答 跳转 依赖关系
+			var rows = document.getElementById("conditions").rows;
+			var cols = rows[0].children;
+			q.must_answer = cols[0].children[0].checked;
+			if(cols[1].children[0].checked == true){
+				q.jump_to = Number(cols[1].children[1].value);
+			}
+			else{
+				q.jump_to = false;
+			}
+			if(cols[2].children[0].checked == true){
+				q.jump_from = [Number(cols[2].children[1].value),Number(cols[2].children[2].value)];
+			}
+			else{
+				q.jump_from = false;
+			}
+
 			return q;
 			break;
 		}
@@ -296,6 +448,11 @@ function getQFromModal(){
 			q.index = operate_index;
 			q.title = document.getElementById("s_title").value;
 			var rows = document.getElementById("options").rows;
+			if(rows[1].children[0].children[0].value == "" ){
+				q.n_option = 0;
+				q.options = [];
+			}
+			else{
 			q.n_option = rows.length-1;
 			q.options = [];
 			for(var i = 1; i < rows.length; i ++)
@@ -308,6 +465,25 @@ function getQFromModal(){
 				option.option_type = 0;
 				q.options.push(option);
 			}
+			}
+
+			//conditions 必答 跳转 依赖关系
+			var rows = document.getElementById("conditions").rows;
+			var cols = rows[0].children;
+			q.must_answer = cols[0].children[0].checked;
+			if(cols[1].children[0].checked == true){
+				q.jump_to = Number(cols[1].children[1].value);
+			}
+			else{
+				q.jump_to = false;
+			}
+			if(cols[2].children[0].checked == true){
+				q.jump_from = [Number(cols[2].children[1].value),Number(cols[2].children[2].value)];
+			}
+			else{
+				q.jump_from = false;
+			}
+
 			return q;
 			break;
 		}
@@ -317,6 +493,12 @@ function getQFromModal(){
 			q.title = document.getElementById("s_title").value;
 			var rows = document.getElementById("options_row").rows;
 			var cols = document.getElementById("options_col").rows;
+			if(rows[1].children[0].children[0].value == "" & cols[1].children[0].children[0].value == ""){
+				q.n_option = 0;
+				q.options = [];
+				q.n_set = 0;
+			}
+			else{
 			q.n_option = (rows.length - 1) * (cols.length - 1);
 			q.n_set = rows.length-1;
 			q.options = [];
@@ -332,6 +514,25 @@ function getQFromModal(){
 					q.options.push(option);
 				}
 			}
+			}
+
+			//conditions 必答 跳转 依赖关系
+			var rows = document.getElementById("conditions").rows;
+			var cols = rows[0].children;
+			q.must_answer = cols[0].children[0].checked;
+			if(cols[1].children[0].checked == true){
+				q.jump_to = Number(cols[1].children[1].value);
+			}
+			else{
+				q.jump_to = false;
+			}
+			if(cols[2].children[0].checked == true){
+				q.jump_from = [Number(cols[2].children[1].value),Number(cols[2].children[2].value)];
+			}
+			else{
+				q.jump_from = false;
+			}
+
 			return q;
 			break;
 		}
@@ -343,7 +544,13 @@ function createHtml(q){
 	switch(q.s_type){
 		case 1:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title+"</div>";
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title;
+			if(q.must_answer == true){
+				HTMLContent += "*</div>";
+			}
+			else{
+				HTMLContent += "</div>";
+			}
 			HTMLContent += "<div><form>";
 			for(var i = 0; i < q.n_option; i ++)
 			{
@@ -367,7 +574,13 @@ function createHtml(q){
 		}
 		case 2:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." +q.title+"</div>";
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title;
+			if(q.must_answer == true){
+				HTMLContent += "*</div>";
+			}
+			else{
+				HTMLContent += "</div>";
+			}
 			HTMLContent += "<div><form>";
 			for(var i = 0; i < q.n_option; i ++)
 			{
@@ -391,7 +604,13 @@ function createHtml(q){
 		}
 		case 3:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title+"</div>";
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title;
+			if(q.must_answer == true){
+				HTMLContent += "*</div>";
+			}
+			else{
+				HTMLContent += "</div>";
+			}
 			HTMLContent += "<form>";
 			HTMLContent += "<p class=\"q_item\"><input type=\"text\"></p>";
 			HTMLContent += "</form></div>";
@@ -399,7 +618,13 @@ function createHtml(q){
 		}
 		case 4:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title+"</div>";
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title;
+			if(q.must_answer == true){
+				HTMLContent += "*</div>";
+			}
+			else{
+				HTMLContent += "</div>";
+			}
 			HTMLContent += "<div><select><option value = \"\">--请选择--</option>";
 			for(var i = 0; i < q.n_option; i ++)
 			{
@@ -411,7 +636,13 @@ function createHtml(q){
 		}
 		case 5:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title+"</div>";
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title;
+			if(q.must_answer == true){
+				HTMLContent += "*</div>";
+			}
+			else{
+				HTMLContent += "</div>";
+			}
 			HTMLContent += "<ul style=\"float:left;margin:0px;padding:0px;\">";
 			for(var i = 0; i < q.n_option; i++){
 				var option = q.options[i];
@@ -430,7 +661,13 @@ function createHtml(q){
 		}
 		case 6:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title+"</div>";
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title;
+			if(q.must_answer == true){
+				HTMLContent += "*</div>";
+			}
+			else{
+				HTMLContent += "</div>";
+			}
 			HTMLContent += "<table class=\"table \"><tbody><tr><td></td>";
 			var n_col = q.n_option / q.n_set;
 			var n_row = q.n_set;
