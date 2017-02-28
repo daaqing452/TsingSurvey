@@ -5,6 +5,7 @@ $(document).ready(function(){
 		data: {'op': 'load'},
 		success: function(data) {
 			data = JSON.parse(data);
+			status = data['status'];
 			title = data['title'];
 			qstring = data['qstring'];
 			$('input#title').val(title);
@@ -12,9 +13,16 @@ $(document).ready(function(){
 			if(qstring == ""){
 				return;
 			}
-			show(qstring);
-			getindex(qstring);
-			questions = JSON.parse(qstring);
+			if(status == 0){
+				questions = JSON.parse(qstring);
+				createPage();
+				getindex();
+			}
+			if(status == 1){
+				questions = JSON.parse(qstring);
+				showPage();
+				getindex();
+			}
 		}
 	});
 });

@@ -11,10 +11,10 @@ var image_size_lim = 4096 * 1024;
 var q_table = document.getElementById("questions");
 var operate_index = current_status.index;
 
-function getindex(Qstring){
+function getindex(){
 	var q_table = document.getElementById("questions");
 	current_status.index = document.getElementById('questions').rows.length;
-	
+	operate_index = current_status.index;
 }
 
 function myclick(){
@@ -575,6 +575,24 @@ function createHtml(q){
 		case 2:{
 			var index = q.index;
 			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title;
+			if(q.s_type == 2){
+				var flag = 0;
+				var HTMLtemp = "";
+				if(q.min_select != ""){
+					HTMLtemp += "至少选" + q.min_select+"项"; 
+					flag = 1;
+				}
+				if(q.max_select != ""){
+					if(flag == 1){
+						HTMLtemp += ",";
+					}
+					HTMLtemp += "至多选" + q.max_select+"项";
+					flag = 2;
+				}
+				if(flag != 0){
+					HTMLContent+="("+HTMLtemp+")";
+				}
+			}
 			if(q.must_answer == true){
 				HTMLContent += "*</div>";
 			}
@@ -733,6 +751,14 @@ function commitS(){
 		current_status.index ++;
 		operate_index = current_status.index;
 	}
+}
+
+function createPage(){
+	for(var i = 0; i < questions.length; i++){
+		var new_row = q_table.insertRow(-1);
+		new_row.innerHTML = createHtml(questions[i]);
+	}
+
 }
 
 function addOption(b)

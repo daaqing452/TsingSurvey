@@ -59,7 +59,7 @@ def survey(request, qid):
 			else:
 				# 加载问卷请求
 				if op == 'load':
-					return HttpResponse(json.dumps({'title': questionaire.title, 'qstring': questionaire.questions}))
+					return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions}))
 				# 修改问卷请求
 				if op == 'save':
 					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
@@ -98,7 +98,7 @@ def survey(request, qid):
 
 			# 加载问卷请求
 			if op == 'load':
-				return HttpResponse(json.dumps({'title': questionaire.title, 'qstring': questionaire.questions}))
+				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions}))
 			# 提交问卷请求
 			if op == 'submit':
 				answeraire = Answeraire.objects.create(qid=qid, uid=user.id, update_time=timezone.now(), answers=request.POST.get('astring'))
@@ -123,7 +123,7 @@ def survey(request, qid):
 			else:
 				# 加载问卷请求
 				if op == 'load':
-					return HttpResponse(json.dumps({'title': questionaire.title, 'qstring': questionaire.questions}))
+					return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions}))
 
 		# 报告生成状态
 		elif status == 3:
