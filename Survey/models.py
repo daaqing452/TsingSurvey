@@ -16,9 +16,8 @@ class Questionaire(models.Model):
 class Answeraire(models.Model):
 	qid = models.IntegerField()
 	uid = models.IntegerField()
-	create_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
-	update_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
 	submit_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
+	time_consume = models.IntegerField(default=0)
 	answers = models.TextField(default='')
 
 class Report(models.Model):

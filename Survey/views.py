@@ -101,7 +101,7 @@ def survey(request, qid):
 				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions}))
 			# 提交问卷请求
 			if op == 'submit':
-				answeraire = Answeraire.objects.create(qid=qid, uid=user.id, update_time=timezone.now(), answers=request.POST.get('astring'))
+				answeraire = Answeraire.objects.create(qid=qid, uid=user.id, submit_time=timezone.now(), answers=request.POST.get('astring'))
 				answeraire.save()
 				qid_dict[str(qid)] = 1
 				suser.qid_list = json.dumps(qid_dict)

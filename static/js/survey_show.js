@@ -435,7 +435,18 @@ function submit(){
 
 	if(legal){
 		var Astring = JSON.stringify(answers);
-		alert(Astring);
+		if (confirm('Do you confirm to submit?')) {
+			$.ajax({
+				url: window.location.href,
+				type: 'POST',
+				data: {'op': 'submit', 'astring': Astring, 'credit': 10},
+				success: function(data) {
+					data = JSON.parse(data);
+					alert('Submit succesful');
+					window.location.href = '/bonus/';
+				}
+			});
+		}
 	}
 	else{
 		alert(wrong_info);

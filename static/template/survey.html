@@ -137,7 +137,9 @@
 	{% endifequal %}
 
 	{% ifequal status 2 %}
-	<button id="analysis_btn" class="btn btn-success btn-sm" onclick="analysis()" style="float:right"> Generate the Report </button>
+	<button id="export_btn" class="btn btn-success btn-sm" onclick="exportt()" style="float:right"> Export </button>
+	<a id='download'> </a>
+	<button id="analysis_btn" class="btn btn-success btn-sm" onclick="analysis()" style="float:right" disabled='disabled'> Generate the Report </button>
 	{% endifequal %}
 
 		</div>

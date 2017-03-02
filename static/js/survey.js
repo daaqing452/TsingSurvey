@@ -40,3 +40,18 @@ function analysis() {
 		}
 	});
 }
+
+function exportt() {
+	var qid = $('p#qid').attr('qid');
+	$.ajax({
+		url: '/analysis/',
+		type: 'POST',
+		data: {'op': 'export', 'qid': qid},
+		success: function(data) {
+			data = JSON.parse(data);
+			export_path = '/' + data['export_path'];
+			$('a#download').attr('href', export_path);
+			document.getElementById("download").click();
+		}
+	});
+}
