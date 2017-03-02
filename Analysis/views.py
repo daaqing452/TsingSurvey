@@ -155,12 +155,12 @@ def search(request):
 				d['context_left'], d['context_mid'], d['context_right'] = context(questionaire.title, len(keyword), p)
 				result.append(d)
 				continue
-			p = questionaire.question_list.find(keyword)
+			p = questionaire.questions.find(keyword)
 			if p != -1:
 				d['id'] = questionaire.id
 				d['title'] = questionaire.title
 				d['update_time'] = str(questionaire.update_time)[:19]
-				d['context_left'], d['context_mid'], d['context_right'] = context(questionaire.question_list, len(keyword), p)
+				d['context_left'], d['context_mid'], d['context_right'] = context(questionaire.questions, len(keyword), p)
 				result.append(d)
 		return HttpResponse(json.dumps({'result': result}))
 
