@@ -3,7 +3,7 @@
 <head>
 	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title> Administrators </title>
+	<title> 管理员 </title>
 	<link href='{% static 'bootstrap/css/bootstrap.min.css' %}' rel="stylesheet">
 	<link href='{% static 'css/survey.css' %}' rel="stylesheet">
 	<script src='{% static 'js/jquery-3.1.1.min.js' %}'> </script>
@@ -30,28 +30,28 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li ><a href='/index/'> Index </a></li>
-  		<li ><a href='/profile/{{ user.id }}'> Profile </a></li>
+        <li ><a href='/index/'> 首页 </a></li>
+  		<li ><a href='/profile/{{ user.id }}'> 个人资料 </a></li>
   		{% if user.is_superuser %}
-		<li class="active"><a href='/admin_list/'> Administrators </a> </li>
+		<li class="active"><a href='/admin_list/'> 管理员列表 </a> </li>
   		{% endif %}
   		{% if user.is_staff %}
-    	<li ><a href='/user_list/'> Users </a> </li>
-    	<li ><a href='/search/'> Search </a></li>
+    	<li ><a href='/user_list/'> 用户列表 </a> </li>
+    	<li ><a href='/search/'> 搜索 </a></li>
   		{% endif %}
-  		<li ><a href='/logout/'> Logout </a> </li>
+  		<li ><a href='/logout/'> 登出 </a> </li>
   	
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
 <div class="col-md-offset-1 col-md-10 ">
-<h3 class="text-center"> Administrators </h3>
+<h3 class="text-center"> 管理员列表 </h3>
 <table class="table table-hover" id='admin_list'>
 	<tr>
 		<td></td>
-		<td align=center> Student ID </td>
-		<td align=center> Name </td>
+		<td align=center> 学号 </td>
+		<td align=center> 姓名 </td>
 	</tr>
 	<tr type='clone' style='display:none'>
 		<td align=center> <input type='checkbox' username='' /> </td>
@@ -64,9 +64,9 @@
 		<td align=center> remove_b </td>
 	</tr>
 </table>
-<input type='text' id='add' name='username' placeholder="Enter student ID"  />
-<button class="btn btn-success " id='add'> Add </button>
-<button  class="btn btn-danger " style="float:right" id='delete'> Delete </button>
+<input type='text' id='add' name='username' placeholder="输入学号"  />
+<button class="btn btn-success " id='add'> 添加 </button>
+<button  class="btn btn-danger " style="float:right" id='delete'> 删除 </button>
 
 
 
