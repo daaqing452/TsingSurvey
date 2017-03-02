@@ -101,7 +101,15 @@ def survey(request, qid):
 				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions}))
 			# 提交问卷请求
 			if op == 'submit':
-				answeraire = Answeraire.objects.create(qid=qid, uid=user.id, submit_time=timezone.now(), answers=request.POST.get('astring'))
+				# 获取信息
+				if request.META.has_key('HTTP_X_FORWARDED_FOR'):  
+				    ip = request.META['HTTP_X_FORWARDED_FOR']  
+				else:  
+				    ip = request.META['REMOTE_ADDR']
+				agent = request.META.get('HTTP_USER_AGENT', 'unknown')
+				os = request.META.get('OS', 'unknown')
+
+				answeraire = Answeraire.objects.create(qid=qid, uid=user.id, submit_time=timezone.now(), ip=ip, agent=agent, os=os, answers=request.POST.get('astring'))
 				answeraire.save()
 				qid_dict[str(qid)] = 1
 				suser.qid_list = json.dumps(qid_dict)

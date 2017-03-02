@@ -17,7 +17,9 @@ class Answeraire(models.Model):
 	qid = models.IntegerField()
 	uid = models.IntegerField()
 	submit_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
-	time_consume = models.IntegerField(default=0)
+	ip = models.CharField(max_length=64, default='unknown')
+	agent = models.CharField(max_length=1024, default='unknown')
+	os = models.CharField(max_length=64, default='unknown')
 	answers = models.TextField(default='')
 
 class Report(models.Model):
