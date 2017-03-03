@@ -126,7 +126,7 @@ $(document).ready(function(){
 
 	//	删除用户
 	$('button#delete').click(function(){
-		if (confirm('Do you confirm to delete?')) {
+		if (confirm('确认删除？')) {
 			var username_list = new Array();
 			$('input[username]:checked').each(function(){
 				username_list.push($(this).attr('username'));

@@ -11,3 +11,19 @@ $(document).ready(function(){
 		});
 	});
 });
+
+function delete_questionaire(obj) {
+	if (confirm('确认删除？')) {
+		var td = $(obj);
+		var qid = td.attr('qid');
+		$.ajax({
+			url: '/survey/' + qid + '/',
+			type: 'POST',
+			data: {'op': 'delete'},
+			success: function(data) {
+				data = JSON.parse(data);
+				td.parent().remove();
+			}
+		});
+	}
+}

@@ -35,6 +35,7 @@ def survey(request, qid):
 		questionaire.questions = qstring
 		questionaire.update_time = timezone.now()
 
+	# 添加新问卷
 	if op == 'create':
 		now = timezone.now()
 		questionaire = Questionaire.objects.create(status=0, create_time=now, update_time=now, founder=request.user.id)
@@ -50,6 +51,15 @@ def survey(request, qid):
 		status = questionaire.status
 		suser = SUser.objects.get(uid=user.id)
 
+		# 删除问卷
+		if op == 'delete':
+			questionaire.delete();
+			return HttpResponse(json.dumps({}));
+
+		# 加载问卷请求
+		if op == 'load':
+			return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions}))
+		
 		# 问卷修改状态
 		if status == 0:
 			# 修改中管理员可见
@@ -57,9 +67,6 @@ def survey(request, qid):
 				rdata['viewable'] = 0
 				rdata['info'] = 'Not found 00'
 			else:
-				# 加载问卷请求
-				if op == 'load':
-					return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions}))
 				# 修改问卷请求
 				if op == 'save':
 					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
@@ -96,9 +103,6 @@ def survey(request, qid):
 					permission_submit = 1
 			rdata['permission_submit'] = permission_submit
 
-			# 加载问卷请求
-			if op == 'load':
-				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions}))
 			# 提交问卷请求
 			if op == 'submit':
 				# 获取信息
@@ -129,9 +133,7 @@ def survey(request, qid):
 				rdata['viewable'] = 0
 				rdata['info'] = 'Closed'
 			else:
-				# 加载问卷请求
-				if op == 'load':
-					return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions}))
+				pass
 
 		# 报告生成状态
 		elif status == 3:
