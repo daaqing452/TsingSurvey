@@ -1,5 +1,5 @@
 //for design website
-var option_html = "<td><input type=\"text\" class=\"form-control input-sm\"></td><td><input type=\"file\" id=\"image\" onchange=\"uploadImage(this)\"><input type=\"hidden\" id=\"image_fn\"><label id=\"fn_display\"></label></td><td><input type=\"checkbox\" name=\"single\"></td><td><span class=\"glyphicon glyphicon-plus\" onclick=\"addOption(this)\"></span><span class=\"glyphicon glyphicon-minus\" onclick=\"delOption(this)\"></span></td>"
+var option_html = "<td><input type=\"text\" class=\"form-control input-sm\"></td><td><input type=\"file\" id=\"image\" onchange=\"uploadImage(this)\"><input type=\"hidden\" id=\"image_fn\"><p id=\"file_name\"></p></td><td><input type=\"checkbox\" name=\"single\"></td><td><span class=\"glyphicon glyphicon-plus\" onclick=\"addOption(this)\"></span><span class=\"glyphicon glyphicon-minus\" onclick=\"delOption(this)\"></span></td>"
 var option_html_text = "<td><input type=\"text\" class=\"form-control input-sm\"></td><td><span class=\"glyphicon glyphicon-plus\" onclick=\"addOption(this)\"></span><span class=\"glyphicon glyphicon-minus\" onclick=\"delOption(this)\"></span></td>";
 var table_html = "<table class=\"table table-condensed\"></table>";
 var table_title_html = "<thead><tr><td>题目标题</td></tr><tr><td style=\"padding:0 0 0 0;\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"请输入标题\" style=\"width:100%;\" id=\"s_title\"></td></tr></thead>"
@@ -38,7 +38,7 @@ function save(){
 		data: {'op': 'save', 'title': title, 'qstring': Qstring},
 		success: function(data) {
 			data = JSON.parse(data);
-			alert('Save successful');
+			alert('暂存成功!');
 		}
 	});
 }
@@ -704,13 +704,239 @@ function createHtml(q){
 			break;
 		}
 	}
-	HTMLContent += "<br><div><button class=\"btn btn-primary btn-sm\" onclick=\"addQAfter("+q.index.toString()+")\">插入</button><button class=\"btn btn-danger btn-sm\" onclick=\"deleteQ("+q.index.toString()+")\">删除</button></div><hr>";
+	HTMLContent += "<br><div><button class=\"btn btn-primary btn-sm\" onclick=\"addQAfter("+q.index.toString()+")\">插入</button><button class=\"btn btn-danger btn-sm\" onclick=\"deleteQ("+q.index.toString()+")\">删除</button><button data-toggle=\"modal\" data-target=\"#myModal\" class=\"btn btn-warning btn-sm\" onclick=\"modifyQ("+q.index.toString()+")\">修改</button></div><hr>";
 	HTMLContent += "</td>";
 	return HTMLContent;
 }
 
 function addQAfter(index){
 	alert("请在上方选择题型");
+	operate_index = index+1;
+}
+
+function modifyQ(index){
+	var q = questions[index];
+	current_status.action = 2;
+	current_status.s_type = q.s_type;
+	switch(q.s_type){
+		case 1:{
+			//single choice
+			$("#myModal_body").empty();
+			$("#myModal_body").append(table_html,table_html,table_html);
+			var $mymodal_table = $("#myModal_body").children(".table");
+			$mymodal_table.eq(0).append(table_title_html);
+			$("#s_title").val(q.title);
+			$mymodal_table.eq(1).attr("id","options");
+			$mymodal_table.eq(1).addClass("table-striped");
+			$mymodal_table.eq(1).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
+			var single_table_title = "<tr><td class=\"text_col\">选项文字</td>"
+										+"<td class=\"img_col\">图片</td>"
+										+"<td class=\"fill_col\">允许填空</td>"
+										+"<td class=\"op_col\">操作</td></tr>";
+			$mymodal_tbody.append(single_table_title);
+			for(var i = 0; i < q.n_option; i++){
+				$mymodal_tbody.append("<tr>"+option_html+"</tr>");
+			}
+			for(var i = 0; i < q.n_option; i++){
+				var option = q.options[i];
+				if(option.option_type == 0){
+					$mymodal_tbody.find("input[type=\"text\"]").eq(i).val(option.text);
+				}
+				else{
+					$mymodal_tbody.find("input[id=\"image_fn\"]").eq(i).val(option.image);
+					$mymodal_tbody.find("p[id=\"file_name\"]").eq(i).text("已选择"+option.image);
+				}
+				if(option.allow_filled == true){
+					$mymodal_tbody.find("input[type=\"checkbox\"]").eq(i).prop('checked', true);
+				}
+
+			}
+			$mymodal_table.eq(2).attr("id","conditions");
+			$mymodal_table.eq(2).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
+			$mymodal_tbody.append(condition_html);
+			break;
+		}
+		case 2:{
+			$("#myModal_body").empty();
+			$("#myModal_body").append(table_html,table_html,table_html);
+			var $mymodal_table = $("#myModal_body").children(".table");
+			$mymodal_table.eq(0).append(table_title_html);
+			$("#s_title").val(q.title);
+			$mymodal_table.eq(1).attr("id","options");
+			$mymodal_table.eq(1).addClass("table-striped");
+			$mymodal_table.eq(1).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
+			var single_table_title = "<tr><td class=\"text_col\">选项文字</td>"
+										+"<td class=\"img_col\">图片</td>"
+										+"<td class=\"fill_col\">允许填空</td>"
+										+"<td class=\"op_col\">操作</td></tr>";
+			$mymodal_tbody.append(single_table_title);
+			for(var i = 0; i < q.n_option; i++){
+				$mymodal_tbody.append("<tr>"+option_html+"</tr>");
+			}
+			for(var i = 0; i < q.n_option; i++){
+				var option = q.options[i];
+				if(option.option_type == 0){
+					$mymodal_tbody.find("input[type=\"text\"]").eq(i).val(option.text);
+				}
+				else{
+					$mymodal_tbody.find("input[id=\"image_fn\"]").eq(i).val(option.image);
+					$mymodal_tbody.find("p[id=\"file_name\"]").eq(i).text("已选择"+option.image);
+				}
+				if(option.allow_filled == true){
+					$mymodal_tbody.find("input[type=\"checkbox\"]").eq(i).prop('checked', true);
+				}
+
+			}
+			$mymodal_table.eq(2).attr("id","conditions");
+			$mymodal_table.eq(2).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
+			var condition_multi_html = "<tr><td id=\"must_answer\"><input type=\"checkbox\"> 必答</td>"+
+			                           "<td id=\"jump_to\"><input type=\"checkbox\" onclick=\"jump(1)\"> 无条件跳题</td>"+
+			                           "<td id=\"jump_from\"><input type=\"checkbox\" onclick=\"jump(2)\"> 关联逻辑</td>"+
+			                           "<td id=\"min_select\">至少选<input type=\"text\" style=\"width:40px\">项</td>"+
+			                           "<td id=\"max_select\">至多选<input type=\"text\" style=\"width:40px\">项</td><tr>";
+			$mymodal_tbody.append(condition_multi_html);
+			if(q.min_select != ""){
+				$mymodal_tbody.find("#min_select").children("input[type=\"text\"]").val(q.min_select);
+			}
+			if(q.max_select != ""){
+				$mymodal_tbody.find("#max_select").children("input[type=\"text\"]").val(q.max_select);
+			}
+			break;
+		}
+		case 3:{
+			$("#myModal_body").empty();
+			$("#myModal_body").append(table_html,table_html);
+			var $mymodal_table = $("#myModal_body").children(".table");
+			$mymodal_table.eq(0).append(table_title_html);
+			$("#s_title").val(q.title);
+			$mymodal_table.eq(1).attr("id","conditions");
+			$mymodal_table.eq(1).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
+			$mymodal_tbody.append(condition_html);
+			break;
+		}
+		case 4:{
+			$("#myModal_body").empty();
+			$("#myModal_body").append(table_html,table_html,table_html,table_html);
+			var $mymodal_table = $("#myModal_body").children(".table");
+			$mymodal_table.eq(0).append(table_title_html);
+			$("#s_title").val(q.title);
+			$mymodal_table.eq(1).addClass("table-striped");
+			$mymodal_table.eq(1).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
+			$mymodal_tbody.append("<tr><td><input type=\"radio\" name=\"single\" onclick=\"buildBox(1)\">性别</td>"+
+									"<td><input type=\"radio\" name=\"single\" onclick=\"buildBox(2)\">院系</td>"+
+									"<td><input type=\"radio\" name=\"single\" onclick=\"buildBox(3)\">就读学位</td>"+
+									"<td><input type=\"radio\" name=\"single\" onclick=\"buildBox(4)\">年级</td>"+
+									"<td><input type=\"radio\" name=\"single\" onclick=\"buildBox(5)\">自定义</td>"+
+									"</tr>");
+			$mymodal_table.eq(2).attr("id","options");
+			$mymodal_table.eq(2).addClass("table-striped");
+			$mymodal_table.eq(2).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
+			$mymodal_tbody.empty();
+			$mymodal_tbody.append("<tr><td class=\"text_col\">选项文字</td>"
+							+"<td class=\"op_col\">操作</td></tr>");
+			for(var i = 0; i < q.n_option; i++){
+				$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
+			}
+			for(var i = 0; i < q.n_option; i++){
+				var option = q.options[i];
+				$('.option_text').eq(i).children().eq(0).children().eq(0).prop("value",option.text);
+			}
+			$mymodal_table.eq(3).attr("id","conditions");
+			$mymodal_table.eq(3).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(3).children().eq(0);
+			$mymodal_tbody.append(condition_html);
+			break;
+		}
+		case 5:{
+			$("#myModal_body").empty();
+			$("#myModal_body").append(table_html,table_html,table_html);
+			var $mymodal_table = $("#myModal_body").children(".table");
+			$mymodal_table.eq(0).append(table_title_html);
+			$("#s_title").val(q.title);
+			$mymodal_table.eq(1).attr("id","options");
+			$mymodal_table.eq(1).addClass("table-striped");
+			$mymodal_table.eq(1).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
+			$mymodal_tbody.append("<tr><td class=\"text_col\">选项文字</td>"
+							+"<td class=\"op_col\">操作</td></tr>");
+			for(var i = 0; i < q.n_option; i++){
+				$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
+			}
+			for(var i = 0; i < q.n_option; i++){
+				var option = q.options[i];
+				$('.option_text').eq(i).children().eq(0).children().eq(0).prop("value",option.text);
+			}
+			$mymodal_table.eq(2).attr("id","conditions");
+			$mymodal_table.eq(2).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
+			$mymodal_tbody.append(condition_html);
+			break;
+		}
+		case 6:{
+			$("#myModal_body").empty();
+			$("#myModal_body").append(table_html,table_html,table_html,table_html);
+			var $mymodal_table = $("#myModal_body").children(".table");
+			$mymodal_table.eq(0).append(table_title_html);
+			$("#s_title").val(q.title);
+			$mymodal_table.eq(1).attr("id","options_row");
+			$mymodal_table.eq(1).addClass("table-striped");
+			$mymodal_table.eq(1).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
+			$mymodal_tbody.append("<tr><td class=\"text_col\">行标题</td>"
+							+"<td class=\"op_col\">操作</td></tr>");
+			var row_n = Number(q.n_set);
+			var col_n = Number(q.n_option/q.n_set);
+			for(var i = 0; i < row_n; i++){
+				$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
+			}
+			for(var i = 0; i < row_n; i++){
+				var option = q.options[i*col_n];
+				$("#options_row").find('.option_text').eq(i).children().eq(0).children().eq(0).prop("value",option.text);
+			}
+			$mymodal_table.eq(2).attr("id","options_col");
+			$mymodal_table.eq(2).addClass("table-striped");
+			$mymodal_table.eq(2).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
+			$mymodal_tbody.append("<tr><td class=\"text_col\">列标题</td>"
+							+"<td class=\"op_col\">操作</td></tr>");
+			for(var i = 0; i < col_n; i++){
+				$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
+			}
+			for(var i = 0; i < col_n; i++){
+				var option = q.options[i];
+				$("#options_col").find('.option_text').eq(i).children().eq(0).children().eq(0).prop("value",option.image);
+			}
+			$mymodal_table.eq(3).attr("id","conditions");
+			$mymodal_table.eq(3).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(3).children().eq(0);
+			$mymodal_tbody.append(condition_html);
+			break;
+		}
+	}
+	if(q.must_answer == true){
+		$mymodal_tbody.find("#must_answer").children().eq(0).prop("checked",true);
+	}
+	if(q.jump_to != false){
+		$jump_to_html = $mymodal_tbody.find("#jump_to").children().eq(0);
+		$jump_to_html.prop("checked",true);
+		jump(1);
+		$jump_to_html.parent().find("input[type=\"text\"]").val(q.jump_to);
+
+	}
+	if(q.jump_from != false){
+		$jump_from_html = $mymodal_tbody.find("#jump_from").children().eq(0);
+		$jump_from_html.prop("checked",true);
+		jump(2);
+		$jump_from_html.parent().find("input[type=\"text\"]").eq(0).val(q.jump_from[0]);
+		$jump_from_html.parent().find("input[type=\"text\"]").eq(1).val(q.jump_from[1]);
+	}
 	operate_index = index+1;
 }
 
@@ -727,6 +953,10 @@ function deleteQ(index){
 	operate_index = current_status.index;
 }
 
+function closeModal(){
+	operate_index = current_status.index;
+}
+
 function commitS(){
 	var q = getQFromModal();
 	if(!q) return;
@@ -736,7 +966,11 @@ function commitS(){
 		var new_row = q_table.insertRow(-1);
 		new_row.innerHTML = createHtml(q);
 		current_status.index ++;
+		if(current_status.action == 2){
+			deleteQ(operate_index-1);
+		}
 		operate_index = current_status.index;
+		return;
 	}
 	else{
 		questions.splice(operate_index,0,q);
@@ -748,8 +982,12 @@ function commitS(){
 			questions[i].index ++;
 			rows[i].innerHTML = createHtml(questions[i]);
 		}
+		if(current_status.action == 2){
+			deleteQ(operate_index-1);
+		}
 		current_status.index ++;
 		operate_index = current_status.index;
+		return;
 	}
 }
 
@@ -775,23 +1013,6 @@ function addOption(b)
 	else{
 		new_row.innerHTML = option_html;
 	}
-	/*
-	if(current_status.qtype == 41)
-		new_row.innerHTML = mat_option_html;
-	else
-	{
-		new_row.innerHTML = option_html;
-		var multi_min = document.getElementById("multi_min");
-		var multi_max = document.getElementById("multi_max");
-		var len = multi_min.length;
-		var x = document.createElement("option");
-		var y =document.createElement("option");
-		x.text = len.toString();
-		y.text = len.toString();
-		multi_min.add(x, null);
-		multi_max.add(y, null);
-	}
-	*/
 }
 function delOption(b)
 {
@@ -804,13 +1025,6 @@ function delOption(b)
 		return;
 	}
 	op_table.deleteRow(current_index);
-	/*
-	var multi_min = document.getElementById("multi_min");
-	var multi_max = document.getElementById("multi_max");
-	var len = multi_max.length;
-	multi_min.remove(len - 1);
-	multi_max.remove(len - 1);
-	*/
 }
 
 function uploadImage(x)
