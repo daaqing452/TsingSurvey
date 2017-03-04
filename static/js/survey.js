@@ -8,6 +8,7 @@ $(document).ready(function(){
 			status = data['status'];
 			title = data['title'];
 			qstring = data['qstring'];
+			load_time = new Date().getTime();
 			$('input#title').val(title);
 			$('p#title').html(title);
 			if(qstring == ""){
@@ -19,6 +20,11 @@ $(document).ready(function(){
 				getindex();
 			}
 			if(status == 1){
+				questions = JSON.parse(qstring);
+				showPage();
+				getindex();
+			}
+			if(status == 2){
 				questions = JSON.parse(qstring);
 				showPage();
 				getindex();

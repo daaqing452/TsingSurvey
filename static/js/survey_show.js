@@ -1,8 +1,19 @@
-var wrong_info = ""
+var wrong_info = "";
+var load_time = 0;
+var submit_time = 0;
 function createSurveyHtml(q){
 	var index = q.index;
 	var HTMLContent = "<td id=\"Q_"+(index + 1).toString()+"\" jump_to=\""+q.jump_to+"\">";
-	HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title;
+	if(q.s_type == 7){
+		HTMLContent += "<div><font class=\"h3\">"+(index + 1).toString()+ ".</font>";
+		for(var i = 0; i < q.n_option; i++){
+			var option = q.options[i];
+			HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\">&nbsp&nbsp";
+		}
+	}
+	else{
+		HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title;
+	}
 	if(q.s_type == 2){
 		var flag = 0;
 		var HTMLtemp = "";
@@ -420,7 +431,22 @@ function submit(){
 				}
 				break;
 			}
+			case 7:{
+				a.min_select = -1;
+				a.max_select = -1;
+				a.n_set = q.n_option;
+				var n_option = q.n_option;
+				var id_str = "Q_" + (i + 1);
+				for(var j = 0; j < n_option; j++){
+					var text = $("#"+id_str).find("input[type=\"text\"]").eq(j).val();
+					if(text != ""){
+						a.select.push([j,0,text,""]);
+					}
+				}
+				break;
+			}
 		}
+
 		a.show = true;
 		if($("#Q_"+(i+1).toString()).parents("tr").is(":hidden")){
 			a.show = false;
@@ -435,14 +461,16 @@ function submit(){
 
 	if(legal){
 		var Astring = JSON.stringify(answers);
-		if (confirm('Do you confirm to submit?')) {
+		submit_time = new Date().getTime();
+		var dwell_time = submit_time - load_time;
+		if (confirm('Do you comfirm to submit?')) {
 			$.ajax({
 				url: window.location.href,
 				type: 'POST',
-				data: {'op': 'submit', 'astring': Astring, 'credit': 10},
+				data: {'op': 'submit', 'astring': Astring, 'credit': 10, 'dwell_time': dwell_time},
 				success: function(data) {
 					data = JSON.parse(data);
-					alert('Submit succesful');
+					alert('提交成功');
 					window.location.href = '/bonus/';
 				}
 			});
@@ -454,45 +482,6 @@ function submit(){
 	}
 }
 
-function submit_backup(){
-	for(var i = 0; i < questions2.length; i++){
-		var q = questions2[i];
-		var a = {s_type:q.s_type};
-		a.title = q.title;
-		if(q.s_type == 1 || q.s_type == 2){
-			a.select = [];
-			var n_option = q.n_option;
-			for(var j =0; j < n_option; j++){
-				var id_str = "Q_" + i.toString() + "_" + j.toString();
-				var is_selected = $('#'+id_str).get(0).checked;
-				if(is_selected == true){
-					a.select.push(j);
-				}
-			}
-		}
-		if(q.s_type == 3){
-			var id_str = "Q_" + i.toString() + "_0";
-			a.text = $('#'+id_str).get(0).value;
-		}
-		answers.push(a);
-	}
-	//put Astring into database
-	var Astring = JSON.stringify(answers);
-	
-	if (confirm('Do you confirm to submit?')) {
-		$.ajax({
-			url: window.location.href,
-			type: 'POST',
-			data: {'op': 'submit', 'astring': Astring, 'credit': 10},
-			success: function(data) {
-				data = JSON.parse(data);
-				alert('Submit succesful');
-				window.location.href = '/bonus/';
-			}
-		});
-	}
-	
-}
 
 function closeup() {
 	if (confirm('Do you comfirm to close?')) {
