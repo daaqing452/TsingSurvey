@@ -7,29 +7,30 @@ def username_to_password(username):
 def remake_questionaire(questionaire, qid_dict):
 	d = {}
 	d['id'] = questionaire.id
-	
+	d['create_time'] = questionaire.create_time
+
 	if questionaire.title == '':
-		d['title'] = '（No title）'
+		d['title'] = '（无标题）'
 	else:
 		d['title'] = questionaire.title
 
 	if not str(questionaire.id) in qid_dict:
 		d['fill'] = ''
 	elif qid_dict[str(questionaire.id)] == 0:
-		d['fill'] = 'Not filled'
+		d['fill'] = '尚未填写'
 	else:
-		d['fill'] = 'Filled'
+		d['fill'] = '已填写'
 	
 	if questionaire.status == 0:
-		d['status'] = 'Not released'
+		d['status'] = '尚未发布'
 	elif questionaire.status == 1:
-		d['status'] = 'Released'
+		d['status'] = '已发布'
 	elif questionaire.status == 2:
-		d['status'] = 'Finish'
+		d['status'] = '已关闭'
 	elif questionaire.status == 3:
-		d['status'] = 'Report'
+		d['status'] = '已生成报告'
 	else:
-		d['status'] = 'Error'
+		d['status'] = '错误'
 	
 	return d
 

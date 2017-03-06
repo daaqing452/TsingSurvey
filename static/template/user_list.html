@@ -97,19 +97,10 @@
 <table class="table">
 	<tr>
 	<td>
-		<button class="btn btn-sm btn-primary" id='add_statistic'> 样本统计 </button>
-		<div id='statistic'>
-			<div type='clone' style='display:none'>
-				<select> </select>
-				<button class="btn btn-sm btn-success" id='show_statistic' onclick='show_statistic(this)'> 显示统计 </button>
-				<span> </span>
-			</div>
-		</div>
-	</td>
-	<td>
 		<button class="btn btn-sm btn-warning" id='add_constraint'> 添加筛选样本条件 </button>
 		<button class="btn btn-sm btn-warning" id='auto_sample'> 自动筛选 </button>
-		样本数上限 <input type='text' id='upperbound'/>
+		<br/>
+		样本数上限 <input type='text' id='upperbound' style='width:120px'/>
 		<div id='constraint'>
 			<div type='clone' style='display:none'>
 				<select onchange='constraint_select_change(this)'>
@@ -117,6 +108,16 @@
 				</select>
 				<input type='checkbox' name='checkbox_clone' style='display:none'/>
 				<span name='span_clone' style='display:none'> </span>
+			</div>
+		</div>
+	</td>
+	<td align='right'>
+		<button class="btn btn-sm btn-primary" id='add_statistic'> 样本统计 </button>
+		<div id='statistic'>
+			<div type='clone' style='display:none'>
+				<span> </span>
+				<button class="btn btn-sm btn-success" id='show_statistic' onclick='show_statistic(this)'> 显示统计 </button>
+				<select> </select>
 			</div>
 		</div>
 	</td>
