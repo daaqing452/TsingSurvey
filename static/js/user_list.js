@@ -65,9 +65,10 @@ function constraint_select_change(obj) {
 }
 
 $(document).ready(function(){
+
 	//	加载
 	$.ajax({
-		url: window.location.pathname,
+		url: window.location.href,
 		type: 'POST',
 		data: {'op': 'load'},
 		success: function(data) {

@@ -8,8 +8,10 @@
 	<script src='{% static 'js/jquery-3.1.1.min.js' %}'> </script>
 	<script src='{% static 'js/csrf.js' %}'> </script>
 	<script src='{% static 'js/header_footer.js' %}'> </script>
-	<script src='{% static 'js/user_list.js' %}'> </script>
 	<script src='{% static 'bootstrap/js/bootstrap.min.js' %}'> </script>
+	<script src='{% static 'js/jpage.js' %}'> </script>
+	<link href='{% static 'css/jpage.css' %}' rel='stylesheet'>
+	<script src='{% static 'js/user_list.js' %}'> </script>
 </head>
 
 <body style="background-color:#F5FFFA;">
@@ -53,7 +55,7 @@
 		<form enctype='multipart/form-data' action='/user_list/' method='post'>
 		{% csrf_token %}
 		<td width="5%">
-		<input type='submit' value='上传名单' class="btn btn-success btn-sm" />
+		<input type='submit' value='上传名单' class="btn btn-info btn-sm" />
 		</td>
 		<td width="5%">
 		<input type='file' class="btn btn-sm" name='upload'>
@@ -93,6 +95,17 @@
 	</tr>
 </table>
 
+<div class="tcdPageCode" page_max='{{ page_max }}' page_current='{{ page_current }}'>
+</div>
+<script>
+	$(".tcdPageCode").createPage({
+        pageCount: $(".tcdPageCode").attr('page_max'),
+        current: $(".tcdPageCode").attr('page_current'),
+        backFn:function(page_n){
+            window.location.href = '/user_list/?page=' + page_n;
+        }
+    });
+</script>
 
 <table class="table">
 	<tr>
@@ -116,7 +129,7 @@
 		<div id='statistic'>
 			<div type='clone' style='display:none'>
 				<span> </span>
-				<button class="btn btn-sm btn-success" id='show_statistic' onclick='show_statistic(this)'> 显示统计 </button>
+				<button class="btn btn-sm btn-primary" id='show_statistic' onclick='show_statistic(this)'> 显示统计 </button>
 				<select> </select>
 			</div>
 		</div>
