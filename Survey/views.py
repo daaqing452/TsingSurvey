@@ -113,7 +113,7 @@ def survey(request, qid):
 				agent = request.META.get('HTTP_USER_AGENT', 'unknown')
 				os = request.META.get('OS', 'unknown')
 
-				answeraire = Answeraire.objects.create(qid=qid, uid=user.id, submit_time=timezone.now(), ip=ip, agent=agent, os=os, answers=request.POST.get('astring'))
+				answeraire = Answeraire.objects.create(qid=qid, uid=user.id, load_time=request.POST['load_time'], submit_time=request.POST['submit_time'], ip=ip, agent=agent, os=os, answers=request.POST.get('astring'))
 				answeraire.save()
 				qid_dict[str(qid)] = 1
 				suser.qid_list = json.dumps(qid_dict)

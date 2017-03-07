@@ -467,7 +467,7 @@ function submit(){
 			$.ajax({
 				url: window.location.href,
 				type: 'POST',
-				data: {'op': 'submit', 'astring': Astring, 'credit': 10, 'load_time': load_time,'submit_time',submit_time},
+				data: {'op': 'submit', 'astring': Astring, 'credit': 10, 'load_time': load_time,'submit_time':submit_time},
 				success: function(data) {
 					data = JSON.parse(data);
 					alert('提交成功');
