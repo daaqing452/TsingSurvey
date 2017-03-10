@@ -2,7 +2,7 @@
 var option_html = "<td><input type=\"text\" class=\"form-control input-sm\"></td><td><input type=\"file\" id=\"image\" onchange=\"uploadImage(this)\"><input type=\"hidden\" id=\"image_fn\"><p id=\"file_name\"></p></td><td><input type=\"checkbox\" name=\"single\"></td><td><span class=\"glyphicon glyphicon-plus\" onclick=\"addOption(this)\"></span><span class=\"glyphicon glyphicon-minus\" onclick=\"delOption(this)\"></span></td>"
 var option_html_text = "<td><input type=\"text\" class=\"form-control input-sm\"></td><td><span class=\"glyphicon glyphicon-plus\" onclick=\"addOption(this)\"></span><span class=\"glyphicon glyphicon-minus\" onclick=\"delOption(this)\"></span></td>";
 var table_html = "<table class=\"table table-condensed\"></table>";
-var table_title_html = "<thead><tr><td>题目标题</td></tr><tr><td style=\"padding:0 0 0 0;\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"请输入标题\" style=\"width:100%;\" id=\"s_title\"></td></tr></thead>"
+var table_title_html = "<thead><tr><td>题目标题</td></tr><tr><td style=\"padding:0 0 0 0;\"><div id=\"myNicPanel\" style=\"width: 100%;\"></div><p class=\"form-control\" style=\"width:100%;height:80px;\" id=\"s_title\"></p></td></tr></thead>"
 var condition_html = "<tr><td id=\"must_answer\"><input type=\"checkbox\"> 必答</td><td id=\"jump_to\" ><input type=\"checkbox\" onclick=\"jump(1)\"> 无条件跳题</td><td id=\"jump_from\" ><input type=\"checkbox\" onclick=\"jump(2)\"> 关联逻辑</td><tr>";
 var questions = new Array();
 var current_status = {s_type: 0, action: 0, index: 0};
@@ -58,6 +58,8 @@ function release() {
 	});
 }
 
+
+
 function createModal(){
 	switch(current_status.s_type){
 		case 1:{
@@ -80,6 +82,9 @@ function createModal(){
 			$mymodal_table.eq(2).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
 			$mymodal_tbody.append(condition_html);
+			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
+		    myNicEditor.setPanel('myNicPanel');
+		    myNicEditor.addInstance('s_title');
 			//alert(s_modal.innerHTML);
 			break;
 		}
@@ -108,6 +113,9 @@ function createModal(){
 			                           "<td id=\"min_select\">至少选<input type=\"text\" style=\"width:40px\">项</td>"+
 			                           "<td id=\"max_select\">至多选<input type=\"text\" style=\"width:40px\">项</td><tr>";
 			$mymodal_tbody.append(condition_multi_html);
+			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
+		    myNicEditor.setPanel('myNicPanel');
+		    myNicEditor.addInstance('s_title');
 			//alert(s_modal.innerHTML);
 			break;
 		}
@@ -121,6 +129,9 @@ function createModal(){
 			$mymodal_table.eq(1).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
 			$mymodal_tbody.append(condition_html);
+			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
+		    myNicEditor.setPanel('myNicPanel');
+		    myNicEditor.addInstance('s_title');
 			break;
 		}
 		case 4:{
@@ -144,6 +155,9 @@ function createModal(){
 			$mymodal_table.eq(3).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(3).children().eq(0);
 			$mymodal_tbody.append(condition_html);
+			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
+		    myNicEditor.setPanel('myNicPanel');
+		    myNicEditor.addInstance('s_title');
 			break;
 		}
 		case 5:{
@@ -162,6 +176,9 @@ function createModal(){
 			$mymodal_table.eq(2).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
 			$mymodal_tbody.append(condition_html);
+			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
+		    myNicEditor.setPanel('myNicPanel');
+		    myNicEditor.addInstance('s_title');
 			break;
 		}
 		case 6:{
@@ -187,6 +204,9 @@ function createModal(){
 			$mymodal_table.eq(3).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(3).children().eq(0);
 			$mymodal_tbody.append(condition_html);
+			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
+		    myNicEditor.setPanel('myNicPanel');
+		    myNicEditor.addInstance('s_title');
 			break;
 		}
 		case 7:{
@@ -289,7 +309,8 @@ function getQFromModal(){
 			var q = {s_type:1};
 			q.index = operate_index;
 			var rows = document.getElementById("options").rows;
-			q.title = document.getElementById("s_title").value;
+			q.title_html = $("#s_title").html();
+			q.title = $("#s_title").text();
 			if(rows[1].children[0].children[0].value == "" & rows[1].children[1].children[1].value == ""){
 				q.n_option = 0;
 				q.options = [];
@@ -320,7 +341,8 @@ function getQFromModal(){
 			var q = {s_type:2};
 			q.index = operate_index;
 			var rows = document.getElementById("options").rows;
-			q.title = document.getElementById("s_title").value;
+			q.title_html = $("#s_title").html();
+			q.title = $("#s_title").text();
 			if(rows[1].children[0].children[0].value == "" & rows[1].children[1].children[1].value == ""){
 				q.n_option = 0;
 				q.options = [];
@@ -350,13 +372,15 @@ function getQFromModal(){
 		case 3:{
 			var q = {s_type:3};
 			q.index = operate_index;
-			q.title = document.getElementById("s_title").value;
+			q.title_html = $("#s_title").html();
+			q.title = $("#s_title").text();
 			break;
 		}
 		case 4:{
 			var q = {s_type:4};
 			q.index = operate_index;
-			q.title = document.getElementById("s_title").value;
+			q.title_html = $("#s_title").html();
+			q.title = $("#s_title").text();
 			var rows = document.getElementById("options").rows;
 			if(rows == null){
 				q.n_option = 0;
@@ -385,7 +409,8 @@ function getQFromModal(){
 		case 5:{
 			var q = {s_type:5};
 			q.index = operate_index;
-			q.title = document.getElementById("s_title").value;
+			q.title_html = $("#s_title").html();
+			q.title = $("#s_title").text();
 			var rows = document.getElementById("options").rows;
 			if(rows[1].children[0].children[0].value == "" ){
 				q.n_option = 0;
@@ -410,7 +435,8 @@ function getQFromModal(){
 		case 6:{
 			var q = {s_type:6};
 			q.index = operate_index;
-			q.title = document.getElementById("s_title").value;
+			q.title_html = $("#s_title").html();
+			q.title = $("#s_title").text();
 			var rows = document.getElementById("options_row").rows;
 			var cols = document.getElementById("options_col").rows;
 			if(rows[1].children[0].children[0].value == "" & cols[1].children[0].children[0].value == ""){
@@ -490,7 +516,7 @@ function createHtml(q){
 	switch(q.s_type){
 		case 1:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title;
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title_html;
 			if(q.must_answer == true){
 				HTMLContent += "*</div>";
 			}
@@ -520,7 +546,7 @@ function createHtml(q){
 		}
 		case 2:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title;
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title_html;
 			if(q.s_type == 2){
 				var flag = 0;
 				var HTMLtemp = "";
@@ -568,7 +594,7 @@ function createHtml(q){
 		}
 		case 3:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title;
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title_html;
 			if(q.must_answer == true){
 				HTMLContent += "*</div>";
 			}
@@ -582,7 +608,7 @@ function createHtml(q){
 		}
 		case 4:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title;
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title_html;
 			if(q.must_answer == true){
 				HTMLContent += "*</div>";
 			}
@@ -600,7 +626,7 @@ function createHtml(q){
 		}
 		case 5:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title;
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title_html;
 			if(q.must_answer == true){
 				HTMLContent += "*</div>";
 			}
@@ -625,7 +651,7 @@ function createHtml(q){
 		}
 		case 6:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title;
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title_html;
 			if(q.must_answer == true){
 				HTMLContent += "*</div>";
 			}
@@ -689,7 +715,7 @@ function modifyQ(index){
 			$("#myModal_body").append(table_html,table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
-			$("#s_title").val(q.title);
+			$("#s_title").html(q.title_html);
 			$mymodal_table.eq(1).attr("id","options");
 			$mymodal_table.eq(1).addClass("table-striped");
 			$mymodal_table.eq(1).append("<tbody></tbody>");
@@ -700,6 +726,9 @@ function modifyQ(index){
 										+"<td class=\"op_col\">操作</td></tr>";
 			$mymodal_tbody.append(single_table_title);
 			for(var i = 0; i < q.n_option; i++){
+				$mymodal_tbody.append("<tr>"+option_html+"</tr>");
+			}
+			if(q.n_option==0){
 				$mymodal_tbody.append("<tr>"+option_html+"</tr>");
 			}
 			for(var i = 0; i < q.n_option; i++){
@@ -720,6 +749,9 @@ function modifyQ(index){
 			$mymodal_table.eq(2).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
 			$mymodal_tbody.append(condition_html);
+			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
+		    myNicEditor.setPanel('myNicPanel');
+		    myNicEditor.addInstance('s_title');
 			break;
 		}
 		case 2:{
@@ -738,6 +770,9 @@ function modifyQ(index){
 										+"<td class=\"op_col\">操作</td></tr>";
 			$mymodal_tbody.append(single_table_title);
 			for(var i = 0; i < q.n_option; i++){
+				$mymodal_tbody.append("<tr>"+option_html+"</tr>");
+			}
+			if(q.n_option==0){
 				$mymodal_tbody.append("<tr>"+option_html+"</tr>");
 			}
 			for(var i = 0; i < q.n_option; i++){
@@ -769,6 +804,9 @@ function modifyQ(index){
 			if(q.max_select != ""){
 				$mymodal_tbody.find("#max_select").children("input[type=\"text\"]").val(q.max_select);
 			}
+			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
+		    myNicEditor.setPanel('myNicPanel');
+		    myNicEditor.addInstance('s_title');
 			break;
 		}
 		case 3:{
@@ -781,6 +819,9 @@ function modifyQ(index){
 			$mymodal_table.eq(1).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
 			$mymodal_tbody.append(condition_html);
+			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
+		    myNicEditor.setPanel('myNicPanel');
+		    myNicEditor.addInstance('s_title');
 			break;
 		}
 		case 4:{
@@ -808,6 +849,9 @@ function modifyQ(index){
 			for(var i = 0; i < q.n_option; i++){
 				$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
 			}
+			if(q.n_option==0){
+				$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
+			}
 			for(var i = 0; i < q.n_option; i++){
 				var option = q.options[i];
 				$('.option_text').eq(i).children().eq(0).children().eq(0).prop("value",option.text);
@@ -816,6 +860,9 @@ function modifyQ(index){
 			$mymodal_table.eq(3).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(3).children().eq(0);
 			$mymodal_tbody.append(condition_html);
+			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
+		    myNicEditor.setPanel('myNicPanel');
+		    myNicEditor.addInstance('s_title');
 			break;
 		}
 		case 5:{
@@ -833,6 +880,9 @@ function modifyQ(index){
 			for(var i = 0; i < q.n_option; i++){
 				$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
 			}
+			if(q.n_option==0){
+				$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
+			}
 			for(var i = 0; i < q.n_option; i++){
 				var option = q.options[i];
 				$('.option_text').eq(i).children().eq(0).children().eq(0).prop("value",option.text);
@@ -841,6 +891,9 @@ function modifyQ(index){
 			$mymodal_table.eq(2).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
 			$mymodal_tbody.append(condition_html);
+			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
+		    myNicEditor.setPanel('myNicPanel');
+		    myNicEditor.addInstance('s_title');
 			break;
 		}
 		case 6:{
@@ -860,6 +913,9 @@ function modifyQ(index){
 			for(var i = 0; i < row_n; i++){
 				$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
 			}
+			if(row_n == 0){
+				$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
+			}
 			for(var i = 0; i < row_n; i++){
 				var option = q.options[i*col_n];
 				$("#options_row").find('.option_text').eq(i).children().eq(0).children().eq(0).prop("value",option.text);
@@ -873,6 +929,9 @@ function modifyQ(index){
 			for(var i = 0; i < col_n; i++){
 				$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
 			}
+			if(col_n==0){
+				$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
+			}
 			for(var i = 0; i < col_n; i++){
 				var option = q.options[i];
 				$("#options_col").find('.option_text').eq(i).children().eq(0).children().eq(0).prop("value",option.image);
@@ -881,6 +940,9 @@ function modifyQ(index){
 			$mymodal_table.eq(3).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(3).children().eq(0);
 			$mymodal_tbody.append(condition_html);
+			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
+		    myNicEditor.setPanel('myNicPanel');
+		    myNicEditor.addInstance('s_title');
 			break;
 		}
 		case 7:{
@@ -894,6 +956,9 @@ function modifyQ(index){
 			$mymodal_tbody.append("<tr><td class=\"text_col\">小标题</td>"
 							+"<td class=\"op_col\">操作</td></tr>");
 			for(var i = 0; i < q.n_option; i++){
+				$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
+			}
+			if(q.n_option==0){
 				$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
 			}
 			for(var i = 0; i < q.n_option; i++){

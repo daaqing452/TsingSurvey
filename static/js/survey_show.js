@@ -12,7 +12,7 @@ function createSurveyHtml(q){
 		}
 	}
 	else{
-		HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title;
+		HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title_html;
 	}
 	if(q.s_type == 2){
 		var flag = 0;
