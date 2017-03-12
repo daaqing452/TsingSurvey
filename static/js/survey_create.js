@@ -52,7 +52,7 @@ function release() {
 		data: {'op': 'release', 'title': title, 'qstring': Qstring},
 		success: function(data) {
 			data = JSON.parse(data);
-			alert('Release successful');
+			alert('发布成功');
 			window.location.reload()
 		}
 	});
@@ -1073,7 +1073,7 @@ function delOption(b)
 	var op_table = b.parentNode.parentNode.parentNode;
 	if(current_index == 1 && op_table.rows.length == 2)
 	{
-		alert("At least one option");
+		alert("至少一个选项！");
 		return;
 	}
 	op_table.deleteRow(current_index);

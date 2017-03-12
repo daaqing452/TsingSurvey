@@ -59,6 +59,7 @@
 		<td align=center> 是否填写？ </td>
 		{% if user.is_staff %}
 		<td align=center> 问卷状态 </td>
+		<td align=center> 填写人数 </td>
 		<td> </td>
 		{% endif %}
 	</tr>
@@ -69,6 +70,7 @@
 		<td align=center>  {{ rq.fill }} </td>
 		{% if user.is_staff %}
 		<td align=center> {{ rq.status }} </td>
+		<td align=center> {{ rq.filled_number }} </td>
 		<td qid='{{ rq.id }}' onclick='delete_questionaire(this)'> <span class="glyphicon glyphicon-remove"></span> </td>
 		{% endif %}
 	</tr>

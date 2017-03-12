@@ -7,7 +7,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
 from SUser.models import SUser
-from Survey.models import Questionaire
+from Survey.models import Questionaire, Answeraire
 import Analysis.statistic as Stat
 import SUser.utils as Utils
 import codecs
@@ -28,6 +28,9 @@ def index(request):
 	if user.is_staff:
 		questionaire_list = Questionaire.objects.all()
 		rq_list = [Utils.remake_questionaire(questionaire, qid_dict) for questionaire in questionaire_list]
+		for rq in rq_list:
+			answeraires = Answeraire.objects.filter(qid=rq['id'])
+			rq['filled_number'] = len(answeraires)
 	else:
 		rq_list = []
 		for qid in qid_dict:

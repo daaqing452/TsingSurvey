@@ -491,7 +491,7 @@ function closeup() {
 			data: {'op': 'closeup'},
 			success: function(data) {
 				data = JSON.parse(data);
-				alert('Close successful');
+				alert('关闭成功！');
 				window.location.reload()
 			}
 		});

@@ -156,7 +156,7 @@ $(document).ready(function(){
 				if (data['result'] == 'yes') {
 					refreshUserList(data['user_list']);
 					$('input#add').val('');
-					alert('Add successful');
+					alert('添加成功！');
 				} else {
 					alert(data['result']);
 				}

@@ -30,7 +30,7 @@ $(document).ready(function(){
 
 	//	删除管理员
 	$('button#delete').click(function(){
-		if (confirm('Do you want to delete these administrators?')) {
+		if (confirm('确认删除管理员？')) {
 			username_list = new Array();
 			$('input[username]:checked').each(function(){
 				username_list.push($(this).attr('username'));
