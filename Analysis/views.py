@@ -21,6 +21,9 @@ def analysis(request):
 		return HttpResponseRedirect('/index/')
 	op = request.POST.get('op')
 
+	def statistic():
+		pass
+
 	if op == 'analysis':
 		# 获取问卷
 		qid = int(request.POST.get('qid'))
@@ -80,41 +83,85 @@ def analysis(request):
 			# 单选题、下拉题
 			if s_type == 1 or s_type == 4:
 				col += 1
-				sheet1.write(row, col, '第' + str(index) + '题（' + title + '）')
-				sheet2.write(row, col, '第' + str(index) + '题（' + title + '）')
+				sheet1.write(row, col, '第' + str(index + 1) + '题（' + title + '）')
+				sheet2.write(row, col, '第' + str(index + 1) + '题（' + title + '）')
 				for select in selects:
 					row += 1
 					if len(select) > 0:
 						selected_option = select[0]
-						sheet1.write(row, col, str(selected_option[0]))
+						sheet1.write(row, col, int(selected_option[0]))
 						sheet2.write(row, col, selected_option[int(selected_option[1]) + 2])
 			# 填空题
 			elif s_type == 3:
 				col += 1
-				sheet1.write(row, col, '第' + str(index) + '题（' + title + '）')
-				sheet2.write(row, col, '第' + str(index) + '题（' + title + '）')
+				sheet1.write(row, col, '第' + str(index + 1) + '题（' + title + '）')
+				sheet2.write(row, col, '第' + str(index + 1) + '题（' + title + '）')
 				for select in selects:
 					row += 1
 					if len(select) > 0:
 						sheet2.write(row, col, select[0][2])
 			# 矩阵题
 			elif s_type == 6:
-				n_set = question['n_set']
 				n_option = question['n_option']
-				n_column = n_option / n_set
 				options = question['options']
+				n_set = question['n_set']
+				n_column = n_option / n_set
 				qtitles = [options[i]['text'] for i in range(0, n_option, n_column)]
 				for qtitle in qtitles:
 					col += 1
-					sheet1.write(row, col, '第' + str(index) + '题（' + qtitle + '）')
-					sheet2.write(row, col, '第' + str(index) + '题（' + qtitle + '）')
+					sheet1.write(row, col, '第' + str(index + 1) + '题（' + qtitle + '）')
+					sheet2.write(row, col, '第' + str(index + 1) + '题（' + qtitle + '）')
 				for select in selects:
 					row += 1
 					for selected_option in select:
 						index2 = selected_option[0]
 						qrow, qcol = index2 / n_column, index2 % n_column
-						sheet1.write(row, col - n_set + qrow + 1, str(qcol))
+						sheet1.write(row, col - n_set + qrow + 1, int(qcol))
 						sheet2.write(row, col - n_set + qrow + 1, selected_option[3])
+			# 多选题
+			elif s_type == 2:
+				n_option = question['n_option']
+				options = question['options']
+				for i in range(len(options)):
+					option = options[i]
+					col += 1
+					str0 = '第' + str(index + 1) + '题第' + str(i + 1) + '项（'
+					if option['option_type'] == 0:
+						str0 += option['text']
+					else:
+						str0 += option['image']
+					str0 += '）'
+					sheet1.write(row, col, str0)
+					sheet2.write(row, col, str0)
+				for select in selects:
+					row += 1
+					for selected_option in select:
+						idx = selected_option[0]
+						sheet1.write(row, col - n_option + idx + 1, 1)
+						sheet2.write(row, col - n_option + idx + 1, '1')
+
+			# 排序题
+			elif s_type == 5:
+				n_option = question['n_option']
+				options = question['options']
+				for i in range(len(options)):
+					option = options[i]
+					col += 1
+					str0 = '第' + str(index + 1) + '题第' + str(i + 1) + '项（'
+					if option['option_type'] == 0:
+						str0 += option['text']
+					else:
+						str0 += option['image']
+					str0 += '）'
+					sheet1.write(row, col, str0)
+					sheet2.write(row, col, str0)
+				for select in selects:
+					row += 1
+					for i in range(len(select)):
+						selected_option = select[i]
+						idx = int(selected_option[0])
+						sheet1.write(row, col - n_option + idx + 1, n_option - i)
+						sheet2.write(row, col - n_option + idx + 1, str(n_option - i))
 		excel.close()
 		return HttpResponse(json.dumps({'export_path': excel_name}))
 
@@ -165,21 +212,3 @@ def search(request):
 		return HttpResponse(json.dumps({'result': result}))
 
 	return render(request, 'search.html', rdata)
-
-def report(request, qid):
-	# 验证身份
-	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
-	rdata = {}
-	rdata['user'] = user = request.user
-	op = request.POST.get('op')
-
-	if op == 'load':
-		reports = Report.objects.filter(qid=qid)
-		if len(reports) == 0:
-			rdata['info'] = '找不到该报告'
-		else:
-			report = reports[0]
-			return HttpResponse(json.dumps({'qid': report.qid, 'title': report.title, 'report': report.report}))
-
-	return render(request, 'report.html', rdata)

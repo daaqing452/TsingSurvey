@@ -18,7 +18,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from SUser.views import index, login, logout, user_list, admin_list, profile, install
 from Survey.views import survey, bonus, upload_file
-from Analysis.views import analysis, search, report
+from Analysis.views import analysis, search
 import settings
 
 urlpatterns = [
