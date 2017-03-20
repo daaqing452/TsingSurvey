@@ -61,6 +61,7 @@
 		<td align=center> 问卷状态 </td>
 		<td align=center> 填写人数 </td>
 		<td> </td>
+		<td> </td>
 		{% endif %}
 	</tr>
 	{% for rq in rq_list %}
@@ -71,7 +72,8 @@
 		{% if user.is_staff %}
 		<td align=center> {{ rq.status }} </td>
 		<td align=center> {{ rq.filled_number }} </td>
-		<td qid='{{ rq.id }}' onclick='delete_questionaire(this)'> <span class="glyphicon glyphicon-remove"></span> </td>
+		<td qid='{{ rq.id }}' onclick='delete_questionaire(this)'> <span class='glyphicon glyphicon-remove'> </span> </td>
+		<td qid='{{ rq.id }}' onclick='copy_questionaire(this)'> <span class='glyphicon glyphicon-plus'> </span> </td>
 		{% endif %}
 	</tr>
 	{% endfor %}

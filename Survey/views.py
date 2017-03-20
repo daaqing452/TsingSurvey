@@ -29,6 +29,7 @@ def survey(request, qid):
 	rdata['qid'] = qid
 	op = request.POST.get('op')
 	status = -1
+	now = timezone.now()
 
 	def update_questionaire(questionaire, title, qstring):
 		questionaire.title = title
@@ -37,7 +38,6 @@ def survey(request, qid):
 
 	# 添加新问卷
 	if op == 'create':
-		now = timezone.now()
 		questionaire = Questionaire.objects.create(status=0, create_time=now, update_time=now, founder=request.user.id)
 		questionaire.save()
 		return HttpResponse(json.dumps({'qid': questionaire.id}));
@@ -50,16 +50,23 @@ def survey(request, qid):
 		questionaire = questionaires[0]
 		status = questionaire.status
 		suser = SUser.objects.get(uid=user.id)
-
+		
+		# 加载问卷请求
+		if op == 'load':
+			return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions}))
+		
 		# 删除问卷
 		if op == 'delete':
 			questionaire.delete();
 			return HttpResponse(json.dumps({}));
 
-		# 加载问卷请求
-		if op == 'load':
-			return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions}))
-		
+		# 复制问卷
+		if op == 'copy':
+			new_questionaire = Questionaire.objects.create(status=0, create_time=now, update_time=now, founder=request.user.id, title=questionaire.title, questions=questionaire.questions)
+			new_questionaire.save()
+			return HttpResponse(json.dumps({}));
+
+
 		# 问卷修改状态
 		if status == 0:
 			# 修改中管理员可见
@@ -75,7 +82,7 @@ def survey(request, qid):
 				# 发布问卷请求
 				elif op == 'release':
 					questionaire.status = 1
-					questionaire.release_time = timezone.now()
+					questionaire.release_time = now
 					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
 					questionaire.save()
 					suser_list = SUser.objects.filter(is_sample=1)
@@ -132,12 +139,14 @@ def survey(request, qid):
 			if not user.is_staff:
 				rdata['viewable'] = 0
 				rdata['info'] = 'Closed'
-			else:
+			
+			if op == 'analysis':
 				pass
 
 		# 报告生成状态
 		elif status == 3:
-			return HttpResponseRedirect('/report/' + qid + '/')
+			# return HttpResponseRedirect('/report/' + qid + '/')
+			pass
 
 		# 问卷出错状态
 		else:

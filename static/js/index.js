@@ -27,3 +27,17 @@ function delete_questionaire(obj) {
 		});
 	}
 }
+
+function copy_questionaire(obj) {
+	var td = $(obj);
+	var qid = td.attr('qid');
+	$.ajax({
+		url: '/survey/' + qid + '/',
+		type: 'POST',
+		data: {'op': 'copy'},
+		success: function(data) {
+			data = JSON.parse(data);
+			window.location.reload();
+		}
+	});
+}

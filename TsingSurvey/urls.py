@@ -38,7 +38,6 @@ urlpatterns = [
 
     url(r'^analysis/$', analysis),
     url(r'^search/$', search),
-    url(r'^report/(\d{1,10})/$', report),
 
     url(r'^install/$', install),
     url(r'^analysis/$', analysis),

@@ -33,7 +33,7 @@ def analysis(request):
 
 		# 枚举每道题
 		report = []
-		for i in range(qnum):
+		'''for i in range(qnum):
 			adicti_list = [adict[i] for adict in adict_list]
 			s_type = adicti_list[0]['s_type']
 			d = {}
@@ -52,7 +52,7 @@ def analysis(request):
 		report = Report.objects.create(qid=qid, title=questionaire.title, report=json.dumps(report))
 		report.save()
 		questionaire.status = 3
-		questionaire.save()
+		questionaire.save()'''
 		return HttpResponse(json.dumps({}))
 
 	if op == 'export':

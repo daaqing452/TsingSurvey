@@ -41,8 +41,8 @@ function analysis() {
 		data: {'op': 'analysis', 'qid': qid},
 		success: function(data) {
 			data = JSON.parse(data);
-			alert('Generate report successful');
-			window.location.href = '/report/' + qid + '/';
+			alert('生成报告成功！');
+			window.location.reload();
 		}
 	});
 }
