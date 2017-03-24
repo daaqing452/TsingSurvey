@@ -13,7 +13,8 @@ var operate_index = current_status.index;
 
 function getindex(){
 	var q_table = document.getElementById("questions");
-	current_status.index = document.getElementById('questions').rows.length;
+	var row_length = document.getElementById('questions').rows.length;
+	current_status.index += row_length;
 	operate_index = current_status.index;
 }
 
@@ -226,6 +227,16 @@ function createModal(){
 			$mymodal_tbody.append(condition_html);
 			break;
 		}
+		case 8:{
+			$("#myModal_body").empty();
+			$("#myModal_body").append(table_html);
+			var $mymodal_table = $("#myModal_body").children(".table");
+			$mymodal_table.eq(0).append(table_title_html);
+			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
+		    myNicEditor.setPanel('myNicPanel');
+		    myNicEditor.addInstance('s_title');
+			break;
+		}
 	}
 }
 
@@ -304,10 +315,21 @@ function buildBox(box_type){
 
 
 function getQFromModal(){
+	var q = {s_type:current_status.s_type};
+	//q.index
+	if(questions.length == 0){
+		q.index = 1;
+	}
+	else{
+		for(var i = operate_index-1; i >= 0; i--){
+			if(questions[i].s_type != 8){
+				q.index = questions[i].index+1; 
+				break;
+			}
+		}
+	}
 	switch(current_status.s_type){
 		case 1:{
-			var q = {s_type:1};
-			q.index = operate_index;
 			var rows = document.getElementById("options").rows;
 			q.title_html = $("#s_title").html();
 			q.title = $("#s_title").text();
@@ -338,8 +360,6 @@ function getQFromModal(){
 			break;
 		}
 		case 2:{
-			var q = {s_type:2};
-			q.index = operate_index;
 			var rows = document.getElementById("options").rows;
 			q.title_html = $("#s_title").html();
 			q.title = $("#s_title").text();
@@ -370,15 +390,11 @@ function getQFromModal(){
 			break;
 		}
 		case 3:{
-			var q = {s_type:3};
-			q.index = operate_index;
 			q.title_html = $("#s_title").html();
 			q.title = $("#s_title").text();
 			break;
 		}
 		case 4:{
-			var q = {s_type:4};
-			q.index = operate_index;
 			q.title_html = $("#s_title").html();
 			q.title = $("#s_title").text();
 			var rows = document.getElementById("options").rows;
@@ -407,8 +423,6 @@ function getQFromModal(){
 			break;
 		}
 		case 5:{
-			var q = {s_type:5};
-			q.index = operate_index;
 			q.title_html = $("#s_title").html();
 			q.title = $("#s_title").text();
 			var rows = document.getElementById("options").rows;
@@ -433,8 +447,6 @@ function getQFromModal(){
 			break;
 		}
 		case 6:{
-			var q = {s_type:6};
-			q.index = operate_index;
 			q.title_html = $("#s_title").html();
 			q.title = $("#s_title").text();
 			var rows = document.getElementById("options_row").rows;
@@ -464,8 +476,6 @@ function getQFromModal(){
 			break;
 		}
 		case 7:{
-			var q = {s_type:7};
-			q.index = operate_index;
 			var rows = document.getElementById("options").rows;
 			if(rows[1].children[0].children[0].value == "" ){
 				q.n_option = 0;
@@ -485,27 +495,38 @@ function getQFromModal(){
 					q.options.push(option);
 				}
 			}
+			break;
+		}
+		case 8:{
+			q.title_html = $("#s_title").html();
+			q.title = $("#s_title").text();
+			q.jump_to = false;
+			q.jump_from = false;
+			q.must_answer = false;
+			break;
 		}
 	}
-	//conditions 必答 跳转 依赖关系
-	var rows = document.getElementById("conditions").rows;
-	var cols = rows[0].children;
-	q.must_answer = cols[0].children[0].checked;
-	if(cols[1].children[0].checked == true){
-		q.jump_to = Number(cols[1].children[1].value);
-	}
-	else{
-		q.jump_to = false;
-	}
-	if(cols[2].children[0].checked == true){
-		q.jump_from = [Number(cols[2].children[1].value),Number(cols[2].children[2].value)];
-	}
-	else{
-		q.jump_from = false;
-	}
-	if(q.s_type == 2){
-		q.min_select = cols[3].children[0].value;
-		q.max_select = cols[4].children[0].value;
+	if(current_status.s_type != 8){
+		//conditions 必答 跳转 依赖关系
+		var rows = document.getElementById("conditions").rows;
+		var cols = rows[0].children;
+		q.must_answer = cols[0].children[0].checked;
+		if(cols[1].children[0].checked == true){
+			q.jump_to = Number(cols[1].children[1].value);
+		}
+		else{
+			q.jump_to = false;
+		}
+		if(cols[2].children[0].checked == true){
+			q.jump_from = [Number(cols[2].children[1].value),Number(cols[2].children[2].value)];
+		}
+		else{
+			q.jump_from = false;
+		}
+		if(q.s_type == 2){
+			q.min_select = cols[3].children[0].value;
+			q.max_select = cols[4].children[0].value;
+		}
 	}
 
 	return q;
@@ -693,18 +714,27 @@ function createHtml(q){
 			}
 			break;
 		}
+		case 8:{
+			var index = q.index;
+			HTMLContent += "<div class=\"h3\">" + q.title_html + "</div>";
+			break;
+		}
 	}
-	HTMLContent += "<br><div><button class=\"btn btn-primary btn-sm\" onclick=\"addQAfter("+q.index.toString()+")\">插入</button><button class=\"btn btn-danger btn-sm\" onclick=\"deleteQ("+q.index.toString()+")\">删除</button><button data-toggle=\"modal\" data-target=\"#myModal\" class=\"btn btn-warning btn-sm\" onclick=\"modifyQ("+q.index.toString()+")\">修改</button></div><hr>";
+	HTMLContent += "<br><div><button class=\"btn btn-primary btn-sm\" onclick=\"addQAfter(this)\">插入</button><button class=\"btn btn-danger btn-sm\" onclick=\"deleteQ(this)\">删除</button><button data-toggle=\"modal\" data-target=\"#myModal\" class=\"btn btn-warning btn-sm\" onclick=\"modifyQ(this)\">修改</button></div><hr>";
 	HTMLContent += "</td>";
 	return HTMLContent;
 }
 
-function addQAfter(index){
+function addQAfter(b){
 	alert("请在上方选择题型");
+	var $b = $(b);
+	var index = $b.parents("tr").index();
 	operate_index = index+1;
 }
 
-function modifyQ(index){
+function modifyQ(b){
+	var $b = $(b);
+	var index = $b.parents("tr").index();
 	var q = questions[index];
 	current_status.action = 2;
 	current_status.s_type = q.s_type;
@@ -759,7 +789,7 @@ function modifyQ(index){
 			$("#myModal_body").append(table_html,table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
-			$("#s_title").val(q.title);
+			$("#s_title").html(q.title_html);
 			$mymodal_table.eq(1).attr("id","options");
 			$mymodal_table.eq(1).addClass("table-striped");
 			$mymodal_table.eq(1).append("<tbody></tbody>");
@@ -814,7 +844,7 @@ function modifyQ(index){
 			$("#myModal_body").append(table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
-			$("#s_title").val(q.title);
+			$("#s_title").html(q.title_html);
 			$mymodal_table.eq(1).attr("id","conditions");
 			$mymodal_table.eq(1).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
@@ -829,7 +859,7 @@ function modifyQ(index){
 			$("#myModal_body").append(table_html,table_html,table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
-			$("#s_title").val(q.title);
+			$("#s_title").html(q.title_html);
 			$mymodal_table.eq(1).addClass("table-striped");
 			$mymodal_table.eq(1).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
@@ -870,7 +900,7 @@ function modifyQ(index){
 			$("#myModal_body").append(table_html,table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
-			$("#s_title").val(q.title);
+			$("#s_title").html(q.title_html);
 			$mymodal_table.eq(1).attr("id","options");
 			$mymodal_table.eq(1).addClass("table-striped");
 			$mymodal_table.eq(1).append("<tbody></tbody>");
@@ -901,7 +931,7 @@ function modifyQ(index){
 			$("#myModal_body").append(table_html,table_html,table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
-			$("#s_title").val(q.title);
+			$("#s_title").html(q.title_html);
 			$mymodal_table.eq(1).attr("id","options_row");
 			$mymodal_table.eq(1).addClass("table-striped");
 			$mymodal_table.eq(1).append("<tbody></tbody>");
@@ -971,36 +1001,52 @@ function modifyQ(index){
 			$mymodal_tbody.append(condition_html);
 			break;
 		}
+		case 8:{
+			$("#myModal_body").empty();
+			$("#myModal_body").append(table_html);
+			var $mymodal_table = $("#myModal_body").children(".table");
+			$mymodal_table.eq(0).append(table_title_html);
+			$("#s_title").html(q.title_html);
+			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
+		    myNicEditor.setPanel('myNicPanel');
+		    myNicEditor.addInstance('s_title');
+			break;
+		}
 	}
-	if(q.must_answer == true){
-		$mymodal_tbody.find("#must_answer").children().eq(0).prop("checked",true);
-	}
-	if(q.jump_to != false){
-		$jump_to_html = $mymodal_tbody.find("#jump_to").children().eq(0);
-		$jump_to_html.prop("checked",true);
-		jump(1);
-		$jump_to_html.parent().find("input[type=\"text\"]").val(q.jump_to);
+		if(q.must_answer == true){
+			$mymodal_tbody.find("#must_answer").children().eq(0).prop("checked",true);
+		}
+		if(q.jump_to != false){
+			$jump_to_html = $mymodal_tbody.find("#jump_to").children().eq(0);
+			$jump_to_html.prop("checked",true);
+			jump(1);
+			$jump_to_html.parent().find("input[type=\"text\"]").val(q.jump_to);
 
-	}
-	if(q.jump_from != false){
-		$jump_from_html = $mymodal_tbody.find("#jump_from").children().eq(0);
-		$jump_from_html.prop("checked",true);
-		jump(2);
-		$jump_from_html.parent().find("input[type=\"text\"]").eq(0).val(q.jump_from[0]);
-		$jump_from_html.parent().find("input[type=\"text\"]").eq(1).val(q.jump_from[1]);
-	}
+		}
+		if(q.jump_from != false){
+			$jump_from_html = $mymodal_tbody.find("#jump_from").children().eq(0);
+			$jump_from_html.prop("checked",true);
+			jump(2);
+			$jump_from_html.parent().find("input[type=\"text\"]").eq(0).val(q.jump_from[0]);
+			$jump_from_html.parent().find("input[type=\"text\"]").eq(1).val(q.jump_from[1]);
+		}
 	operate_index = index+1;
 }
 
-function deleteQ(index){
+function deleteQ(b){
+	var $b = $(b);
+	var index = $b.parents("tr").index();
 	current_status.index --;
 	q_table.deleteRow(index);
+	var now_s_type = questions[index].s_type;
 	questions.splice(index, 1);
 	var rows = q_table.rows;
-	for(var i = index; i < questions.length; i ++)
-	{
-		questions[i].index --;
-		rows[i].innerHTML = createHtml(questions[i]);
+	if(now_s_type != 8){
+		for(var i = index; i < questions.length; i ++)
+		{
+			questions[i].index --;
+			rows[i].innerHTML = createHtml(questions[i]);
+		}
 	}
 	operate_index = current_status.index;
 }
@@ -1019,7 +1065,7 @@ function commitS(){
 		new_row.innerHTML = createHtml(q);
 		current_status.index ++;
 		if(current_status.action == 2){
-			deleteQ(operate_index-1);
+			deleteQ($(q_table.rows[operate_index-1]).children("td"));
 		}
 		operate_index = current_status.index;
 		return;
@@ -1029,13 +1075,15 @@ function commitS(){
 		var new_row = q_table.insertRow(operate_index);
 		new_row.innerHTML = createHtml(q);
 		var rows = q_table.rows;
-		for(var i = operate_index+1; i < questions.length; i ++)
-		{
-			questions[i].index ++;
-			rows[i].innerHTML = createHtml(questions[i]);
+		if(q.s_type != 8){
+			for(var i = operate_index+1; i < questions.length; i ++)
+			{
+				questions[i].index ++;
+				rows[i].innerHTML = createHtml(questions[i]);
+			}
 		}
 		if(current_status.action == 2){
-			deleteQ(operate_index-1);
+			deleteQ($(q_table.rows[operate_index-1]).children("td"));
 		}
 		current_status.index ++;
 		operate_index = current_status.index;

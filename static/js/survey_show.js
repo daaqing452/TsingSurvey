@@ -3,13 +3,21 @@ var load_time = 0;
 var submit_time = 0;
 function createSurveyHtml(q){
 	var index = q.index;
-	var HTMLContent = "<td id=\"Q_"+(index + 1).toString()+"\" jump_to=\""+q.jump_to+"\">";
+	if(q.s_type != 8){
+		var HTMLContent = "<td id=\"Q_"+(index + 1).toString()+"\" jump_to=\""+q.jump_to+"\">";
+	}
+	if(q.s_type == 8){
+		var HTMLContent = "<td>";
+	}
 	if(q.s_type == 7){
 		HTMLContent += "<div><font class=\"h3\">"+(index + 1).toString()+ ".</font>";
 		for(var i = 0; i < q.n_option; i++){
 			var option = q.options[i];
 			HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\">&nbsp&nbsp";
 		}
+	}
+	else if(q.s_type == 8){
+		HTMLContent += "<div class=\"h3\">"+q.title_html;
 	}
 	else{
 		HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title_html;
@@ -443,6 +451,9 @@ function submit(){
 						a.select.push([j,0,text,""]);
 					}
 				}
+				break;
+			}
+			case 8:{
 				break;
 			}
 		}
