@@ -33,26 +33,12 @@ $(document).ready(function(){
 	});
 });
 
-function analysis() {
-	var qid = $('p#qid').attr('qid');
-	$.ajax({
-		url: '/analysis/',
-		type: 'POST',
-		data: {'op': 'analysis', 'qid': qid},
-		success: function(data) {
-			data = JSON.parse(data);
-			alert('生成报告成功！');
-			window.location.reload();
-		}
-	});
-}
-
 function exportt() {
 	var qid = $('p#qid').attr('qid');
 	$.ajax({
-		url: '/analysis/',
+		url: window.location.href,
 		type: 'POST',
-		data: {'op': 'export', 'qid': qid},
+		data: {'op': 'export'},
 		success: function(data) {
 			data = JSON.parse(data);
 			export_path = '/' + data['export_path'];

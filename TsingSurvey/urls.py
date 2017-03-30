@@ -18,7 +18,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from SUser.views import index, login, logout, user_list, admin_list, profile, install
 from Survey.views import survey, bonus, upload_file
-from Analysis.views import analysis, search
+from Analysis.views import search
 import settings
 
 urlpatterns = [
@@ -36,9 +36,7 @@ urlpatterns = [
     url(r'^bonus/', bonus),
     url(r'^upload_file/', upload_file),
 
-    url(r'^analysis/$', analysis),
     url(r'^search/$', search),
 
     url(r'^install/$', install),
-    url(r'^analysis/$', analysis),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

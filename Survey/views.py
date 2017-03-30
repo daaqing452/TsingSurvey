@@ -11,13 +11,12 @@ from SUser.models import SUser
 import SUser.utils as Utils
 import json
 import datetime
+import Analysis.views as Analysis
 
 # 问卷状态
 #	 0 修改中（随时修改）
 #	 1 发布中
-#	 2 已结束（随时可分析）
-#	 3 已生成报告
-#	-1 用户不可见
+#	 2 已结束
 
 def survey(request, qid):
 	# 验证身份
@@ -134,19 +133,15 @@ def survey(request, qid):
 				questionaire.save()
 				return HttpResponse(json.dumps({}))
 
-		# 问卷结束状态（待分析）
+		# 问卷结束状态
 		elif status == 2:
 			if not user.is_staff:
 				rdata['viewable'] = 0
 				rdata['info'] = 'Closed'
-			
-			if op == 'analysis':
-				pass
 
-		# 报告生成状态
-		elif status == 3:
-			# return HttpResponseRedirect('/report/' + qid + '/')
-			pass
+			if op == 'export':
+				excel_name = Analysis.export(qid)
+				return HttpResponse(json.dumps({'export_path': excel_name}))
 
 		# 问卷出错状态
 		else:
