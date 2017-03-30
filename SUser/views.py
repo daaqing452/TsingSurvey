@@ -8,7 +8,6 @@ from django.shortcuts import render
 from django.template import RequestContext
 from SUser.models import SUser
 from Survey.models import Questionaire, Answeraire
-import Analysis.statistic as Stat
 import SUser.utils as Utils
 import codecs
 import json
@@ -192,7 +191,7 @@ def user_list(request):
 		varname = SUser.__var_name__[index]
 		susers = SUser.objects.filter(is_sample=1)
 		values = [suser.__dict__[varname] for suser in susers]
-		result = Stat.count(values)
+		result = Utils.count(values)
 		return HttpResponse(json.dumps({'result': result}))
 
 	# 添加样本筛选条件
@@ -207,7 +206,7 @@ def user_list(request):
 			varname = SUser.__var_name__[index]
 			susers = SUser.objects.filter(~Q(username='root'))
 			values = [suser.__dict__[varname] for suser in susers]
-			values = Stat.count(values).keys()
+			values = Utils.count(values).keys()
 		return HttpResponse(json.dumps({'index': index, 'values': values}))
 
 	# 自动样本生成

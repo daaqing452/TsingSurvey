@@ -8,32 +8,77 @@ from django.template import RequestContext
 from Survey.models import Questionaire, Answeraire, Report
 import json
 import math
+import numpy as np
 import time
 import xlsxwriter
 
 
 def statistic(qid):
+	MATRIX_STAT_RANK = 2
 	questionaire = Questionaire.objects.get(id=qid)
 	questions = json.loads(questionaire.questions)
 	answeraire_list = Answeraire.objects.filter(qid=qid)
-	answers = [json.loads(answeraire.answers) for answeraire in answeraire_list]
-	counter = []
+	answeraires = [json.loads(answeraire.answers) for answeraire in answeraire_list]
+	# 预处理+清空
+	counters = []
 	for question in questions:
 		s_type = question['s_type']
-		index = question['index']
-		# 单选题、下拉题
-		if s_type == 1 or s_type == 4:
-			counter[index] = 1
-		# 矩阵题
-		elif s_type == 4:
-			pass
-		# 多选题
-		elif s_type == 2:
-			pass
+		if 'n_option' in question: n_option = int(question['n_option'])
+		# 单选题、多选题、下拉题、矩阵题
+		if s_type in [1, 2, 4, 6]:
+			counters.append(np.zeros((1, n_option)))
 		# 排序题
 		elif s_type == 5:
-			pass
+			counters.append(np.zeros((MATRIX_STAT_RANK, n_option)))
+		else:
+			counters.append(-1)
+	# 计数
+	for answeraire in answeraires:
+		for answer in answeraire:
+			s_type = answer['s_type']
+			qindex = int(answer['index'])
+			selects = answer['select']
+			for i in range(len(selects)):
+				select = selects[i]
+				oindex = int(select[0])
+				if s_type in [1, 2, 4, 6]:
+					counters[qindex][0, oindex] += 1
+				elif s_type == 5:
+					if i < MATRIX_STAT_RANK:
+						counters[qindex][i, oindex] += 1
+	# 统计
+	reports = []
+	n_people = len(answeraires)
+	for i in range(len(counters)):
+		report = {}
+		question = questions[i]
+		counter = counters[i]
+		report['s_type'] = s_type = question['s_type']
+		report['index'] = question['index']
+		report['title'] = question['title']
+		if 'n_option' in question: report['n_option'] = question['n_option']
+		if 'n_set' in question: report['n_set'] = question['n_set']
+		report['options'] = []
+		if s_type in [1, 2, 4, 5, 6]:
+			options = question['options']
+			for j in range(len(options)):
+				option = options[j]
+				n_total = counter.sum(axis=1)
+				nk = 1
+				if s_type == 5: nk = MATRIX_STAT_RANK
+				for k in range(nk):
+					roption = {}
+					roption['index'] = j
+					roption['option_type'] = option['option_type']
+					roption['text'] = option['text']
+					roption['image'] = option['image']
+					roption['rank'] = k
+					roption['num'] = counter[k, j]
+					roption['ratio'] = 1.0 * counter[k, j] / n_people
+					report['options'].append(roption)
+		reports.append(report)
 	xxx
+
 
 def export(qid):
 	statistic(qid)

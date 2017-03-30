@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import time
+import collections
 
 def username_to_password(username):
 	return str((hash(username) ^ 3968766407) % 104939997)
@@ -41,3 +42,7 @@ def upload_file(raw):
 		f.write(chunk)
 	f.close()
 	return f_path
+
+def count(a):
+	c = collections.Counter(a)
+	return dict(c)
