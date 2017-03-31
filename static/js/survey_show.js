@@ -474,7 +474,7 @@ function submit(){
 		var Astring = JSON.stringify(answers);
 		submit_time = new Date().getTime();
 		var dwell_time = submit_time - load_time;
-		if (confirm('Do you comfirm to submit?')) {
+		if (confirm('确认提交问卷？')) {
 			$.ajax({
 				url: window.location.href,
 				type: 'POST',
@@ -495,7 +495,7 @@ function submit(){
 
 
 function closeup() {
-	if (confirm('Do you comfirm to close?')) {
+	if (confirm('确认关闭问卷？')) {
 		$.ajax({
 			url: window.location.href,
 			type: 'POST',
