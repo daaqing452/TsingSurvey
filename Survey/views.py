@@ -9,9 +9,10 @@ from django.template import RequestContext
 from Survey.models import Questionaire, Answeraire
 from SUser.models import SUser
 import SUser.utils as Utils
-import json
-import datetime
 import Analysis.views as Analysis
+import datetime
+import json
+import math
 
 # 问卷状态
 #	 0 修改中（随时修改）
@@ -122,14 +123,18 @@ def survey(request, qid):
 				    ip = request.META['REMOTE_ADDR']
 				agent = request.META.get('HTTP_USER_AGENT', 'unknown')
 				os = request.META.get('OS', 'unknown')
-
-				answeraire = Answeraire.objects.create(qid=qid, uid=user.id, load_time=request.POST['load_time'], submit_time=request.POST['submit_time'], ip=ip, agent=agent, os=os, answers=request.POST.get('astring'))
+				astring = request.POST.get('astring')
+				answeraire = Answeraire.objects.create(qid=qid, uid=user.id, load_time=request.POST['load_time'], submit_time=request.POST['submit_time'], ip=ip, agent=agent, os=os, answers=astring)
 				answeraire.save()
 				qid_dict[str(qid)] = 1
 				suser.qid_list = json.dumps(qid_dict)
-				suser.credit += int(request.POST.get('credit'));
+				# 计算积分
+				k = (len(json.loads(astring)) - 1) / 5 + 1
+				credit = int(k * math.pow(1.05, len(qid_dict)))
+				suser.credit += credit
 				suser.save()
-				return HttpResponse(json.dumps({}))
+				return HttpResponse(json.dumps({'credit': credit}))
+
 			# 关闭问卷请求
 			if op == 'closeup':
 				questionaire.close_time = datetime.datetime.now()
@@ -161,6 +166,7 @@ def bonus(request):
 		return HttpResponseRedirect('../login/')
 	rdata = {}
 	rdata['user'] = request.user
+	rdata['credit'] = request.POST.get('credit')
 	op = request.POST.get('op')
 
 	return render(request, 'bonus.html', rdata)

@@ -482,11 +482,12 @@ function submit(){
 			$.ajax({
 				url: window.location.href,
 				type: 'POST',
-				data: {'op': 'submit', 'astring': Astring, 'credit': 10, 'load_time': load_time_format,'submit_time':submit_time_format},
+				data: {'op': 'submit', 'astring': Astring, 'load_time': load_time_format,'submit_time':submit_time_format},
 				success: function(data) {
 					data = JSON.parse(data);
 					alert('提交成功');
-					window.location.href = '/bonus/';
+					$('input#credit').val(data['credit']);
+					$('form#goto_bonus').submit();
 				}
 			});
 		}
