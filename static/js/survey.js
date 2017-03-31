@@ -28,8 +28,9 @@ $(document).ready(function(){
 			}
 			if(status == 2){
 				questions = JSON.parse(qstring);
-				showPage();
-				getindex();
+				alert(questions);
+				//showPage();
+				//getindex();
 			}
 		}
 	});

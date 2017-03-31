@@ -318,7 +318,7 @@ function getQFromModal(){
 	var q = {s_type:current_status.s_type};
 	//q.index
 	if(questions.length == 0){
-		q.index = 1;
+		q.index = 0;
 	}
 	else{
 		for(var i = operate_index-1; i >= 0; i--){
