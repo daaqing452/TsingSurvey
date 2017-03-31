@@ -5,6 +5,7 @@ function refreshUserList(user_list) {
 		var uid = user_list[i]['uid'];
 		var username = user_list[i]['username'];
 		var name = user_list[i]['name'];
+		var credit = user_list[i]['credit']
 		var is_sample = '√';
 		if (user_list[i]['is_sample'] == 0) is_sample = '';
 		var tr = tbody.find('[type="clone"]').clone();
@@ -14,6 +15,7 @@ function refreshUserList(user_list) {
 		tr.find('[type="username"]').attr('href', '/profile/' + uid + '/');
 		tr.find('[type="name"]').text(name);
 		tr.find('[type="is_sample"]').text(is_sample);
+		tr.find('[type="credit"]').text(credit);
 		tr.show();
 		tbody.append(tr);
 	}
@@ -62,6 +64,14 @@ function constraint_select_change(obj) {
 			}
 		}
 	});
+}
+
+function change_credit(obj) {
+	var new_credit = prompt('新的积分', '');
+	var td = $(obj);
+	if (new_credit == null) new_credit = td.html();
+	if (new_credit == '') new_credit = td.html();
+	td.html(new_credit);
 }
 
 $(document).ready(function(){

@@ -103,7 +103,7 @@ def user_list(request):
 	rdata['page_max'] = (SUser.objects.count() - 1) / ITEM_PER_PAGE + 1
 
 	def get_suser_list():
-		return [{'uid': suser_raw.uid, 'username': suser_raw.username, 'name': suser_raw.name, 'is_sample': suser_raw.is_sample} for suser_raw in SUser.objects.order_by('id')[page_s:page_t] ]
+		return [{'uid': suser.uid, 'username': suser.username, 'name': suser.name, 'is_sample': suser.is_sample, 'credit': suser.credit} for suser in SUser.objects.order_by('id')[page_s:page_t] ]
 
 	# 加载
 	if op == 'load':

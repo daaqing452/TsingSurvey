@@ -84,18 +84,21 @@
 		<td align=center> 学号 </td>
 		<td align=center> 姓名 </td>
 		<td align=center> 是否为样本？ </td>
+		<td align=center> 积分 </td>
 	</tr>
 	<tr type='clone' style='display:none'>
 		<td align=center> <input type='checkbox' username='' /> </td>
 		<td align=center> <a type='username'> clone_a </a> </td>
 		<td align=center type='name'> clone_b </td>
-		<td  align=center type='is_sample' align=center> clone_c </td>
+		<td align=center type='is_sample'> clone_c </td>
+		<td align=center type='credit' onclick='change_credit(this)'> clone_d </td>
 	</tr>
 	<tr type='item'>
 		<td> <input type='checkbox' username='' /> </td>
 		<td> remove_a </td>
 		<td> remove_b </td>
-		<td> remote_c </td>
+		<td> remove_c </td>
+		<td> remove_d </td>
 	</tr>
 </table>
 
@@ -110,6 +113,7 @@
         }
     });
 </script>
+
 
 <table class="table">
 	<tr>
