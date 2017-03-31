@@ -5,6 +5,7 @@ var table_html = "<table class=\"table table-condensed\"></table>";
 var table_title_html = "<thead><tr><td>题目标题</td></tr><tr><td style=\"padding:0 0 0 0;\"><div id=\"myNicPanel\" style=\"width: 100%;\"></div><p class=\"form-control\" style=\"width:100%;height:80px;\" id=\"s_title\"></p></td></tr></thead>"
 var condition_html = "<tr><td id=\"must_answer\"><input type=\"checkbox\"> 必答</td><td id=\"jump_to\" ><input type=\"checkbox\" onclick=\"jump(1)\"> 无条件跳题</td><td id=\"jump_from\" ><input type=\"checkbox\" onclick=\"jump(2)\"> 关联逻辑</td><tr>";
 var questions = new Array();
+var results = new Array();
 var current_status = {s_type: 0, action: 0, index: 0};
 var n_option_default = 4;
 var image_size_lim = 4096 * 1024;

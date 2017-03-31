@@ -27,7 +27,8 @@ $(document).ready(function(){
 				getindex();
 			}
 			if(status == 2){
-				questions = JSON.parse(qstring);
+				results = JSON.parse(qstring);
+				showReport();
 				//alert(questions[0].s_type);
 				//showPage();
 				//getindex();

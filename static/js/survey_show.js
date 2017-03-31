@@ -516,3 +516,47 @@ function closeup() {
 		});
 	}
 }
+
+
+
+function createReportHtml(result){
+	var index = result.index;
+	var HTMLContent = "<td>";
+	switch(result.s_type){
+		case 1:{
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + result.title + "</div>";
+			HTMLContent += "<table class=\"table\"><tr><td>选项</td><td>小计</td><td>比例</td></tr>";
+			for(var i = 0; i < result.n_option; i ++){
+				HTMLContent += "<tr>";
+				var option = result.options[i];
+				HTMLContent += "<td>";
+				if(option.option_type==0){
+					HTMLContent += option.text;
+				}
+				if(option.option_type==1){
+					HTMLContent += option.image;
+				}
+				HTMLContent += "</td><td>" + option.num + "</td><td>" + (parseFloat(option.ratio)*100).toString() + "%</td>";
+
+				HTMLContent += "</tr>";
+			}
+			HTMLContent += "</table>";
+			HTMLContent += "<div class=\"btn-group\"><button type=\"button\" class=\"btn btn-info btn-sm\">饼状图</button><button type=\"button\" class=\"btn btn-success btn-sm\">柱状图</button><button type=\"button\" class=\"btn btn-warning btn-sm\">条形图</button></div>"
+			HTMLContent += "</td>";
+			break;
+		}
+	}
+	return HTMLContent;
+	
+}
+
+function showReport(){
+	//alert(JSON.stringify(results));
+	for(var i = 0; i < results.length; i ++){
+		var new_row = q_table.insertRow(-1);
+		var result = results[i];
+		var new_html = createReportHtml(result);
+		new_row.innerHTML = new_html;
+	}
+}
+
