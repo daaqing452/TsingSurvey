@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
-from django.utils import timezone
+# from django.utils import timezone
 from Survey.models import Questionaire, Answeraire
 from SUser.models import SUser
 import SUser.utils as Utils
@@ -28,12 +28,12 @@ def survey(request, qid):
 	rdata['qid'] = qid
 	op = request.POST.get('op')
 	status = -1
-	now = timezone.now()
+	now = datetime.datetime.now()
 
 	def update_questionaire(questionaire, title, qstring):
 		questionaire.title = title
 		questionaire.questions = qstring
-		questionaire.update_time = timezone.now()
+		questionaire.update_time = datetime.datetime.now()
 
 	# 添加新问卷
 	if op == 'create':
@@ -115,6 +115,10 @@ def survey(request, qid):
 
 			# 提交问卷请求
 			if op == 'submit':
+				print('xx')
+				print(datetime.datetime.now())
+				print(request.POST['submit_time'])
+				print('xx')
 				# 获取信息
 				if request.META.has_key('HTTP_X_FORWARDED_FOR'):  
 				    ip = request.META['HTTP_X_FORWARDED_FOR']  
@@ -132,7 +136,7 @@ def survey(request, qid):
 				return HttpResponse(json.dumps({}))
 			# 关闭问卷请求
 			if op == 'closeup':
-				questionaire.close_time = timezone.now()
+				questionaire.close_time = datetime.datetime.now()
 				questionaire.status = 2
 				questionaire.save()
 				return HttpResponse(json.dumps({}))
