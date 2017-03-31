@@ -115,10 +115,6 @@ def survey(request, qid):
 
 			# 提交问卷请求
 			if op == 'submit':
-				print('xx')
-				print(datetime.datetime.now())
-				print(request.POST['submit_time'])
-				print('xx')
 				# 获取信息
 				if request.META.has_key('HTTP_X_FORWARDED_FOR'):  
 				    ip = request.META['HTTP_X_FORWARDED_FOR']  

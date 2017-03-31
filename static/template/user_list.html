@@ -52,6 +52,10 @@
 
 <table width="100%">
 	<tr>
+		<td>
+		<button class="btn btn-info btn-sm" id='export'> 导出名单 </button>
+		<a id='download'> </a>
+		</td>
 		<form enctype='multipart/form-data' action='/user_list/' method='post'>
 		{% csrf_token %}
 		<td width="5%">

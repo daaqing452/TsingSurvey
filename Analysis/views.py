@@ -102,20 +102,29 @@ def export(qid):
 	sheet2 = excel.add_worksheet('工作表2')
 	sheet3 = excel.add_worksheet('工作表3')
 	# 基本信息
+	sheet1.write(0, 0, '开始时间')
+	sheet1.write(0, 1, '结束时间')
+	sheet1.write(0, 2, '持续时间')
+	sheet1.write(0, 3, '学号')
+	sheet1.write(0, 4, 'IP')
+	sheet1.write(0, 5, 'AGENT')
 	for i in range(len(answeraires)):
 		answeraire = answeraires[i]
-		sheet1.write_string(i + 1, 0, str(answeraire.load_time))
-		sheet2.write_string(i + 1, 0, str(answeraire.load_time))
-		sheet1.write_string(i + 1, 1, str(answeraire.submit_time))
-		sheet2.write_string(i + 1, 1, str(answeraire.submit_time))
-		sheet1.write(i + 1, 2, User.objects.get(id=answeraire.uid).username)
-		sheet2.write(i + 1, 2, User.objects.get(id=answeraire.uid).username)
-		sheet1.write(i + 1, 3, answeraire.ip)
-		sheet2.write(i + 1, 3, answeraire.ip)
-		sheet1.write(i + 1, 4, answeraire.os)
-		sheet2.write(i + 1, 4, answeraire.os)
+		sheet1.write(i + 1, 0, str(answeraire.load_time))
+		sheet2.write(i + 1, 0, str(answeraire.load_time))
+		sheet1.write(i + 1, 1, str(answeraire.submit_time))
+		sheet2.write(i + 1, 1, str(answeraire.submit_time))
+		cost_time = answeraire.submit_time - answeraire.load_time
+		sheet1.write(i + 1, 2, str(cost_time))
+		sheet2.write(i + 1, 2, str(cost_time))
+		sheet1.write(i + 1, 3, User.objects.get(id=answeraire.uid).username)
+		sheet2.write(i + 1, 3, User.objects.get(id=answeraire.uid).username)
+		sheet1.write(i + 1, 4, answeraire.ip)
+		sheet2.write(i + 1, 4, answeraire.ip)
+		sheet1.write(i + 1, 5, answeraire.agent)
+		sheet2.write(i + 1, 5, answeraire.agent)
 	# 文件内容
-	col = 4
+	col = 5
 	for question in questionaire:
 		s_type = question['s_type']
 		index = question['index']

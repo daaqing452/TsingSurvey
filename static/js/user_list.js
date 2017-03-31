@@ -233,4 +233,19 @@ $(document).ready(function(){
 			}
 		});
 	});
+
+	//	导出名单
+	$('button#export').click(function() {
+		$.ajax({
+			url: window.location.pathname,
+			type: 'POST',
+			data: {'op': 'export'},
+			success: function(data) {
+				data = JSON.parse(data);
+				export_path = '/' + data['export_path'];
+				$('a#download').attr('href', export_path);
+				document.getElementById("download").click();
+			}
+		});
+	});
 });
