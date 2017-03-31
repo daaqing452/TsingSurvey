@@ -11,7 +11,6 @@ $(document).ready(function(){
 			now_time = new Date();
 			load_time_format = gettimeformat(now_time);
 			load_time = now_time.getTime();
-			alert(load_time_format);
 			$('input#title').val(title);
 			$('p#title').html(title);
 			if(qstring == ""){
@@ -47,7 +46,7 @@ function prefixzero(num){
 
 function gettimeformat(now_t) {
 	var year = prefixzero(now_t.getFullYear().toString());
-	var month = prefixzero(now_t.getMonth().toString());
+	var month = prefixzero((now_t.getMonth()+1).toString());
 	var day = prefixzero(now_t.getDate().toString());
 	var hour = prefixzero(now_t.getHours().toString());
 	var minute = prefixzero(now_t.getMinutes().toString());
