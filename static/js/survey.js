@@ -8,7 +8,9 @@ $(document).ready(function(){
 			status = data['status'];
 			title = data['title'];
 			qstring = data['qstring'];
-			load_time = new Date().getTime();
+			now_time = new Date();
+			load_time_format = gettimeformat(now_time);
+			load_time = now_time.getTime();
 			$('input#title').val(title);
 			$('p#title').html(title);
 			if(qstring == ""){
@@ -32,6 +34,17 @@ $(document).ready(function(){
 		}
 	});
 });
+
+function gettimeformat(now_t) {
+	var year = now_t.getFullYear().toString();
+	var month = now_t.getMonth().toString();
+	var day = now_t.getDate().toString();
+	var hour = now_t.getHours().toString();
+	var minute = now_t.getMinutes().toString();
+	var second = now_t.getSeconds().toString();
+	var t_format = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
+	return t_format;
+}
 
 function exportt() {
 	var qid = $('p#qid').attr('qid');

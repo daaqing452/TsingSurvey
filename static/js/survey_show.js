@@ -1,6 +1,8 @@
 var wrong_info = "";
-var load_time = 0;
+var load_time_format = 0;
+var load_time = 0
 var submit_time = 0;
+var submit_time_format = 0;
 function createSurveyHtml(q){
 	var index = q.index;
 	if(q.s_type != 8){
@@ -472,13 +474,15 @@ function submit(){
 
 	if(legal){
 		var Astring = JSON.stringify(answers);
-		submit_time = new Date().getTime();
+		now_time = new Date();
+		submit_time = now_time.getTime();
+		submit_time_format = gettimeformat(now_time);
 		var dwell_time = submit_time - load_time;
 		if (confirm('Do you comfirm to submit?')) {
 			$.ajax({
 				url: window.location.href,
 				type: 'POST',
-				data: {'op': 'submit', 'astring': Astring, 'credit': 10, 'load_time': load_time,'submit_time':submit_time},
+				data: {'op': 'submit', 'astring': Astring, 'credit': 10, 'load_time': load_time_format,'submit_time':submit_time_format},
 				success: function(data) {
 					data = JSON.parse(data);
 					alert('提交成功');
