@@ -13,9 +13,13 @@ import time
 import xlsxwriter
 
 
-def statistic(qid):
+def get_report(qid):
 	MATRIX_STAT_RANK = 2
 	questionaire = Questionaire.objects.get(id=qid)
+	# 已经生成报告
+	if questionaire.report_id != -1:
+		return Report.objects.get(id=questionaire.report_id).report
+	# 还没生成报告
 	questions = json.loads(questionaire.questions)
 	answeraire_list = Answeraire.objects.filter(qid=qid)
 	answeraires = [json.loads(answeraire.answers) for answeraire in answeraire_list]
@@ -77,17 +81,20 @@ def statistic(qid):
 					roption['ratio'] = 1.0 * counter[k, j] / n_people
 					report['options'].append(roption)
 		reports.append(report)
-	xxx
-
+	report_str = json.dumps(reports)
+	report = Report.objects.create(qid=qid, report=report_str)
+	questionaire.report_id = report.id
+	questionaire.save()
+	return report.report
 
 def export(qid):
-	statistic(qid)
 	questionaires = Questionaire.objects.filter(id=qid)
 	if len(questionaires) == 0:
-		return HttpResponse(json.dumps({'info': 'no tt'}))
+		return HttpResponse(json.dumps({'info': 'no that'}))
 	questionaire = json.loads(questionaires[0].questions)
 	answeraires = Answeraire.objects.filter(qid=qid)
 	answers = [json.loads(answeraire.answers) for answeraire in answeraires]
+	report = json.loads(get_report(qid))
 	# 写入excel
 	excel_name = 'media/' + time.strftime('%Y%m%d%H%M%S') + '-export.xlsx'
 	excel = xlsxwriter.Workbook(excel_name)
@@ -182,6 +189,8 @@ def export(qid):
 					idx = int(selected_option[0])
 					sheet1.write(row, col - n_option + idx + 1, n_option - i)
 					sheet2.write(row, col - n_option + idx + 1, str(n_option - i))
+	# 写入统计
+	xxx
 	excel.close()
 	return excel_name
 

@@ -52,7 +52,11 @@ def survey(request, qid):
 		
 		# 加载问卷请求
 		if op == 'load':
-			return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions}))
+			if status == 2:
+				report = Analysis.get_report(qid)
+				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': report}))
+			else:
+				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions}))
 		
 		# 删除问卷
 		if op == 'delete':
