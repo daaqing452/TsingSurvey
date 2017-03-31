@@ -96,7 +96,7 @@ def export(qid):
 	answers = [json.loads(answeraire.answers) for answeraire in answeraires]
 	reports = json.loads(get_report(qid))
 	# 写入excel
-	excel_name = 'media/' + time.strftime('%Y%m%d%H%M%S') + '-export.xlsx'
+	excel_name = 'media/' + time.strftime('%Y%m%d%H%M%S') + '-survey.xlsx'
 	excel = xlsxwriter.Workbook(excel_name)
 	sheet1 = excel.add_worksheet('工作表1')
 	sheet2 = excel.add_worksheet('工作表2')
