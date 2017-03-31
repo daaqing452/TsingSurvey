@@ -247,9 +247,11 @@ function verify(a){
 		wrong_info += "第"+(a.index+1)+"题为必答题!\n";
 		return false;
 	}
-	if(a.s_type == 2 & (a.select.length < a.min_select || a.select.length > a.max_select)){
-		wrong_info += "第"+(a.index+1)+"题选择选项数量有误!\n";
-		return false;
+	if(a.s_type == 2){
+		if((a.min_select != "" & a.select.length < a.min_select) || (a.max_select != "" & a.select.length > a.max_select)){
+			wrong_info += "第"+(a.index+1)+"题选择选项数量有误!\n";
+			return false;
+		}
 	}
 	return true;
 }
@@ -327,8 +329,9 @@ function submit(){
 	var answers = new Array();
 	wrong_info = "[填写错误信息]\n";
 	var legal = true;
-	for(var i = 0; i < questions.length; i++){
-		var q = questions[i];
+	for(var line = 0; line < questions.length; line++){
+		var q = questions[line];
+		var i = q.index;
 		var a = {s_type:q.s_type};
 		a.index = q.index;
 		a.title = q.title;
