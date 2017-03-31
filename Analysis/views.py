@@ -27,6 +27,7 @@ def get_report(qid):
 	counters = []
 	for question in questions:
 		s_type = question['s_type']
+		if s_type == 8: continue
 		if 'n_option' in question: n_option = int(question['n_option'])
 		# 单选题、多选题、下拉题、矩阵题
 		if s_type in [1, 2, 4, 6]:
@@ -133,6 +134,7 @@ def export(qid):
 	col = 5
 	for question in questionaire:
 		s_type = question['s_type']
+		if s_type == 8: continue
 		index = question['index']
 		title = question['title']
 		selects = [answer[index]['select'] for answer in answers]
@@ -222,6 +224,7 @@ def export(qid):
 	row = 0
 	for report in reports:
 		s_type = report['s_type']
+		if s_type == 8: continue
 		if 'n_option' in report: n_option = int(report['n_option'])
 		options = report['options']
 		sheet3.write(row, 0, str(int(report['index'] + 1)) + '.' + report['title'])
@@ -274,7 +277,7 @@ def export(qid):
 				sheet3.write(r, c, option['ratio'])
 			row += n_set + 2
 		# 填空题
-		elif s_type == 3:
+		else:
 			row += 1
 	excel.close()
 	return excel_name
