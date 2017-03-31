@@ -103,11 +103,17 @@ def export(qid):
 	sheet3 = excel.add_worksheet('工作表3')
 	# 基本信息
 	sheet1.write(0, 0, '开始时间')
+	sheet2.write(0, 0, '开始时间')
 	sheet1.write(0, 1, '结束时间')
+	sheet2.write(0, 1, '结束时间')
 	sheet1.write(0, 2, '持续时间')
+	sheet2.write(0, 2, '持续时间')
 	sheet1.write(0, 3, '学号')
+	sheet2.write(0, 3, '学号')
 	sheet1.write(0, 4, 'IP')
+	sheet2.write(0, 4, 'IP')
 	sheet1.write(0, 5, 'AGENT')
+	sheet2.write(0, 5, 'AGENT')
 	for i in range(len(answeraires)):
 		answeraire = answeraires[i]
 		sheet1.write(i + 1, 0, str(answeraire.load_time))
