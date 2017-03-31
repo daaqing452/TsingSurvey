@@ -94,7 +94,7 @@ def export(qid):
 	questionaire = json.loads(questionaires[0].questions)
 	answeraires = Answeraire.objects.filter(qid=qid)
 	answers = [json.loads(answeraire.answers) for answeraire in answeraires]
-	report = json.loads(get_report(qid))
+	reports = json.loads(get_report(qid))
 	# 写入excel
 	excel_name = 'media/' + time.strftime('%Y%m%d%H%M%S') + '-export.xlsx'
 	excel = xlsxwriter.Workbook(excel_name)
@@ -109,7 +109,7 @@ def export(qid):
 		selects = [answer[index]['select'] for answer in answers]
 		row = 0
 		# 单选题、下拉题
-		if s_type == 1 or s_type == 4:
+		if s_type in [1, 4]:
 			col += 1
 			sheet1.write(row, col, '第' + str(index + 1) + '题（' + title + '）')
 			sheet2.write(row, col, '第' + str(index + 1) + '题（' + title + '）')
@@ -166,7 +166,7 @@ def export(qid):
 				for selected_option in select:
 					idx = selected_option[0]
 					sheet1.write(row, col - n_option + idx + 1, 1)
-					sheet2.write(row, col - n_option + idx + 1, '1')
+					sheet2.write(row, col - n_option + idx + 1, 1)
 		# 排序题
 		elif s_type == 5:
 			n_option = question['n_option']
@@ -188,9 +188,65 @@ def export(qid):
 					selected_option = select[i]
 					idx = int(selected_option[0])
 					sheet1.write(row, col - n_option + idx + 1, n_option - i)
-					sheet2.write(row, col - n_option + idx + 1, str(n_option - i))
+					sheet2.write(row, col - n_option + idx + 1, n_option - i)
 	# 写入统计
-	xxx
+	row = 0
+	for report in reports:
+		s_type = report['s_type']
+		if 'n_option' in report: n_option = int(report['n_option'])
+		options = report['options']
+		sheet3.write(row, 0, str(int(report['index'] + 1)) + '.' + report['title'])
+		row += 1
+		# 单选题、多选题、下拉题
+		if s_type in [1, 2, 4]:
+			for i in range(n_option):
+				option = options[i]
+				s = option['text']
+				if option['option_type'] == 1: s = str(i + 1)
+				sheet3.write(row + 0, i + 2, s)
+				sheet3.write(row + 1, i + 2, option['num'])
+				sheet3.write(row + 2, i + 2, option['ratio'])
+			sheet3.write(row + 1, 1, '数量')
+			sheet3.write(row + 2, 1, '比例')
+			row += 4
+		# 排序题
+		elif s_type == 5:
+			for option in options:
+				s = option['text']
+				if option['option_type'] == 1: s = str(i + 1)
+				index = int(option['index'])
+				rank = int(option['rank'])
+				sheet3.write(row, index + 2, s)
+				sheet3.write(row + rank * 2 + 1, index + 2, option['num'])
+				sheet3.write(row + rank * 2 + 2, index + 2, option['ratio'])
+			sheet3.write(row + 1, 1, '第一选择 数量')
+			sheet3.write(row + 2, 1, '第一选择 比例')
+			sheet3.write(row + 3, 1, '第二选择 数量')
+			sheet3.write(row + 4, 1, '第二选择 比例')
+			row += 6
+		# 矩阵题
+		elif s_type == 6:
+			n_set = int(report['n_set'])
+			n_column = n_option / n_set
+			for option in options:
+				index = option['index']
+				r = row + 1 + index / n_column
+				c = 2 + index % n_column
+				sheet3.write(row, c, option['image'])
+				sheet3.write(r, 1, option['text'])
+				sheet3.write(r, c, option['num'])
+			row += n_set + 2
+			for option in options:
+				index = option['index']
+				r = row + 1 + index / n_column
+				c = 2 + index % n_column
+				sheet3.write(row, c, option['image'])
+				sheet3.write(r, 1, option['text'])
+				sheet3.write(r, c, option['ratio'])
+			row += n_set + 2
+		# 填空题
+		elif s_type == 3:
+			row += 1
 	excel.close()
 	return excel_name
 
