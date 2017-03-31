@@ -54,11 +54,14 @@ def get_report(qid):
 	# 统计
 	reports = []
 	n_people = len(answeraires)
-	for i in range(len(counters)):
+	i = -1
+	for question in questions:
+		s_type = question['s_type']
+		if s_type == 8: continue
 		report = {}
-		question = questions[i]
+		i += 1
 		counter = counters[i]
-		report['s_type'] = s_type = question['s_type']
+		report['s_type'] = s_type
 		report['index'] = question['index']
 		report['title'] = question['title']
 		if 'n_option' in question: report['n_option'] = question['n_option']
@@ -121,6 +124,8 @@ def export(qid):
 		sheet2.write(i + 1, 0, str(answeraire.load_time))
 		sheet1.write(i + 1, 1, str(answeraire.submit_time))
 		sheet2.write(i + 1, 1, str(answeraire.submit_time))
+		print(type(answeraire.submit_time))
+		print(type(answeraire.load_time))
 		cost_time = answeraire.submit_time - answeraire.load_time
 		sheet1.write(i + 1, 2, str(cost_time))
 		sheet2.write(i + 1, 2, str(cost_time))
