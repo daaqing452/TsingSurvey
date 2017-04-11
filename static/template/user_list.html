@@ -53,19 +53,19 @@
 <table width="100%">
 	<tr>
 		<td>
-		<button class="btn btn-info btn-sm" id='export'> 导出名单 </button>
-		<a id='download'> </a>
+			<button class="btn btn-info btn-sm" type='all' onclick='exportt(this)'> 导出所有用户 </button>
+			<br/>
+			<button class="btn btn-info btn-sm" type='sample' onclick='exportt(this)'> 导出样本名单 </button>
+			<a id='download'> </a>
 		</td>
-		<form enctype='multipart/form-data' action='/user_list/' method='post'>
-		{% csrf_token %}
-		<td width="5%">
-		<input type='submit' value='上传名单' class="btn btn-info btn-sm" />
+		<td>
+			<form enctype='multipart/form-data' action='/user_list/' method='post'>
+			{% csrf_token %}
+			<input type='submit' value='上传名单' class="btn btn-info btn-sm" />
+			<input type='file' class="btn btn-sm" name='upload'>
+			{% csrf_token %}
+			</form>
 		</td>
-		<td width="5%">
-		<input type='file' class="btn btn-sm" name='upload'>
-		</td>
-		{% csrf_token %}
-		</form>
 		<td align="right">
 		<button class="btn btn-success btn-sm" id='select_all'> 全部选择 </button>
 		<button class="btn btn-success btn-sm" id='select_none'> 全部不选择 </button>
@@ -76,6 +76,41 @@
 	</tr>
 </table>
 <br/>
+
+
+<table class="table">
+	<tr>
+	<td>
+		<button class="btn btn-sm btn-warning" id='add_constraint'> 添加筛选样本条件 </button>
+		<button class="btn btn-sm btn-warning" id='auto_sample'> 自动筛选 </button>
+		<div id='constraint'>
+			<div type='clone' style='display:none'>
+				<select onchange='constraint_select_change(this)'>
+					<option value='-1'> </option>
+				</select>
+				<input type='checkbox' name='checkbox_clone' style='display:none'/>
+				<span name='span_clone' style='display:none'> </span>
+			</div>
+		</div>
+		<button class="btn btn-sm btn-warning" id='add_statistic'> 样本统计 </button>
+		<div id='statistic'>
+			<div type='clone' style='display:none'>
+				<span> </span>
+				<button class="btn btn-sm btn-warning" id='show_statistic' onclick='show_statistic(this)'> 显示统计 </button>
+				<select> </select>
+			</div>
+		</div>
+		<br/>
+		样本数上限 <input type='text' id='upperbound' style='width:120px'/>
+	</td>
+	<td align='right'>
+		<button class="btn btn-sm btn-primary" id='list_add'> 显示全部 </button>
+		<button class="btn btn-sm btn-primary" id='list_sample'> 显示样本 </button>
+		<button class="btn btn-sm btn-primary" id='list_single'> 显示个人 </button>
+		<input type='text' id='query_single' style='width:120px'/>
+	</td>
+	</tr>
+</table>
 
 
 <table class="table table-hover" id='user_list'>
@@ -109,41 +144,19 @@
         pageCount: $(".tcdPageCode").attr('page_max'),
         current: $(".tcdPageCode").attr('page_current'),
         backFn:function(page_n){
-            window.location.href = '/user_list/?page=' + page_n;
+        	var par = window.location.search;
+        	var list = 'all';
+        	if (par.indexOf('?') != -1) {
+        		par = par.substr(1).split('&');
+        		for (var i = 0; i < par.length; i++) {
+        			var arr = par[i].split('=');
+        			if (arr[0] == 'list') list = arr[1];
+        		}
+        	}
+            window.location.href = '/user_list/?list=' + list + '&page=' + page_n;
         }
     });
 </script>
-
-
-<table class="table">
-	<tr>
-	<td>
-		<button class="btn btn-sm btn-warning" id='add_constraint'> 添加筛选样本条件 </button>
-		<button class="btn btn-sm btn-warning" id='auto_sample'> 自动筛选 </button>
-		<br/>
-		样本数上限 <input type='text' id='upperbound' style='width:120px'/>
-		<div id='constraint'>
-			<div type='clone' style='display:none'>
-				<select onchange='constraint_select_change(this)'>
-					<option value='-1'> </option>
-				</select>
-				<input type='checkbox' name='checkbox_clone' style='display:none'/>
-				<span name='span_clone' style='display:none'> </span>
-			</div>
-		</div>
-	</td>
-	<td align='right'>
-		<button class="btn btn-sm btn-primary" id='add_statistic'> 样本统计 </button>
-		<div id='statistic'>
-			<div type='clone' style='display:none'>
-				<span> </span>
-				<button class="btn btn-sm btn-primary" id='show_statistic' onclick='show_statistic(this)'> 显示统计 </button>
-				<select> </select>
-			</div>
-		</div>
-	</td>
-	</tr>
-</table>
 
 
 {{ debug }}

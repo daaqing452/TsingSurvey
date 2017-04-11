@@ -1,3 +1,4 @@
+// 刷新用户列表
 function refreshUserList(user_list) {
 	var tbody = $('table#user_list').children('tbody');
 	tbody.find('[type="item"]').remove();
@@ -26,7 +27,7 @@ function show_statistic(obj) {
 	var select = button.parent().children('select');
 	var option = select.find('option:selected');
 	$.ajax({
-		url: window.location.pathname,
+		url: window.location.href,
 		type: 'POST',
 		data: {'op': 'show_statistic', 'index': option.val()},
 		success: function(data) {
@@ -40,7 +41,7 @@ function constraint_select_change(obj) {
 	var select = $(obj);
 	var option = select.find('option:selected');
 	$.ajax({
-		url: window.location.pathname,
+		url: window.location.href,
 		type: 'POST',
 		data: {'op': 'constraint_select_change', 'index': option.val()},
 		success: function(data) {
@@ -66,13 +67,41 @@ function constraint_select_change(obj) {
 	});
 }
 
+// 更改积分
 function change_credit(obj) {
 	var new_credit = prompt('新的积分', '');
 	var td = $(obj);
 	if (new_credit == null) new_credit = td.html();
 	if (new_credit == '') new_credit = td.html();
+	var username = td.parent().find('[type=username]').html();
+	$.ajax({
+		url: window.location.href,
+		type: 'POST',
+		data: {'op': 'change_credit', 'credit': new_credit, 'username': username},
+		success: function(data) {
+			data = JSON.parse(data);
+		}
+	});
 	td.html(new_credit);
 }
+
+// 导出
+function exportt(obj) {
+	var button = $(obj);
+	$.ajax({
+		url: window.location.href,
+		type: 'POST',
+		data: {'op': 'export', 'size': button.attr('type')},
+		success: function(data) {
+			data = JSON.parse(data);
+			export_path = '/' + data['export_path'];
+			$('a#download').attr('href', export_path);
+			document.getElementById("download").click();
+		}
+	});
+}
+
+
 
 $(document).ready(function(){
 
@@ -108,7 +137,7 @@ $(document).ready(function(){
 			username_list.push($(this).attr('username'));
 		});
 		$.ajax({
-			url: window.location.pathname,
+			url: window.location.href,
 			type: 'POST',
 			data: {'op': 'sample_yes', 'username_list': JSON.stringify(username_list)},
 			success: function(data) {
@@ -125,7 +154,7 @@ $(document).ready(function(){
 			username_list.push($(this).attr('username'));
 		});
 		$.ajax({
-			url: window.location.pathname,
+			url: window.location.href,
 			type: 'POST',
 			data: {'op': 'sample_no', 'username_list': JSON.stringify(username_list)},
 			success: function(data) {
@@ -143,7 +172,7 @@ $(document).ready(function(){
 				username_list.push($(this).attr('username'));
 			});
 			$.ajax({
-				url: window.location.pathname,
+				url: window.location.href,
 				type: 'POST',
 				data: {'op': 'delete', 'username_list': JSON.stringify(username_list)},
 				success: function(data) {
@@ -158,7 +187,7 @@ $(document).ready(function(){
 	$('button#add').click(function(){
 		var username = $('input#add').val();
 		$.ajax({
-			url: window.location.pathname,
+			url: window.location.href,
 			type: 'POST',
 			data: {'op': 'add', 'username': username},
 			success: function(data) {
@@ -177,7 +206,7 @@ $(document).ready(function(){
 	//	添加统计
 	$('button#add_statistic').click(function(){
 		$.ajax({
-			url: window.location.pathname,
+			url: window.location.href,
 			type: 'POST',
 			data: {'op': 'add_statistic'},
 			success: function(data) {
@@ -199,7 +228,7 @@ $(document).ready(function(){
 	//	添加样本限制条件
 	$('button#add_constraint').click(function(){
 		$.ajax({
-			url: window.location.pathname,
+			url: window.location.href,
 			type: 'POST',
 			data: {'op': 'add_constraint'},
 			success: function(data) {
@@ -234,7 +263,7 @@ $(document).ready(function(){
 			constraints[value] = item;
 		});
 		$.ajax({
-			url: window.location.pathname,
+			url: window.location.href,
 			type: 'POST',
 			data: {'op': 'auto_sample', 'constraints': JSON.stringify(constraints), 'upperbound': $('input#upperbound').val()},
 			success: function(data) {
@@ -244,18 +273,14 @@ $(document).ready(function(){
 		});
 	});
 
-	//	导出名单
-	$('button#export').click(function() {
-		$.ajax({
-			url: window.location.pathname,
-			type: 'POST',
-			data: {'op': 'export'},
-			success: function(data) {
-				data = JSON.parse(data);
-				export_path = '/' + data['export_path'];
-				$('a#download').attr('href', export_path);
-				document.getElementById("download").click();
-			}
-		});
+	// 显示名单
+	$('button#list_add').click(function() {
+		window.location.href = '/user_list/?list=all';
+	});
+	$('button#list_sample').click(function() {
+		window.location.href = '/user_list/?list=sample';
+	});
+	$('button#list_single').click(function() {
+		window.location.href = '/user_list/?list=q' + $('input#query_single').val();
 	});
 });
