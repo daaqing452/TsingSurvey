@@ -11,6 +11,7 @@ from Survey.models import Questionaire, Answeraire
 import SUser.utils as Utils
 import codecs
 import json
+import math
 import random
 import time
 import sys
@@ -242,13 +243,28 @@ def user_list(request):
 		# 构造命令
 		constraints = json.loads(request.POST.get('constraints'))
 		upperbound = request.POST.get('upperbound')
+		if upperbound == '': upperbound = 100
+		upperbound = float(upperbound) / 100.0
 		susers = SUser.objects.filter(~Q(username='root'))
-		for suser in susers:
+		cnt = {}
+		for i in range(len(susers)):
+			suser = susers[i]
+			suser.is_sample = False
+			suser.save()
 			tag = ''
 			for constraint in constraints:
 				tag += eval('suser.' + SUser.__var_name__[int(constraint)]) + '&'
-			print(tag)
-			xxx
+			if not tag in cnt: cnt[tag] = []
+			cnt[tag].append(i)
+		for tag in cnt:
+			arr = cnt[tag]
+			nn = int(math.ceil(len(arr) * upperbound))
+			sampled = random.sample(arr, nn)
+			for sampled_idx in sampled:
+				suser = susers[sampled_idx]
+				suser.is_sample = True
+				suser.save()
+		return HttpResponse(json.dumps({}))
 
 	# 显示统计
 	if op == 'show_statistic':

@@ -204,7 +204,7 @@ $(document).ready(function(){
 	});
 
 	//	添加统计
-	$('button#add_statistic').click(function(){
+	/*$('button#add_statistic').click(function(){
 		$.ajax({
 			url: window.location.href,
 			type: 'POST',
@@ -223,7 +223,7 @@ $(document).ready(function(){
 				div.append(subdiv);
 			}
 		});
-	});
+	});*/
 
 	//	添加样本限制条件
 	$('button#add_constraint').click(function(){
@@ -264,7 +264,7 @@ $(document).ready(function(){
 			data: {'op': 'auto_sample', 'constraints': JSON.stringify(constraints), 'upperbound': $('input#upperbound').val()},
 			success: function(data) {
 				data = JSON.parse(data);
-				refreshUserList(data['user_list']);
+				window.location.href='/user_list/?list=all'
 			}
 		});
 	});
