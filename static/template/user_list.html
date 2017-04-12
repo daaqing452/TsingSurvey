@@ -81,18 +81,22 @@
 <table class="table">
 	<tr>
 	<td>
-		<button class="btn btn-sm btn-warning" id='add_constraint'> 添加筛选样本条件 </button>
+		<button class="btn btn-sm btn-warning" id='add_constraint'> 添加筛选条件 </button>
+		抽样比例 <input type='text' id='upperbound' style='width:30px'/>%
 		<button class="btn btn-sm btn-warning" id='auto_sample'> 自动筛选 </button>
+		<button class="btn btn-sm btn-warning" id='add_statistic'> 样本统计 </button>
 		<div id='constraint'>
-			<div type='clone' style='display:none'>
-				<select onchange='constraint_select_change(this)'>
+			<!--<div type='clone' style='display:none'>
+				<select>
 					<option value='-1'> </option>
 				</select>
 				<input type='checkbox' name='checkbox_clone' style='display:none'/>
 				<span name='span_clone' style='display:none'> </span>
-			</div>
+			</div>-->
+			<select type='clone' style='display:none'>
+				<option value='-1'> </option>
+			</select>
 		</div>
-		<button class="btn btn-sm btn-warning" id='add_statistic'> 样本统计 </button>
 		<div id='statistic'>
 			<div type='clone' style='display:none'>
 				<span> </span>
@@ -100,8 +104,6 @@
 				<select> </select>
 			</div>
 		</div>
-		<br/>
-		样本数上限 <input type='text' id='upperbound' style='width:120px'/>
 	</td>
 	<td align='right'>
 		<button class="btn btn-sm btn-primary" id='list_add'> 显示全部 </button>

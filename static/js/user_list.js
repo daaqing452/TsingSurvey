@@ -37,7 +37,7 @@ function show_statistic(obj) {
 	});
 }
 
-function constraint_select_change(obj) {
+/*function constraint_select_change(obj) {
 	var select = $(obj);
 	var option = select.find('option:selected');
 	$.ajax({
@@ -65,7 +65,7 @@ function constraint_select_change(obj) {
 			}
 		}
 	});
-}
+}*/
 
 // 更改积分
 function change_credit(obj) {
@@ -230,37 +230,33 @@ $(document).ready(function(){
 		$.ajax({
 			url: window.location.href,
 			type: 'POST',
-			data: {'op': 'add_constraint'},
+			data: {'op': 'get_field_chinese'},
 			success: function(data) {
 				data = JSON.parse(data);
 				options = data['options'];
 				var div = $('div#constraint');
-				var subdiv = div.children('[type="clone"]').clone();
-				subdiv.attr('type', 'item');
-				subdiv.attr('value', -1);
-				var select = subdiv.children('select');
-				for (i in options) {
+				var select = div.children('[type="clone"]').clone();
+				select.attr('type', 'item');
+				var a = new Array(33, 4, 6, 9, 13, 40);
+				for (var j in a) {
+					var i = a[j];
 					select.append('<option value="' + i + '">' + options[i] + '</option>');
 				}
-				subdiv.show();
-				div.append(subdiv);
+				select.show();
+				div.append(select);
+				div.append('<br/>');
 			}
 		});
 	});
 
 	//	自动筛选
 	$('button#auto_sample').click(function() {
-		var constraints = {};
+		var constraints = [];
 		var div = $('div#constraint');
-		var childrens = div.children('[type="item"]');
 		div.children('[type="item"]').each(function() {
-			var value = $(this).attr('value');
+			var value = $(this).val();
 			if (value == -1) return;
-			var item = new Array();
-			$(this).children('input:checkbox:checked').each(function() {
-				item.push($(this).val());
-			});
-			constraints[value] = item;
+			constraints.push(value);
 		});
 		$.ajax({
 			url: window.location.href,

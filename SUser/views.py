@@ -223,7 +223,7 @@ def user_list(request):
 		return HttpResponse(json.dumps({'export_path': excel_name}))
 
 	# 添加样本筛选条件
-	if op == 'add_constraint':
+	if op == 'get_field_chinese':
 		return HttpResponse(json.dumps({'options': SUser.__var_chinese__}))
 
 	# 更改样本筛选条件
@@ -240,37 +240,15 @@ def user_list(request):
 	# 自动样本生成
 	if op == 'auto_sample':
 		# 构造命令
-		constraints = json.loads(request.POST.get('constraints'));
-		command = 'SUser.objects.filter(~Q(username="root"))'
-		for index in constraints:
-			var = SUser.__var_name__[int(index)]
-			options = constraints[index]
-			command += '.filter('
-			for i in range(len(options)):
-				command += 'Q(' + var + '="' + options[i] + '")'
-				if i < len(options) - 1:
-					command += '|'
-			command += ')'
-		# 获取符合要求的id
-		susers = eval(command)
-		ids = [suser.id for suser in susers]
-		# 抽样
+		constraints = json.loads(request.POST.get('constraints'))
 		upperbound = request.POST.get('upperbound')
-		try:
-			upperbound = min(int(upperbound), len(susers))
-		except:
-			upperbound = len(susers)
-		sample_ids = set(random.sample(ids, upperbound))
-		# 修改is_sample
 		susers = SUser.objects.filter(~Q(username='root'))
 		for suser in susers:
-			suser.is_sample = int(suser.id in sample_ids)
-			suser.save()
-		return HttpResponse(json.dumps({'user_list': get_suser_list()}))
-
-	# 添加统计
-	if op == 'add_statistic':
-		return HttpResponse(json.dumps({'options': SUser.__var_chinese__}))
+			tag = ''
+			for constraint in constraints:
+				tag += eval('suser.' + SUser.__var_name__[int(constraint)]) + '&'
+			print(tag)
+			xxx
 
 	# 显示统计
 	if op == 'show_statistic':
