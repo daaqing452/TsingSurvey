@@ -80,11 +80,13 @@
 
 <table class="table">
 	<tr>
-	<td>
+		<td>
+		<button class="btn btn-sm btn-warning" id='auto_sample'> 自动筛选 </button>
+		<button class="btn btn-sm btn-warning" id='show_statistic'> 样本统计 </button>
+		<button class="btn btn-sm btn-warning" id='save_sample_list'> 保存样本列表 </button>
+		<br/>
 		<button class="btn btn-sm btn-warning" id='add_constraint'> 添加筛选条件 </button>
 		抽样比例 <input type='text' id='upperbound' style='width:30px'/>%
-		<button class="btn btn-sm btn-warning" id='auto_sample'> 自动筛选 </button>
-		<!--<button class="btn btn-sm btn-warning" id='add_statistic'> 样本统计 </button>-->
 		<div id='constraint'>
 			<!--<div type='clone' style='display:none'>
 				<select>
@@ -97,20 +99,16 @@
 				<option value='-1'> </option>
 			</select>
 		</div>
-		<!--<div id='statistic'>
-			<div type='clone' style='display:none'>
-				<span> </span>
-				<button class="btn btn-sm btn-warning" id='show_statistic' onclick='show_statistic(this)'> 显示统计 </button>
-				<select> </select>
-			</div>
-		</div>-->
-	</td>
-	<td align='right'>
-		<button class="btn btn-sm btn-primary" id='list_add'> 显示全部 </button>
-		<button class="btn btn-sm btn-primary" id='list_sample'> 显示样本 </button>
-		<button class="btn btn-sm btn-primary" id='list_single'> 显示个人 </button>
-		<input type='text' id='query_single' style='width:120px'/>
-	</td>
+		<table id='statistic' class='table table-bordered'>
+			<tr type='clone'> </tr>
+		</table>
+		</td>
+		<td align='right'>
+			<button class="btn btn-sm btn-primary" id='list_add'> 显示全部 </button>
+			<button class="btn btn-sm btn-primary" id='list_sample'> 显示样本 </button>
+			<button class="btn btn-sm btn-primary" id='list_single'> 显示个人 </button>
+			<input type='text' id='query_single' style='width:120px'/>
+		</td>
 	</tr>
 </table>
 

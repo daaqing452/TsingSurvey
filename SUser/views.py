@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
-from SUser.models import SUser
+from SUser.models import SUser, SampleList
 from Survey.models import Questionaire, Answeraire
 import SUser.utils as Utils
 import codecs
@@ -118,6 +118,18 @@ def user_list(request):
 		rdata['page_max'] = (n_susers - 1) / ITEM_PER_PAGE + 1
 		return [{'uid': suser.uid, 'username': suser.username, 'name': suser.name, 'is_sample': suser.is_sample, 'credit': suser.credit} for suser in susers[page_s:page_t] ]
 
+	def get_statistic(susers):
+		fields = [6, 4, 33, 13]
+		cnt = {}
+		for suser in susers:
+			for field in fields:
+				key = SUser.__var_chinese__[field]
+				if not key in cnt: cnt[key] = {}
+				value = eval('suser.' + SUser.__var_name__[field])
+				if not value in cnt[key]: cnt[key][value] = 0
+				cnt[key][value] += 1
+		return cnt
+
 	# 加载
 	if op == 'load':
 		return HttpResponse(json.dumps({'user_list': get_suser_list()}))
@@ -227,50 +239,34 @@ def user_list(request):
 		sheet1.write(0, 1, '是否为样本')
 		for i in range(len(SUser.__var_chinese__)):
 			sheet1.write(0, i + 2, SUser.__var_chinese__[i])
+		row = 1
 		for row in range(n_susers):
 			suser = susers[row]
 			if suser.username == 'root': continue
-			sheet1.write(row + 1, 0, suser.id)
-			sheet1.write(row + 1, 1, suser.is_sample)
+			sheet1.write(row, 0, suser.id)
+			sheet1.write(row, 1, suser.is_sample)
 			for i in range(len(SUser.__var_name__)):
 				s = 'sheet1.write(row + 1, ' + str(i + 2) + ', suser.' + SUser.__var_name__[i] + ')'
 				eval(s)
+			row += 1
 		# 统计用户列表
-		fields = [6, 4, 33, 13]
-		cnt = {}
-		for suser in susers:
-			for field in fields:
-				if not field in cnt: cnt[field] = {}
-				value = eval('suser.' + SUser.__var_name__[field])
-				if not value in cnt[field]: cnt[field][value] = 0
-				cnt[field][value] += 1
+		cnt = get_statistic(susers)
 		row = 0
-		for field in fields:
-			sheet2.write(row, 0, SUser.__var_chinese__[field])
+		for key in cnt:
+			sheet2.write(row, 0, key)
 			col = 1
-			for value in cnt[field]:
+			for value in cnt[key]:
 				sheet2.write(row + 1, col, value)
-				sheet2.write(row + 2, col, cnt[field][value])
-				sheet2.write(row + 3, col, str(round(100.0 * cnt[field][value] / n_susers, 1)) + '%')
+				sheet2.write(row + 2, col, cnt[key][value])
+				sheet2.write(row + 3, col, str(round(100.0 * cnt[key][value] / n_susers, 1)) + '%')
 				col += 1
 			row += 5
 		excel.close()
 		return HttpResponse(json.dumps({'export_path': excel_name}))
 
-	# 添加样本筛选条件
+	# 获得用户字段
 	if op == 'get_field_chinese':
 		return HttpResponse(json.dumps({'options': SUser.__var_chinese__}))
-
-	# 更改样本筛选条件
-	if op == 'constraint_select_change':
-		index = int(request.POST.get('index'))
-		values = []
-		if index != -1:
-			varname = SUser.__var_name__[index]
-			susers = SUser.objects.filter(~Q(username='root'))
-			values = [suser.__dict__[varname] for suser in susers]
-			values = Utils.count(values).keys()
-		return HttpResponse(json.dumps({'index': index, 'values': values}))
 
 	# 自动样本生成
 	if op == 'auto_sample':
@@ -290,6 +286,8 @@ def user_list(request):
 				tag += eval('suser.' + SUser.__var_name__[int(constraint)]) + '&'
 			if not tag in cnt: cnt[tag] = []
 			cnt[tag].append(i)
+		# 采样
+		sampled_susers = []
 		for tag in cnt:
 			arr = cnt[tag]
 			nn = int(math.ceil(len(arr) * upperbound))
@@ -299,15 +297,20 @@ def user_list(request):
 				suser.is_sample = True
 				suser.save()
 		return HttpResponse(json.dumps({}))
-
-	# 显示统计
+	
+	# 显示样本统计
 	if op == 'show_statistic':
-		index = int(request.POST.get('index'))
-		varname = SUser.__var_name__[index]
-		susers = SUser.objects.filter(is_sample=1)
-		values = [suser.__dict__[varname] for suser in susers]
-		result = Utils.count(values)
-		return HttpResponse(json.dumps({'result': result}))
+		susers = SUser.objects.filter(~Q(username='root')).filter(is_sample=True)
+		cnt = get_statistic(susers)
+		return HttpResponse(json.dumps({'statistic': cnt, 'n_susers': len(susers)}))
+
+	# 保存样本列表
+	if op == 'save_sample_list':
+		name = request.POST.get('sample_list_name', '')
+		name = time.strftime('%Y%m%d%H%M%S') + ' ' + name
+		suser_id_list = [suser.id for suser in SUser.objects.filter(is_sample=True)]
+		SampleList.objects.create(name=name, sample_list=suser_id_list)
+		return HttpResponse(json.dumps({}))
 
 	rdata['user_list'] = get_suser_list()
 	return render(request, 'user_list.html', rdata)

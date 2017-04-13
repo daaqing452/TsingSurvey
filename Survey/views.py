@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.template import RequestContext
 # from django.utils import timezone
 from Survey.models import Questionaire, Answeraire
-from SUser.models import SUser
+from SUser.models import SUser, SampleList
 import SUser.utils as Utils
 import Analysis.views as Analysis
 import datetime
@@ -73,6 +73,9 @@ def survey(request, qid):
 
 		# 问卷修改状态
 		if status == 0:
+			# 添加可选样本列表
+			rdata['sample_lists'] = SampleList.objects.all()
+
 			# 修改中管理员可见
 			if not user.is_staff:
 				rdata['viewable'] = 0
