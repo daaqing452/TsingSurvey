@@ -3,6 +3,7 @@ var load_time_format = 0;
 var load_time = 0
 var submit_time = 0;
 var submit_time_format = 0;
+var temp = 0
 function createSurveyHtml(q){
 	var index = q.index;
 	if(q.s_type != 8){
@@ -541,13 +542,252 @@ function createReportHtml(result){
 				HTMLContent += "</tr>";
 			}
 			HTMLContent += "</table>";
-			HTMLContent += "<div class=\"btn-group\"><button type=\"button\" class=\"btn btn-info btn-sm\">饼状图</button><button type=\"button\" class=\"btn btn-success btn-sm\">柱状图</button><button type=\"button\" class=\"btn btn-warning btn-sm\">条形图</button></div>"
+			HTMLContent += "<div class=\"btn-group\"><button type=\"button\" class=\"btn btn-info btn-sm\" onclick=\"doughnut(this)\">饼状图</button><button type=\"button\" class=\"btn btn-success btn-sm\" onclick=\"bar(this)\">柱状图</button><button type=\"button\" class=\"btn btn-warning btn-sm\" onclick=\"Hbar(this)\">条形图</button><button type=\"button\" class=\"btn btn-danger btn-sm\" onclick=\"clearCanvas(this)\">隐藏统计图</button></div>";
+	
+			HTMLContent += "</td>";
+			break;
+		}
+		case 2:{
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + result.title + "</div>";
+			HTMLContent += "<table class=\"table\"><tr><td>选项</td><td>小计</td><td>比例</td></tr>";
+			for(var i = 0; i < result.n_option; i ++){
+				HTMLContent += "<tr>";
+				var option = result.options[i];
+				HTMLContent += "<td>";
+				if(option.option_type==0){
+					HTMLContent += option.text;
+				}
+				if(option.option_type==1){
+					HTMLContent += option.image;
+				}
+				HTMLContent += "</td><td>" + option.num + "</td><td>" + (parseFloat(option.ratio)*100).toString() + "%</td>";
+
+				HTMLContent += "</tr>";
+			}
+			HTMLContent += "</table>";
+			HTMLContent += "<div class=\"btn-group\"><button type=\"button\" class=\"btn btn-info btn-sm\" onclick=\"doughnut(this)\">饼状图</button><button type=\"button\" class=\"btn btn-success btn-sm\" onclick=\"bar(this)\">柱状图</button><button type=\"button\" class=\"btn btn-warning btn-sm\" onclick=\"Hbar(this)\">条形图</button><button type=\"button\" class=\"btn btn-danger btn-sm\" onclick=\"clearCanvas(this)\">隐藏统计图</button></div>";
+	
+			HTMLContent += "</td>";
+			break;
+		}
+		case 4:{
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + result.title + "</div>";
+			HTMLContent += "<table class=\"table\"><tr><td>选项</td><td>小计</td><td>比例</td></tr>";
+			for(var i = 0; i < result.n_option; i ++){
+				HTMLContent += "<tr>";
+				var option = result.options[i];
+				HTMLContent += "<td>";
+				if(option.option_type==0){
+					HTMLContent += option.text;
+				}
+				if(option.option_type==1){
+					HTMLContent += option.image;
+				}
+				HTMLContent += "</td><td>" + option.num + "</td><td>" + (parseFloat(option.ratio)*100).toString() + "%</td>";
+
+				HTMLContent += "</tr>";
+			}
+			HTMLContent += "</table>";
+			HTMLContent += "<div class=\"btn-group\"><button type=\"button\" class=\"btn btn-info btn-sm\" onclick=\"doughnut(this)\">饼状图</button><button type=\"button\" class=\"btn btn-success btn-sm\" onclick=\"bar(this)\">柱状图</button><button type=\"button\" class=\"btn btn-warning btn-sm\" onclick=\"Hbar(this)\">条形图</button><button type=\"button\" class=\"btn btn-danger btn-sm\" onclick=\"clearCanvas(this)\">隐藏统计图</button></div>";
+	
+			HTMLContent += "</td>";
+			break;
+		}
+		case 5:{
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + result.title + "</div>";
+			HTMLContent += "<table class=\"table\"><tr><td>选项</td><td>排序</td><td>小计</td><td>比例</td></tr>";
+			for(var i = 0; i < result.n_option * 2; i ++){
+				HTMLContent += "<tr>";
+				var option = result.options[i];
+				HTMLContent += "<td>";
+				if(option.option_type==0){
+					HTMLContent += option.text;
+				}
+				if(option.option_type==1){
+					HTMLContent += option.image;
+				}
+				HTMLContent += "</td><td>" + option.rank +"</td><td>" + option.num + "</td><td>" + (parseFloat(option.ratio)*100).toString() + "%</td>";
+				HTMLContent += "</tr>";
+			}
+			HTMLContent += "</table>";
+			HTMLContent += "<div class=\"btn-group\"><button type=\"button\" class=\"btn btn-success btn-sm\" onclick=\"Sbar(this)\">柱状图</button><button type=\"button\" class=\"btn btn-danger btn-sm\" onclick=\"clearCanvas(this)\">隐藏统计图</button></div>";
+	
+			HTMLContent += "</td>";
+			break;
+		}
+		case 6:{
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + result.title + "</div>";
+			HTMLContent += "<table class=\"table\"><tr><td>选项</td><td>小计</td><td>比例</td></tr>";
+			for(var i = 0; i < result.n_option; i ++){
+				HTMLContent += "<tr>";
+				var option = result.options[i];
+				HTMLContent += "<td>"+option.text+"-"+option.image;
+				
+				HTMLContent += "</td><td>" + option.num + "</td><td>" + (parseFloat(option.ratio)*100).toString() + "%</td>";
+
+				HTMLContent += "</tr>";
+			}
+			HTMLContent += "</table>";
+			HTMLContent += "<div class=\"btn-group\"><button type=\"button\" class=\"btn btn-success btn-sm\" onclick=\"Mbar(this)\">柱状图</button><button type=\"button\" class=\"btn btn-danger btn-sm\" onclick=\"clearCanvas(this)\">隐藏统计图</button></div>";
+	
 			HTMLContent += "</td>";
 			break;
 		}
 	}
 	return HTMLContent;
 	
+}
+
+function clearCanvas(b){
+	var $b = $(b);
+	var canvas_id = 'canvas' + $b.parents("tr").index();
+	$b.parents("td").children("div#"+canvas_id).remove();
+}
+
+
+
+function doughnut(b){
+	var $b = $(b);
+	var index = $b.parents("tr").index();
+	console.log("bar");
+	console.log(index);
+	var result = results[index];
+	var option_text = new Array();
+	var option_num = new Array();
+	for(var i = 0; i < result.n_option; i++){
+		var option = result.options[i];
+		if(option.option_type == 0){
+			option_text.push(option.text);
+		}
+		if(option.option_type == 1){
+			option_text.push(option.image);
+		}
+		option_num.push(option.num);
+	}
+	console.log(option_text);
+	console.log(option_num);
+
+	var canvas_id = 'canvas' + $b.parents("tr").index();
+	$b.parents("td").children("div#"+canvas_id).remove();
+	$b.parents("td").append("<div id=\""+canvas_id+"\" style=\"width: 600px;height:400px;margin:0 100px 0 100px\"></div>");
+	
+    drawDoughnut(canvas_id, option_text, option_num);
+    
+
+}
+
+function bar(b){
+	var $b = $(b);
+	var index = $b.parents("tr").index();
+	console.log("bar");
+	console.log(index);
+	var result = results[index];
+	var option_text = new Array();
+	var option_num = new Array();
+	for(var i = 0; i < result.n_option; i++){
+		var option = result.options[i];
+		if(option.option_type == 0){
+			option_text.push(option.text);
+		}
+		if(option.option_type == 1){
+			option_text.push(option.image);
+		}
+		option_num.push(option.num);
+	}
+	console.log(option_text);
+	console.log(option_num);
+
+	var canvas_id = 'canvas' + $b.parents("tr").index();
+	$b.parents("td").children("div#"+canvas_id).remove();
+	$b.parents("td").append("<div id=\""+canvas_id+"\" style=\"width: 600px;height:400px;margin:0 100px 0 100px\"></div>");
+	
+    drawBar(canvas_id, option_text, option_num);
+    
+}
+
+function Hbar(b){
+	var $b = $(b);
+	var index = $b.parents("tr").index();
+	console.log("Hbar");
+	console.log(index);
+	var result = results[index];
+	var option_text = new Array();
+	var option_num = new Array();
+	for(var i = 0; i < result.n_option; i++){
+		var option = result.options[i];
+		if(option.option_type == 0){
+			option_text.push(option.text);
+		}
+		if(option.option_type == 1){
+			option_text.push(option.image);
+		}
+		option_num.push(option.num);
+	}
+	console.log(option_text);
+	console.log(option_num);
+
+	var canvas_id = 'canvas' + $b.parents("tr").index();
+	$b.parents("td").children("div#"+canvas_id).remove();
+	$b.parents("td").append("<div id=\""+canvas_id+"\" style=\"width: 600px;height:400px;margin:0 100px 0 100px\"></div>");
+	
+    drawHBar(canvas_id, option_text, option_num);
+    
+}
+
+
+function Mbar(b){
+	var $b = $(b);
+	var index = $b.parents("tr").index();
+	console.log("Mbar");
+	console.log(index);
+	var result = results[index];
+	var rowlabels = new Array();
+	var collabels = new Array();
+	var data = new Array();
+	var n_col = result.n_option / result.n_set;
+	var n_row = result.n_set;
+	for(var i = 0; i < n_col; i++){
+		collabels.push(result.options[i].image);
+		var col_data = new Array();
+		for(var j = 0; j < n_row; j ++){
+			col_data.push(result.options[j*n_col+i].num);
+		}
+		data.push(col_data);
+	}
+	for(var i = 0; i < n_row; i++){
+		rowlabels.push(result.options[i*n_col].text);
+	}
+	var canvas_id = 'canvas' + $b.parents("tr").index();
+	$b.parents("td").children("div#"+canvas_id).remove();
+	$b.parents("td").append("<div id=\""+canvas_id+"\" style=\"width: 600px;height:400px;margin:0 100px 0 100px\"></div>");
+	drawMBar(canvas_id,rowlabels,collabels,data);
+}
+
+function Sbar(b){
+	var $b = $(b);
+	var index = $b.parents("tr").index();
+	console.log("Sbar");
+	console.log(index);
+	var result = results[index];
+	var rowlabels = new Array();
+	var collabels = ["0","1"];
+	var data = new Array();
+	var n_col = 2;
+	var n_row = result.n_option;
+	for(var i = 0; i < n_col; i++){
+		var col_data = new Array();
+		for(var j = 0; j < n_row; j ++){
+			col_data.push(result.options[j*n_col+i].num);
+		}
+		data.push(col_data);
+	}
+	for(var i = 0; i < n_row; i++){
+		rowlabels.push(result.options[i*n_col].text);
+	}
+	var canvas_id = 'canvas' + $b.parents("tr").index();
+	$b.parents("td").children("div#"+canvas_id).remove();
+	$b.parents("td").append("<div id=\""+canvas_id+"\" style=\"width: 600px;height:400px;margin:0 100px 0 100px\"></div>");
+	drawSBar(canvas_id,rowlabels,collabels,data);
 }
 
 function showReport(){

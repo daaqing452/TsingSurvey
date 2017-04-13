@@ -18,7 +18,7 @@ function drawBar(myID,mytitle,mylabels,mylabel,mydata){
     var barChartData = {
     labels: mylabels,
     datasets: [{
-        label: mylabel,
+        label: "统计结果",
         backgroundColor:[
             window.chartColors.red,
             window.chartColors.yellow,
@@ -41,17 +41,12 @@ function drawBar(myID,mytitle,mylabels,mylabel,mydata){
         data: barChartData,
         options: {
             responsive: true,
-            
-            legend: {
-                position: 'top',
-            },
             title: {
-                display: true,
+                display: false,
                 text: mytitle,
                 fontSize : 19,
             },
             scales: {
-
                 xAxes: [{
                     barThickness:35,
                 }],
