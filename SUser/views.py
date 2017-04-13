@@ -15,6 +15,7 @@ import math
 import random
 import time
 import sys
+import xlsxwriter
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -214,13 +215,46 @@ def user_list(request):
 			susers = SUser.objects.all()
 		elif size == 'sample':
 			susers = SUser.objects.filter(is_sample=True)
-		excel_name = 'media/' + time.strftime('%Y%m%d%H%M%S') + '-userlist.csv'
-		f = codecs.open(excel_name, 'w', 'gbk')
-		f.write(u'用户ID,是否为样本,学号,姓名,英文姓名,学生类别代码,学生类别,性别代码,性别,出生日期,民族代码,民族,国别代码,国别、地区,政治面貌代码,政治面貌,证件类型代码,证件类型,证件号,婚姻状况代码,婚姻状况,原学历代码,原学历,大学毕校,大学毕校码,大学专业,大学专业码,大学毕业年月,硕士毕校,硕士毕校码,硕士专业,硕士专业码,硕士毕业年月,获硕日期,系号,院系所,二级学科代码,二级学科,导师证号,入学年月,方案年月,入学方式代码,入学方式,录取类别代码,录取类别,定向类别代码,定向类别,考生来源代码,考生来源,准考证号,本科学号,硕士学号,生源地代码,生源地,宿舍地址,宿舍电话,原单位,委定单位,电子邮件,是否有床位,是否公费医疗,是否户口迁入,是否校内学籍,是否国家学籍,是否学籍异动,是否留学生,预计毕业日期,答辩日期,结业日期,是否毕业,结业方式代码,结业方式,毕业证书编号,学位授予日期,学位授予方式代码,学位授予方式,培养类别代码,培养类别,培养方向代码,培养方向,学科门类代码,学科门类,专业代码,专业,学位证书编号,学籍状态码,校区代码,校区,备注,导师姓名,学生特殊情况代码,学生特殊情况,是否一级学科,籍贯省市代码,籍贯省市,籍贯市县代码,籍贯市县,家庭地省市代码,家庭地省市,委定单位地市县代码,委定单位地市县,原学号,异动类别码,异动类别,变动日期\n')
-		for s in susers:
-			if s.username == 'root': continue
-			f.write(str(s.id) + ',' + str(s.is_sample) + ',' + str(s.username) + ',' + str(s.name) + ',' + str(s.name_english) + ',' + str(s.student_type_code) + ',' + str(s.student_type) + ',' + str(s.gender_code) + ',' + str(s.gender) + ',' + str(s.birthday) + ',' + str(s.ethnic_code) + ',' + str(s.ethnic) + ',' + str(s.nationality_code) + ',' + str(s.nationality) + ',' + str(s.political_status_code) + ',' + str(s.political_status) + ',' + str(s.certificate_type_code) + ',' + str(s.certificate_type) + ',' + str(s.certificate_number) + ',' + str(s.marital_status_code) + ',' + str(s.marital_status) + ',' + str(s.original_education_code) + ',' + str(s.original_education) + ',' + str(s.bachelor_school) + ',' + str(s.bachelor_school_code) + ',' + str(s.bachelor_major) + ',' + str(s.bachelor_major_code) + ',' + str(s.bachelor_graduate_time) + ',' + str(s.master_school) + ',' + str(s.master_school_code) + ',' + str(s.master_major) + ',' + str(s.master_major_code) + ',' + str(s.master_graduate_time) + ',' + str(s.master_degree_date) + ',' + str(s.department_number) + ',' + str(s.department) + ',' + str(s.secondary_subject_code) + ',' + str(s.secondary_subject) + ',' + str(s.advisor_certificate_number) + ',' + str(s.enrollment_time) + ',' + str(s.scheme_time) + ',' + str(s.enrollment_mode_code) + ',' + str(s.enrollment_mode) + ',' + str(s.admission_type_code) + ',' + str(s.admission_type) + ',' + str(s.targeted_area_type_code) + ',' + str(s.targeted_area_type) + ',' + str(s.student_source_code) + ',' + str(s.student_source) + ',' + str(s.examination_ticket_number) + ',' + str(s.bachelor_student_number) + ',' + str(s.master_student_number) + ',' + str(s.origin_place_code) + ',' + str(s.origin_place) + ',' + str(s.dormitory_address) + ',' + str(s.dormitory_telephone) + ',' + str(s.original_unit) + ',' + str(s.client_unit) + ',' + str(s.email) + ',' + str(s.if_bed) + ',' + str(s.if_socialized_madicine) + ',' + str(s.if_resident_migration) + ',' + str(s.if_internal_school_roll) + ',' + str(s.if_national_school_roll) + ',' + str(s.if_school_roll_abnormity) + ',' + str(s.if_international_student) + ',' + str(s.estimated_graduate_date) + ',' + str(s.defense_date) + ',' + str(s.completion_date) + ',' + str(s.if_graduate) + ',' + str(s.completion_mode_code) + ',' + str(s.completion_mode) + ',' + str(s.graduate_certificate_number) + ',' + str(s.degree_confer_date) + ',' + str(s.degree_confer_mode_code) + ',' + str(s.degree_confer_mode) + ',' + str(s.training_type_code) + ',' + str(s.training_type) + ',' + str(s.training_direction_code) + ',' + str(s.training_direction) + ',' + str(s.disciplines_field_code) + ',' + str(s.disciplines_field) + ',' + str(s.major_code) + ',' + str(s.major) + ',' + str(s.diploma_number) + ',' + str(s.school_roll_status_code) + ',' + str(s.campus_code) + ',' + str(s.campus) + ',' + str(s.remark) + ',' + str(s.advisor_name) + ',' + str(s.special_condition_code) + ',' + str(s.special_condition) + ',' + str(s.if_primary_subject) + ',' + str(s.origin_province_code) + ',' + str(s.origin_province) + ',' + str(s.origin_city_code) + ',' + str(s.origin_city) + ',' + str(s.address_province_code) + ',' + str(s.address_province) + ',' + str(s.client_unit_city_code) + ',' + str(s.client_unit_city) + ',' + str(s.original_student_number) + ',' + str(s.abnormity_type_code) + ',' + str(s.abnormity_type) + ',' + str(s.alteration_date) + '\n')
-		f.close()
+		else:
+			susers = []
+		n_susers = len(susers)
+		excel_name = 'media/' + time.strftime('%Y%m%d%H%M%S') + '-用户名单.xlsx'
+		excel = xlsxwriter.Workbook(excel_name)
+		sheet1 = excel.add_worksheet('工作表1')
+		sheet2 = excel.add_worksheet('工作表2')
+		# 用户列表
+		sheet1.write(0, 0, '用户ID')
+		sheet1.write(0, 1, '是否为样本')
+		for i in range(len(SUser.__var_chinese__)):
+			sheet1.write(0, i + 2, SUser.__var_chinese__[i])
+		for row in range(n_susers):
+			suser = susers[row]
+			if suser.username == 'root': continue
+			sheet1.write(row + 1, 0, suser.id)
+			sheet1.write(row + 1, 1, suser.is_sample)
+			for i in range(len(SUser.__var_name__)):
+				s = 'sheet1.write(row + 1, ' + str(i + 2) + ', suser.' + SUser.__var_name__[i] + ')'
+				eval(s)
+		# 统计用户列表
+		fields = [6, 4, 33, 13]
+		cnt = {}
+		for suser in susers:
+			for field in fields:
+				if not field in cnt: cnt[field] = {}
+				value = eval('suser.' + SUser.__var_name__[field])
+				if not value in cnt[field]: cnt[field][value] = 0
+				cnt[field][value] += 1
+		row = 0
+		for field in fields:
+			sheet2.write(row, 0, SUser.__var_chinese__[field])
+			col = 1
+			for value in cnt[field]:
+				sheet2.write(row + 1, col, value)
+				sheet2.write(row + 2, col, cnt[field][value])
+				sheet2.write(row + 3, col, str(round(100.0 * cnt[field][value] / n_susers, 1)) + '%')
+				col += 1
+			row += 5
+		excel.close()
 		return HttpResponse(json.dumps({'export_path': excel_name}))
 
 	# 添加样本筛选条件
