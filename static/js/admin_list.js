@@ -59,9 +59,9 @@ $(document).ready(function(){
 				if (data['result'] == 'yes') {
 					refreshAdminList(data['admin_list']);
 					$('input#add').val('');
-					alert('Add successful');
+					alert('添加成功！');
 				} else {
-					alert('No that user');
+					alert('没有此用户！');
 				}
 			}
 		});

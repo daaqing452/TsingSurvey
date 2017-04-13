@@ -22,6 +22,10 @@ $(document).ready(function(){
 				getindex();
 			}
 			if(status == 1){
+				//定时保存
+				window.setInterval(function(){ 
+					tempSave(); 
+				}, 10000); 
 				questions = JSON.parse(qstring);
 				answers_from_database = JSON.parse(data['astring']);
 				showPage();

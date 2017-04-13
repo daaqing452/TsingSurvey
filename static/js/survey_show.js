@@ -154,10 +154,7 @@ function createSurveyHtml(q){
 
 }
 
-//定时保存
-window.setInterval(function(){ 
-	tempSave(); 
-}, 10000); 
+
 
 function tempSave(){
 	var save_time = new Date();

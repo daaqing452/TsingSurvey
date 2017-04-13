@@ -308,7 +308,7 @@ def user_list(request):
 	# 保存样本列表
 	if op == 'save_sample_list':
 		name = request.POST.get('sample_list_name', '')
-		name = time.strftime('%Y%m%d%H%M%S') + ' ' + name
+		if name == '': name = time.strftime('%Y%m%d%H%M%S')
 		suser_id_list = [suser.id for suser in SUser.objects.filter(is_sample=True)]
 		SampleList.objects.create(name=name, sample_list=suser_id_list)
 		return HttpResponse(json.dumps({}))
