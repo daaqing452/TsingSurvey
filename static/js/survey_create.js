@@ -48,14 +48,15 @@ function save(){
 function release() {
 	var Qstring = JSON.stringify(questions);
 	var title = $('input#title').val();
+	var sample_list_id = $('select#sample_list').val();
 	$.ajax({
 		url: window.location.pathname,
 		type: 'POST',
-		data: {'op': 'release', 'title': title, 'qstring': Qstring},
+		data: {'op': 'release', 'title': title, 'qstring': Qstring, 'sample_list_id': sample_list_id},
 		success: function(data) {
 			data = JSON.parse(data);
 			alert('发布成功');
-			window.location.reload()
+			window.location.reload();
 		}
 	});
 }

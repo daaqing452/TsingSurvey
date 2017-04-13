@@ -22,7 +22,7 @@ function refreshUserList(user_list) {
 	}
 }
 
-function show_statistic(obj) {
+/*function show_statistic(obj) {
 	var button = $(obj);
 	var select = button.parent().children('select');
 	var option = select.find('option:selected');
@@ -35,7 +35,7 @@ function show_statistic(obj) {
 			button.parent().children('span').text(JSON.stringify(data['result']));
 		}
 	});
-}
+}*/
 
 /*function constraint_select_change(obj) {
 	var select = $(obj);
