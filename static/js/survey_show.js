@@ -190,6 +190,9 @@ function fill(answer){
 			}
 			break;
 		}
+		case 3:{
+			
+		}
 	}
 }
 
