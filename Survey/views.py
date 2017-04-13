@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.template import RequestContext
 # from django.utils import timezone
 from Survey.models import Questionaire, Answeraire
-from SUser.models import SUser
+from SUser.models import SUser, SampleList
 import SUser.utils as Utils
 import Analysis.views as Analysis
 import datetime
@@ -73,6 +73,9 @@ def survey(request, qid):
 
 		# 问卷修改状态
 		if status == 0:
+			# 添加可选样本列表
+			rdata['sample_lists'] = SampleList.objects.all()
+
 			# 修改中管理员可见
 			if not user.is_staff:
 				rdata['viewable'] = 0
@@ -85,19 +88,27 @@ def survey(request, qid):
 					return HttpResponse(json.dumps({}))
 				# 发布问卷请求
 				elif op == 'release':
-					questionaire.status = 1
-					questionaire.release_time = now
-					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
-					questionaire.save()
-					suser_list = SUser.objects.filter(is_sample=1)
-					for suser in suser_list:
+					sample_list_id = int(request.POST.get('sample_list_id'))
+					susers = SUser.objects.filter(is_sample=1)
+					if sample_list_id != -1:
+						sample_list = SampleList.objects.filter(id=sample_list_id)
+						susers = []
+						if len(sample_list) > 0:
+							sample_list = eval(sample_list[0].sample_list)
+							for suser_id in sample_list:
+								suser = SUser.objects.filter(id=suser_id)
+								if len(suser) > 0:
+									susers.append(suser[0])
+					for suser in susers:
 						qid_dict = json.loads(suser.qid_list)
 						qid_dict[questionaire.id] = 0
 						suser.qid_list = json.dumps(qid_dict)
 						suser.save()
+					questionaire.status = 1
+					questionaire.release_time = now
+					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
+					questionaire.save()
 					return HttpResponse(json.dumps({}))
-				else:
-					pass
 
 		# 问卷填写状态
 		elif status == 1:

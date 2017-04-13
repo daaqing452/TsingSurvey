@@ -100,7 +100,7 @@ def export(qid):
 	answers = [json.loads(answeraire.answers) for answeraire in answeraires]
 	reports = json.loads(get_report(qid))
 	# 写入excel
-	excel_name = 'media/' + time.strftime('%Y%m%d%H%M%S') + '-survey.xlsx'
+	excel_name = 'media/' + time.strftime('%Y%m%d%H%M%S') + '-问卷结果.xlsx'
 	excel = xlsxwriter.Workbook(excel_name)
 	sheet1 = excel.add_worksheet('工作表1')
 	sheet2 = excel.add_worksheet('工作表2')
@@ -124,8 +124,6 @@ def export(qid):
 		sheet2.write(i + 1, 0, str(answeraire.load_time))
 		sheet1.write(i + 1, 1, str(answeraire.submit_time))
 		sheet2.write(i + 1, 1, str(answeraire.submit_time))
-		print(type(answeraire.submit_time))
-		print(type(answeraire.load_time))
 		cost_time = answeraire.submit_time - answeraire.load_time
 		sheet1.write(i + 1, 2, str(cost_time))
 		sheet2.write(i + 1, 2, str(cost_time))

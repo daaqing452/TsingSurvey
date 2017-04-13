@@ -22,7 +22,7 @@ function refreshUserList(user_list) {
 	}
 }
 
-function show_statistic(obj) {
+/*function show_statistic(obj) {
 	var button = $(obj);
 	var select = button.parent().children('select');
 	var option = select.find('option:selected');
@@ -35,7 +35,7 @@ function show_statistic(obj) {
 			button.parent().children('span').text(JSON.stringify(data['result']));
 		}
 	});
-}
+}*/
 
 /*function constraint_select_change(obj) {
 	var select = $(obj);
@@ -203,28 +203,6 @@ $(document).ready(function(){
 		});
 	});
 
-	//	添加统计
-	$('button#add_statistic').click(function(){
-		$.ajax({
-			url: window.location.href,
-			type: 'POST',
-			data: {'op': 'add_statistic'},
-			success: function(data) {
-				data = JSON.parse(data);
-				options = data['options'];
-				var div = $('div#statistic');
-				var subdiv = div.children('[type="clone"]').clone();
-				subdiv.attr('type', 'item');
-				var select = subdiv.children('select');
-				for (i in options) {
-					select.append('<option value="' + i + '">' + options[i] + '</option>');
-				}
-				subdiv.show();
-				div.append(subdiv);
-			}
-		});
-	});
-
 	//	添加样本限制条件
 	$('button#add_constraint').click(function(){
 		$.ajax({
@@ -264,9 +242,50 @@ $(document).ready(function(){
 			data: {'op': 'auto_sample', 'constraints': JSON.stringify(constraints), 'upperbound': $('input#upperbound').val()},
 			success: function(data) {
 				data = JSON.parse(data);
-				refreshUserList(data['user_list']);
+				window.location.href='/user_list/?list=all';
 			}
 		});
+	});
+
+	// 添加统计
+	$('button#show_statistic').click(function(){
+		$.ajax({
+			url: window.location.href,
+			type: 'POST',
+			data: {'op': 'show_statistic'},
+			success: function(data) {
+				data = JSON.parse(data);
+				statistic = data['statistic'];
+				n_susers = parseInt(data['n_susers']);
+				var table = $('table#statistic');
+				for (var key in statistic) {
+					var tr = table.find('[type="clone"]').clone();
+					tr.attr('type', 'item');
+					values = statistic[key];
+					tr.append('<td>' + key + '</td>');
+					for (var value in values) {
+						s = '<td>' + value + ': ';
+						var d = parseInt(values[value]);
+						s += d + ' (' + (100.0 * d / n_susers) + '%) </td>';
+						tr.append(s);
+					}
+					table.append(tr);
+				}
+			}
+		});
+	});
+
+	// 保存样本列表
+	$('button#save_sample_list').click(function() {
+		var sample_list_name = prompt('样本列表名', '');
+		$.ajax({
+			url: window.location.href,
+			type: 'POST',
+			data: {'op': 'save_sample_list', 'sample_list_name': sample_list_name},
+			success: function(data) {
+				data = JSON.parse(data);
+			}
+		})
 	});
 
 	// 显示名单
