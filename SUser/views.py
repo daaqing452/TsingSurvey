@@ -7,6 +7,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
 from SUser.models import SUser, SampleList
+from SUser.auth_tsinghua import auth_tsinghua
 from Survey.models import Questionaire, Answeraire
 import SUser.utils as Utils
 import codecs
@@ -64,9 +65,9 @@ def login(request):
 		else:
 			# 如果不是root进行清华验证
 			if username != 'root':
-				if username == password:
+				yes = auth_tsinghua(request, username, password)
+				if yes:
 					password = Utils.username_to_password(username)
-					# 是否首次登陆
 				else:
 					password = ''
 			
