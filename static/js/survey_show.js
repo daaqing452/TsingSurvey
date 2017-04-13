@@ -3,7 +3,9 @@ var load_time_format = 0;
 var load_time = 0
 var submit_time = 0;
 var submit_time_format = 0;
-var temp = 0
+var temp = 0;
+var answers = new Array();
+var answers_from_database = new Array();
 function createSurveyHtml(q){
 	var index = q.index;
 	if(q.s_type != 8){
@@ -150,6 +152,52 @@ function createSurveyHtml(q){
 	HTMLContent += "</td>";
 	return HTMLContent;
 
+}
+
+//定时保存
+window.setInterval(function(){ 
+	tempSave(); 
+}, 10000); 
+
+function tempSave(){
+	var save_time = new Date();
+	var save_time_format = gettimeformat(save_time); 
+	console.log(save_time_format+" save to database");
+	submit(1);
+} 
+
+function fill(answer){
+	switch(answer.s_type){
+		case 1:{
+			var select = answer.select;
+			if(select.length != 0){
+				for(var i = 0; i < select.length; i++){
+					var a_index = select[0][0];
+					var id_str = "Q_" + (answer.index+1).toString() + "_" + (a_index+1).toString();
+					$('#'+id_str).get(0).checked = true;
+				}
+			}
+			break;
+		}
+		case 2:{
+			var select = answer.select;
+			if(select.length != 0){
+				for(var i = 0; i < select.length; i++){
+					var a_index = select[0][0];
+					var id_str = "Q_" + (answer.index+1).toString() + "_" + (a_index+1).toString();
+					$('#'+id_str).get(0).checked = true;
+				}
+			}
+			break;
+		}
+	}
+}
+
+function fillAnswer(){
+	for(var i = 0; i < answers_from_database.length; i++){
+		var answer = answers_from_database[i];
+		fill(answer);
+	}
 }
 
 function showBase(b){
@@ -326,8 +374,8 @@ function sort(b){
 
 }
 
-function submit(){
-	var answers = new Array();
+function submit(flag){
+	answers = new Array();
 	wrong_info = "[填写错误信息]\n";
 	var legal = true;
 	for(var line = 0; line < questions.length; line++){
@@ -468,37 +516,53 @@ function submit(){
 		if($("#Q_"+(i+1).toString()).parents("tr").is(":hidden")){
 			a.show = false;
 		}
-		if(verify(a)){
-			answers.push(a);
-		}
-		else{
+		answers.push(a);
+		if(verify(a) == false){
 			legal = false;
 		}
 	}
-
-	if(legal){
+	if(flag == 0){
+		if(legal){
+			var Astring = JSON.stringify(answers);
+			now_time = new Date();
+			submit_time = now_time.getTime();
+			submit_time_format = gettimeformat(now_time);
+			var dwell_time = submit_time - load_time;
+			if (confirm('确认提交问卷？')) {
+				$.ajax({
+					url: window.location.href,
+					type: 'POST',
+					data: {'op': 'submit', 'complete': 'yes', 'astring': Astring, 'load_time': load_time_format,'submit_time':submit_time_format},
+					success: function(data) {
+						data = JSON.parse(data);
+						alert('提交成功');
+						$('input#credit').val(data['credit']);
+						$('form#goto_bonus').submit();
+					}
+				});
+			}
+		}
+		else{
+			alert(wrong_info);
+			return;
+		}
+	}
+	if(flag == 1){
+		var Astring = JSON.stringify(answers);
+		console.log(Astring);
 		var Astring = JSON.stringify(answers);
 		now_time = new Date();
 		submit_time = now_time.getTime();
 		submit_time_format = gettimeformat(now_time);
 		var dwell_time = submit_time - load_time;
-		if (confirm('确认提交问卷？')) {
-			$.ajax({
-				url: window.location.href,
-				type: 'POST',
-				data: {'op': 'submit', 'astring': Astring, 'load_time': load_time_format,'submit_time':submit_time_format},
-				success: function(data) {
-					data = JSON.parse(data);
-					alert('提交成功');
-					$('input#credit').val(data['credit']);
-					$('form#goto_bonus').submit();
-				}
-			});
-		}
-	}
-	else{
-		alert(wrong_info);
-		return;
+		$.ajax({
+			url: window.location.href,
+			type: 'POST',
+			data: {'op': 'submit', 'complete': 'no', 'astring': Astring, 'load_time': load_time_format,'submit_time':submit_time_format},
+			success: function(data) {
+				data = JSON.parse(data);
+			}
+		});
 	}
 }
 

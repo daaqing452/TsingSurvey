@@ -135,7 +135,7 @@
 	{% ifequal status 1 %}
 	{% ifequal permission_submit 1 %}
 	<div style="text-align:left;">
-		<button id ="submit_btn" class="btn btn-success btn-sm" onclick="submit()" style="float:right"> 提交 </button>
+		<button id ="submit_btn" class="btn btn-success btn-sm" onclick="submit(0)" style="float:right"> 提交 </button>
 	</div>
 	{% endifequal %}
 	{% if user.is_staff %}

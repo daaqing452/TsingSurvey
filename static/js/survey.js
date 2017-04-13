@@ -23,8 +23,10 @@ $(document).ready(function(){
 			}
 			if(status == 1){
 				questions = JSON.parse(qstring);
+				answers_from_database = [{"s_type":1,"index":0,"title":"单项选择","select":[[0,0,"1",""]],"must_answer":false,"min_select":-1,"max_select":-1,"n_set":1,"show":true},{"s_type":2,"index":1,"title":"多项选择","select":[[0,0,"1",""],[1,0,"2",""]],"must_answer":false,"min_select":"","max_select":"","n_set":1,"show":true}];
 				showPage();
 				getindex();
+				fillAnswer();
 			}
 			if(status == 2){
 				results = JSON.parse(qstring);
