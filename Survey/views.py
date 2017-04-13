@@ -147,7 +147,7 @@ def survey(request, qid):
 				# 记录
 				astring = request.POST.get('astring')
 				complete = request.POST.get('complete', 'no')
-				answeraire.objects.filter(qid=qid, uid=user.id)
+				answeraire = Answeraire.objects.filter(qid=qid, uid=user.id)
 				if len(answeraire) > 0:
 					answeraire = answeraire[0]
 				else:

@@ -172,7 +172,7 @@ function fill(answer){
 			var select = answer.select;
 			if(select.length != 0){
 				for(var i = 0; i < select.length; i++){
-					var a_index = select[0][0];
+					var a_index = select[i][0];
 					var id_str = "Q_" + (answer.index+1).toString() + "_" + (a_index+1).toString();
 					$('#'+id_str).get(0).checked = true;
 				}
@@ -183,7 +183,7 @@ function fill(answer){
 			var select = answer.select;
 			if(select.length != 0){
 				for(var i = 0; i < select.length; i++){
-					var a_index = select[0][0];
+					var a_index = select[i][0];
 					var id_str = "Q_" + (answer.index+1).toString() + "_" + (a_index+1).toString();
 					$('#'+id_str).get(0).checked = true;
 				}
