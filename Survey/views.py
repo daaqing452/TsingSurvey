@@ -53,11 +53,20 @@ def survey(request, qid):
 		
 		# 加载问卷请求
 		if op == 'load':
-			if status == 2:
+			if status == 0:
+				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions}))
+			elif status == 1:
+				answeraire = Answeraire.objects.filter(qid=qid, uid=user.id)
+				if len(answeraire):
+					astring = answeraire[0].answers
+				else:
+					astring = '{}'
+				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions, 'astring': astring}))
+			elif status == 2:
 				report = Analysis.get_report(qid)
 				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': report}))
 			else:
-				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions}))
+				assert(False)
 		
 		# 删除问卷
 		if op == 'delete':
@@ -134,17 +143,33 @@ def survey(request, qid):
 				    ip = request.META['REMOTE_ADDR']
 				agent = request.META.get('HTTP_USER_AGENT', 'unknown')
 				os = request.META.get('OS', 'unknown')
+				# 记录
 				astring = request.POST.get('astring')
-				answeraire = Answeraire.objects.create(qid=qid, uid=user.id, load_time=request.POST['load_time'], submit_time=request.POST['submit_time'], ip=ip, agent=agent, os=os, answers=astring)
+				complete = request.POST.get('complete', 'no')
+				answeraire.objects.filter(qid=qid, uid=user.id)
+				if len(answeraire) > 0:
+					answeraire = answeraire[0]
+				else:
+					answeraire = Answeraire.objects.create(qid=qid, uid=user.id)
+				answeraire.load_time = request.POST['load_time']
+				answeraire.submit_time=request.POST['submit_time']
+				answeraire.ip = ip
+				answeraire.agent = agent
+				answeraire.os = os
+				answeraire.answers = astring
 				answeraire.save()
-				qid_dict[str(qid)] = 1
-				suser.qid_list = json.dumps(qid_dict)
-				# 计算积分
-				k = (len(json.loads(astring)) - 1) / 5 + 1
-				credit = int(k * math.pow(1.05, len(qid_dict)))
-				suser.credit += credit
-				suser.save()
-				return HttpResponse(json.dumps({'credit': credit}))
+				# 判断暂存还是提交
+				if complete == 'yes':
+					qid_dict[str(qid)] = 1
+					suser.qid_list = json.dumps(qid_dict)
+					# 计算积分
+					k = (len(json.loads(astring)) - 1) / 5 + 1
+					credit = int(k * math.pow(1.05, len(qid_dict)))
+					suser.credit += credit
+					suser.save()
+					return HttpResponse(json.dumps({'credit': credit}))
+				else:
+					return HttpResponse(json.dumps({}))
 
 			# 关闭问卷请求
 			if op == 'closeup':
