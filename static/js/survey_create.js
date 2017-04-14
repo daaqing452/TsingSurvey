@@ -19,9 +19,6 @@ function getindex(){
 	operate_index = current_status.index;
 }
 
-function myclick(){
-	alert(JSON.stringify(questions));
-}
 
 function createSurvey(s_type){
 	current_status.s_type = s_type;
