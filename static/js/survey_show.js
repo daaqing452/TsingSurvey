@@ -159,7 +159,7 @@ function createSurveyHtml(q){
 function tempSave(){
 	var save_time = new Date();
 	var save_time_format = gettimeformat(save_time); 
-	console.log(save_time_format+" save to database");
+	
 	submit(1);
 } 
 
@@ -183,6 +183,63 @@ function fill(answer){
 					var a_index = select[i][0];
 					var id_str = "Q_" + (answer.index+1).toString() + "_" + (a_index+1).toString();
 					$('#'+id_str).get(0).checked = true;
+				}
+			}
+			break;
+		}
+		case 3:{
+			var select = answer.select;
+			if(select.length != 0){
+				var id_str = "Q_" + (answer.index + 1);
+				var a_text = select[0][2];
+				$('#'+id_str).find("input[type='text']").attr("value",a_text);
+			}
+			
+			break;
+		}
+		case 4:{
+			var select = answer.select;
+			if(select.length != 0){
+				var id_str = "Q_" + (answer.index + 1);
+				var a_val = select[0][0];
+				$('#'+id_str).find("select").val(a_val);
+			}
+			break;
+		}
+		case 5:{
+			var select = answer.select;
+			if(select.length != 0){
+				var id_str = "Q_" + (answer.index + 1);
+				var $select = $('#'+id_str).find("select");
+				for(var i = 0; i < select.length; i++){
+					var a_val = select[i][0];
+					var a_text = select[i][2];
+					$select.append("<option value=\"" + a_val + "\">" +a_text +"</option>");
+					var a_id_str = "Q_" + (answer.index + 1) + "_" + (Number(a_val)+1);
+					$('#'+a_id_str).get(0).checked = true;
+				}
+			}
+			break;
+		}
+		case 6:{
+			var select = answer.select;
+			if(select.length != 0){
+				for(var i = 0; i < select.length; i++){
+					var a_index = select[i][0];
+					var id_str = "Q_" + (answer.index+1).toString() + "_" + (a_index+1).toString();
+					$('#'+id_str).get(0).checked = true;
+				}
+			}
+			break;
+		}
+		case 7:{
+			var select = answer.select;
+			if(select.length != 0){
+				var id_str = "Q_" + (answer.index + 1);
+				for(var i = 0; i < select.length; i ++){
+					var a_index = select[i][0];
+					var a_text = select[i][2];
+					$("#"+id_str).find("input[type=\"text\"]").eq(a_index).attr("value",a_text);
 				}
 			}
 			break;
@@ -546,7 +603,6 @@ function submit(flag){
 	}
 	if(flag == 1){
 		var Astring = JSON.stringify(answers);
-		console.log(Astring);
 		var Astring = JSON.stringify(answers);
 		now_time = new Date();
 		submit_time = now_time.getTime();
@@ -710,8 +766,7 @@ function clearCanvas(b){
 function doughnut(b){
 	var $b = $(b);
 	var index = $b.parents("tr").index();
-	console.log("bar");
-	console.log(index);
+	
 	var result = results[index];
 	var option_text = new Array();
 	var option_num = new Array();
@@ -725,8 +780,7 @@ function doughnut(b){
 		}
 		option_num.push(option.num);
 	}
-	console.log(option_text);
-	console.log(option_num);
+	
 
 	var canvas_id = 'canvas' + $b.parents("tr").index();
 	$b.parents("td").children("div#"+canvas_id).remove();
@@ -740,8 +794,7 @@ function doughnut(b){
 function bar(b){
 	var $b = $(b);
 	var index = $b.parents("tr").index();
-	console.log("bar");
-	console.log(index);
+	
 	var result = results[index];
 	var option_text = new Array();
 	var option_num = new Array();
@@ -755,8 +808,7 @@ function bar(b){
 		}
 		option_num.push(option.num);
 	}
-	console.log(option_text);
-	console.log(option_num);
+	
 
 	var canvas_id = 'canvas' + $b.parents("tr").index();
 	$b.parents("td").children("div#"+canvas_id).remove();
@@ -769,8 +821,7 @@ function bar(b){
 function Hbar(b){
 	var $b = $(b);
 	var index = $b.parents("tr").index();
-	console.log("Hbar");
-	console.log(index);
+	
 	var result = results[index];
 	var option_text = new Array();
 	var option_num = new Array();
@@ -784,8 +835,7 @@ function Hbar(b){
 		}
 		option_num.push(option.num);
 	}
-	console.log(option_text);
-	console.log(option_num);
+	
 
 	var canvas_id = 'canvas' + $b.parents("tr").index();
 	$b.parents("td").children("div#"+canvas_id).remove();
@@ -799,8 +849,7 @@ function Hbar(b){
 function Mbar(b){
 	var $b = $(b);
 	var index = $b.parents("tr").index();
-	console.log("Mbar");
-	console.log(index);
+	
 	var result = results[index];
 	var rowlabels = new Array();
 	var collabels = new Array();
@@ -827,8 +876,7 @@ function Mbar(b){
 function Sbar(b){
 	var $b = $(b);
 	var index = $b.parents("tr").index();
-	console.log("Sbar");
-	console.log(index);
+	
 	var result = results[index];
 	var rowlabels = new Array();
 	var collabels = ["0","1"];
