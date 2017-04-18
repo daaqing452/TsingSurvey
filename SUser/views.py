@@ -17,8 +17,8 @@ import random
 import time
 import sys
 import xlsxwriter
-reload(sys)
-sys.setdefaultencoding('utf-8')
+#reload(sys)
+#sys.setdefaultencoding('utf-8')
 
 def index(request):
 	# 验证身份
