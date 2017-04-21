@@ -10,6 +10,7 @@ from Survey.models import Questionaire, Answeraire
 from SUser.models import SUser, SampleList
 import SUser.utils as Utils
 import Analysis.views as Analysis
+import chardet
 import datetime
 import json
 import math
@@ -94,6 +95,11 @@ def survey(request, qid):
 				if op == 'save':
 					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
 					questionaire.save()
+					
+
+					print([questionaire.title, '1'])
+					
+
 					return HttpResponse(json.dumps({}))
 				# 发布问卷请求
 				elif op == 'release':

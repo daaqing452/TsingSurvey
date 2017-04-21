@@ -84,6 +84,7 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': 'SurveyDatabase',
         'HOST': '127.0.0.1',
+        'OPTIONS': {'charset': 'utf8mb4'},
     }
 }
 
