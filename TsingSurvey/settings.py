@@ -82,7 +82,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'SurveyDatabase',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': 'SurveyDatabase',
         'HOST': '127.0.0.1',
     }
 }
