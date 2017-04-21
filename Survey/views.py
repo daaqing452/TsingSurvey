@@ -10,7 +10,6 @@ from Survey.models import Questionaire, Answeraire
 from SUser.models import SUser, SampleList
 import SUser.utils as Utils
 import Analysis.views as Analysis
-import chardet
 import datetime
 import json
 import math
@@ -51,7 +50,7 @@ def survey(request, qid):
 		questionaire = questionaires[0]
 		status = questionaire.status
 		suser = SUser.objects.get(uid=user.id)
-		
+
 		# 加载问卷请求
 		if op == 'load':
 			if status == 0:
@@ -68,7 +67,7 @@ def survey(request, qid):
 				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': report}))
 			else:
 				assert(False)
-		
+
 		# 删除问卷
 		if op == 'delete':
 			questionaire.delete();
@@ -95,10 +94,10 @@ def survey(request, qid):
 				if op == 'save':
 					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
 					questionaire.save()
-					
+
 
 					print([questionaire.title, '1'])
-					
+
 
 					return HttpResponse(json.dumps({}))
 				# 发布问卷请求
@@ -144,9 +143,9 @@ def survey(request, qid):
 			# 提交问卷请求
 			if op == 'submit':
 				# 获取信息
-				if request.META.has_key('HTTP_X_FORWARDED_FOR'):  
-				    ip = request.META['HTTP_X_FORWARDED_FOR']  
-				else:  
+				if request.META.has_key('HTTP_X_FORWARDED_FOR'):
+				    ip = request.META['HTTP_X_FORWARDED_FOR']
+				else:
 				    ip = request.META['REMOTE_ADDR']
 				agent = request.META.get('HTTP_USER_AGENT', 'unknown')
 				os = request.META.get('OS', 'unknown')
@@ -199,7 +198,7 @@ def survey(request, qid):
 		else:
 			rdata['viewable'] = 0
 			rdata['info'] = 'Not found 99'
-		
+
 	rdata['status'] = status
 	return render(request, 'survey.html', rdata)
 
