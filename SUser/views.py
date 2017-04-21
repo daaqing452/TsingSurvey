@@ -17,8 +17,8 @@ import random
 import time
 import sys
 import xlsxwriter
-#reload(sys)
-#sys.setdefaultencoding('utf-8')
+# reload(sys)
+# sys.setdefaultencoding('utf-8')
 
 def index(request):
 	# 验证身份
@@ -236,18 +236,16 @@ def user_list(request):
 		sheet1 = excel.add_worksheet('工作表1')
 		sheet2 = excel.add_worksheet('工作表2')
 		# 用户列表
-		sheet1.write(0, 0, '用户ID')
-		sheet1.write(0, 1, '是否为样本')
+		sheet1.write(0, 0, '是否为样本')
 		for i in range(len(SUser.__var_chinese__)):
-			sheet1.write(0, i + 2, SUser.__var_chinese__[i])
+			sheet1.write(0, i + 1, SUser.__var_chinese__[i])
 		row = 1
 		for row in range(n_susers):
 			suser = susers[row]
 			if suser.username == 'root': continue
-			sheet1.write(row, 0, suser.id)
-			sheet1.write(row, 1, suser.is_sample)
+			sheet1.write(row, 0, suser.is_sample)
 			for i in range(len(SUser.__var_name__)):
-				s = 'sheet1.write(row + 1, ' + str(i + 2) + ', suser.' + SUser.__var_name__[i] + ')'
+				s = 'sheet1.write(row, ' + str(i + 1) + ', suser.' + SUser.__var_name__[i] + ')'
 				eval(s)
 			row += 1
 		# 统计用户列表
