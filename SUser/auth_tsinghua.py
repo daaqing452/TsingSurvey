@@ -1,5 +1,5 @@
 import urllib
-import urllib2
+# import urllib2
 import json
 
 def get_ip(request):
@@ -26,7 +26,7 @@ def auth_tsinghua(request, username, password):
             'Origin':'http://net.tsinghua.edu.cn',
             'Referer':'http://net.tsinghua.edu.cn/wired/',
             'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_90_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36'}
-    req = urllib2.Request(url, data=urllib.urlencode(data))
+    req = urllib.Request(url, data=urllib.urlencode(data))
     response = urllib2.urlopen(req)
     res = response.read()
     ret = json.loads(res)

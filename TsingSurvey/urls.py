@@ -19,7 +19,7 @@ from django.contrib import admin
 from SUser.views import index, login, logout, user_list, admin_list, profile, install
 from Survey.views import survey, bonus, upload_file
 from Analysis.views import search
-import settings
+import TsingSurvey.settings as settings
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
