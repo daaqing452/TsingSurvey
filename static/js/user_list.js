@@ -184,18 +184,19 @@ $(document).ready(function(){
 	});
 
 	//	添加用户
-	$('button#add').click(function(){
-		var username = $('input#add').val();
+	$('button#add_new_user').click(function(){
+		var username = $('input#add_new_user').val();
 		$.ajax({
 			url: window.location.href,
 			type: 'POST',
-			data: {'op': 'add', 'username': username},
+			data: {'op': 'add_new_user', 'username': username},
 			success: function(data) {
 				data = JSON.parse(data);
 				if (data['result'] == 'yes') {
 					refreshUserList(data['user_list']);
-					$('input#add').val('');
+					$('input#add_new_user').val('');
 					alert('添加成功！');
+					window.location.reload();
 				} else {
 					alert(data['result']);
 				}
