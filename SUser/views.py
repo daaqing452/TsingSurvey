@@ -61,7 +61,7 @@ def login(request):
 	if username is not None and password is not None:
 		users = User.objects.filter(username=username)
 		if len(users) == 0:
-			rdata['info'] = 'Username not exist'
+			rdata['info'] = '用户名不存在'
 		else:
 			# 如果不是root进行清华验证
 			if username != 'root':
@@ -77,7 +77,7 @@ def login(request):
 				auth.login(request, user)
 				login = True
 			else:
-				rdata['info'] = 'Wrong password'
+				rdata['info'] = '密码错误'
 
 	if login:
 		return HttpResponseRedirect('/index/')
@@ -173,12 +173,12 @@ def user_list(request):
 		return HttpResponse(json.dumps({'user_list': get_suser_list()}))
 
 	# 添加用户
-	if op == 'add':
+	if op == 'add_new_user':
 		username = request.POST.get('username')
 		# 检查username
 		susers = SUser.objects.filter(username=username)
 		if len(susers) > 0:
-			result = 'Username already exist'
+			result = '用户名已存在'
 		else:
 			password = Utils.username_to_password(username)
 			user = User.objects.create_user(username=username, password=password)
