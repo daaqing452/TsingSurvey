@@ -19,6 +19,7 @@ function drawBar(myid,mylabels,mydata){
             name: '人数',
             type: 'bar',
             data: mydata,
+            itemStyle : { normal: {label : {show: true}}},
             
         }]
     };
@@ -48,7 +49,7 @@ function drawHBar(myid,mylabels,mydata){
             name: '人数',
             type: 'bar',
             data: mydata,
-         
+            itemStyle : { normal: {label : {show: true}}},
         }]
     };
 
@@ -65,6 +66,7 @@ function drawMBar(myid,myrowlabels,mycollabels,mydata){
 		col_dic.type = "bar";
 		col_dic.stack = "barstack";
 		col_dic.data = mydata[i];
+        col_dic.itemStyle = {normal: {label : {show: true}}};
 		myseries.push(col_dic);
 	}
     // 指定图表的配置项和数据
@@ -98,6 +100,7 @@ function drawSBar(myid,myrowlabels,mycollabels,mydata){
 		col_dic.type = "bar";
 		//col_dic.stack = "barstack";
 		col_dic.data = mydata[i];
+        col_dic.itemStyle = {normal: {label : {show: true}}};
 		myseries.push(col_dic);
 	}
     // 指定图表的配置项和数据
@@ -134,8 +137,7 @@ function drawDoughnut(myid,mylabels,mydata){
             
         },
         tooltip: {
-        	trigger: 'item',
-        	formatter: "{a} <br/>{b}: {c} ({d}%)"
+        	
     	},
         legend: {
         	
@@ -146,10 +148,15 @@ function drawDoughnut(myid,mylabels,mydata){
             name: '人数',
             type: 'pie',
             data: form_data,
-            labelLine: {
-                normal: {
-                    show: false
-                }
+            itemStyle:{ 
+            normal:{ 
+                  label:{ 
+                    position : 'inner',
+                    show: true, 
+                    formatter : function (params){return (params.percent - 0) + '%';},
+                  }, 
+                  labelLine :{show:false} 
+                } 
             },
         }]
     };
