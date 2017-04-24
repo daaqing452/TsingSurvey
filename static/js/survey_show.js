@@ -14,20 +14,13 @@ function createSurveyHtml(q){
 	if(q.s_type == 8){
 		var HTMLContent = "<td>";
 	}
-	if(q.s_type == 7){
-		HTMLContent += "<div><font class=\"h3\">"+(index + 1).toString()+ ".</font>";
-		for(var i = 0; i < q.n_option; i++){
-			var option = q.options[i];
-			HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\">&nbsp&nbsp";
-		}
-	}
-	else if(q.s_type == 8){
+	if(q.s_type == 8){
 		HTMLContent += "<div class=\"h3\">"+q.title_html;
 	}
 	else{
 		HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title_html;
 	}
-	if(q.s_type == 2){
+	if(q.s_type == 2 || q.s_type == 5){
 		var flag = 0;
 		var HTMLtemp = "";
 		if(q.min_select != ""){
@@ -58,7 +51,7 @@ function createSurveyHtml(q){
 			for(var i = 0; i < q.n_option; i ++)
 			{
 				var option = q.options[i];
-				HTMLContent += "<p class=\"q_item\"><input type=\"radio\" onclick = \"showBase(this)\" name=\"Q_"+(index+1).toString()+"\" id=\"Q_"+(index+1).toString()+"_"+(i+1).toString() +"\" > "+String.fromCharCode(i + 65)+". ";
+				HTMLContent += "<p class=\"q_item\"><input type=\"radio\" onclick = \"showBase(this)\" name=\"Q_"+(index+1).toString()+"\" id=\"Q_"+(index+1).toString()+"_"+(i+1).toString() +"\" > "+option.index+". ";
 				if(option.option_type==0){
 					HTMLContent += option.text;
 				}
@@ -80,7 +73,7 @@ function createSurveyHtml(q){
 			for(var i = 0; i < q.n_option; i ++)
 			{
 				var option = q.options[i];
-				HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" onclick = \"showBase(this)\" name=\"Q_"+(index+1).toString()+"\" id=\"Q_"+(index+1).toString()+"_"+(i+1).toString() +"\" > "+String.fromCharCode(i + 65)+". ";
+				HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" onclick = \"showBase(this)\" name=\"Q_"+(index+1).toString()+"\" id=\"Q_"+(index+1).toString()+"_"+(i+1).toString() +"\" > "+option.index+". ";
 				if(option.option_type==0){
 					HTMLContent += option.text;
 				}
@@ -148,6 +141,16 @@ function createSurveyHtml(q){
 			HTMLContent += "</tbody></table>";
 			break;
 		}
+		case 7:{
+			for(var i = 0; i < q.n_option; i++){
+				var option = q.options[i];
+				if(i != 0 & i % 3 ==0){
+					HTMLContent += "<br>";
+				}
+				HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\">&nbsp&nbsp";
+				}
+				HTMLContent += "<br>";
+			}
 	}
 	HTMLContent += "</td>";
 	return HTMLContent;
@@ -350,7 +353,7 @@ function verify(a){
 		wrong_info += "第"+(a.index+1)+"题为必答题!\n";
 		return false;
 	}
-	if(a.s_type == 2){
+	if(a.s_type == 2 || a.s_type == 5){
 		if((a.min_select != "" & a.select.length < a.min_select) || (a.max_select != "" & a.select.length > a.max_select)){
 			wrong_info += "第"+(a.index+1)+"题选择选项数量有误!\n";
 			return false;
@@ -518,8 +521,8 @@ function submit(flag){
 				break;
 			}
 			case 5:{
-				a.min_select = -1;
-				a.max_select = -1;
+				a.min_select = q.min_select;
+				a.max_select = q.max_select;
 				a.n_set = 1;
 				var id_str = "Q_" + (i + 1);
 				var $select = $('#'+id_str).find("select");

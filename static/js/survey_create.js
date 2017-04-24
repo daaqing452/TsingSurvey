@@ -1,5 +1,5 @@
 //for design website
-var option_html = "<td><input type=\"text\" class=\"form-control input-sm\"></td><td><input type=\"file\" id=\"image\" onchange=\"uploadImage(this)\"><input type=\"hidden\" id=\"image_fn\"><p id=\"file_name\"></p></td><td><input type=\"checkbox\" name=\"single\"></td><td><span class=\"glyphicon glyphicon-plus\" onclick=\"addOption(this)\"></span><span class=\"glyphicon glyphicon-minus\" onclick=\"delOption(this)\"></span></td>"
+var option_html = "<td><input type=\"text\" id=\"option_index\" class=\"form-control input-sm\"></td><td><input type=\"text\" id=\"option_text\" class=\"form-control input-sm\"></td><td><input type=\"file\" id=\"image\" onchange=\"uploadImage(this)\"><input type=\"hidden\" id=\"image_fn\"><p id=\"file_name\"></p></td><td><input type=\"checkbox\" name=\"single\"></td><td><span class=\"glyphicon glyphicon-plus\" onclick=\"addOption(this)\"></span><span class=\"glyphicon glyphicon-minus\" onclick=\"delOption(this)\"></span></td>"
 var option_html_text = "<td><input type=\"text\" class=\"form-control input-sm\"></td><td><span class=\"glyphicon glyphicon-plus\" onclick=\"addOption(this)\"></span><span class=\"glyphicon glyphicon-minus\" onclick=\"delOption(this)\"></span></td>";
 var table_html = "<table class=\"table table-condensed\"></table>";
 var table_title_html = "<thead><tr><td>题目标题</td></tr><tr><td style=\"padding:0 0 0 0;\"><div id=\"myNicPanel\" style=\"width: 100%;\"></div><p class=\"form-control\" style=\"width:100%;height:80px;\" id=\"s_title\"></p></td></tr></thead>"
@@ -72,12 +72,14 @@ function createModal(){
 			$mymodal_table.eq(1).addClass("table-striped");
 			$mymodal_table.eq(1).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
-			var single_table_title = "<tr><td class=\"text_col\">选项文字</td>"
+			var single_table_title = "<tr><td class=\"id_col\">选项序号</td>"
+										+"<td class=\"text_col\">选项文字</td>"
 										+"<td class=\"img_col\">图片</td>"
 										+"<td class=\"fill_col\">允许填空</td>"
 										+"<td class=\"op_col\">操作</td></tr>";
 			$mymodal_tbody.append(single_table_title);
 			$mymodal_tbody.append("<tr>"+option_html+"</tr>");
+			$mymodal_tbody.find("input[id=\"option_index\"]").val("A");
 			$mymodal_table.eq(2).attr("id","conditions");
 			$mymodal_table.eq(2).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
@@ -98,12 +100,14 @@ function createModal(){
 			$mymodal_table.eq(1).addClass("table-striped");
 			$mymodal_table.eq(1).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
-			var single_table_title = "<tr><td class=\"text_col\">选项文字</td>"
+			var single_table_title = "<tr><td class=\"id_col\">选项序号</td>"
+										+"<td class=\"text_col\">选项文字</td>"
 										+"<td class=\"img_col\">图片</td>"
 										+"<td class=\"fill_col\">允许填空</td>"
 										+"<td class=\"op_col\">操作</td></tr>";
 			$mymodal_tbody.append(single_table_title);
 			$mymodal_tbody.append("<tr>"+option_html+"</tr>");
+			$mymodal_tbody.find("input[id=\"option_index\"]").val("A");
 			$mymodal_table.eq(2).attr("id","conditions");
 			$mymodal_table.eq(2).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
@@ -174,8 +178,14 @@ function createModal(){
 			$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
 			$mymodal_table.eq(2).attr("id","conditions");
 			$mymodal_table.eq(2).append("<tbody></tbody>");
+			
 			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
-			$mymodal_tbody.append(condition_html);
+			var condition_multi_html = "<tr><td id=\"must_answer\"><input type=\"checkbox\"> 必答</td>"+
+			                           "<td id=\"jump_to\"><input type=\"checkbox\" onclick=\"jump(1)\"> 无条件跳题</td>"+
+			                           "<td id=\"jump_from\"><input type=\"checkbox\" onclick=\"jump(2)\"> 关联逻辑</td>"+
+			                           "<td id=\"min_select\">至少选<input type=\"text\" style=\"width:40px\">项</td>"+
+			                           "<td id=\"max_select\">至多选<input type=\"text\" style=\"width:40px\">项</td><tr>";
+			$mymodal_tbody.append(condition_multi_html);
 			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
 		    myNicEditor.setPanel('myNicPanel');
 		    myNicEditor.addInstance('s_title');
@@ -211,19 +221,23 @@ function createModal(){
 		}
 		case 7:{
 			$("#myModal_body").empty();
-			$("#myModal_body").append(table_html,table_html);
+			$("#myModal_body").append(table_html,table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
-			$mymodal_table.eq(0).attr("id","options");
-			$mymodal_table.eq(0).addClass("table-striped");
-			$mymodal_table.eq(0).append("<tbody></tbody>");
-			$mymodal_tbody = $mymodal_table.eq(0).children().eq(0);
+			$mymodal_table.eq(0).append(table_title_html);
+			$mymodal_table.eq(1).attr("id","options");
+			$mymodal_table.eq(1).addClass("table-striped");
+			$mymodal_table.eq(1).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
 			$mymodal_tbody.append("<tr><td class=\"text_col\">小标题</td>"
 							+"<td class=\"op_col\">操作</td></tr>");
 			$mymodal_tbody.append("<tr class=\"option_text\">"+option_html_text+"</tr>");
-			$mymodal_table.eq(1).attr("id","conditions");
-			$mymodal_table.eq(1).append("<tbody></tbody>");
-			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
+			$mymodal_table.eq(2).attr("id","conditions");
+			$mymodal_table.eq(2).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
 			$mymodal_tbody.append(condition_html);
+			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
+		    myNicEditor.setPanel('myNicPanel');
+		    myNicEditor.addInstance('s_title');
 			break;
 		}
 		case 8:{
@@ -332,7 +346,7 @@ function getQFromModal(){
 			var rows = document.getElementById("options").rows;
 			q.title_html = $("#s_title").html();
 			q.title = $("#s_title").text();
-			if(rows[1].children[0].children[0].value == "" & rows[1].children[1].children[1].value == ""){
+			if(rows[1].children[1].children[0].value == "" & rows[1].children[2].children[1].value == ""){
 				q.n_option = 0;
 				q.options = [];
 			}
@@ -343,10 +357,10 @@ function getQFromModal(){
 			{
 				var option = {}
 				var cols = rows[i].children;
-				option.index = i-1;
-				option.text = cols[0].children[0].value;
-				option.image = cols[1].children[1].value;
-				option.allow_filled = cols[2].children[0].checked;
+				option.index = cols[0].children[0].value;
+				option.text = cols[1].children[0].value;
+				option.image = cols[2].children[1].value;
+				option.allow_filled = cols[3].children[0].checked;
 				if(option.image != ""){
 					option.option_type = 1;
 				}
@@ -362,7 +376,7 @@ function getQFromModal(){
 			var rows = document.getElementById("options").rows;
 			q.title_html = $("#s_title").html();
 			q.title = $("#s_title").text();
-			if(rows[1].children[0].children[0].value == "" & rows[1].children[1].children[1].value == ""){
+			if(rows[1].children[1].children[0].value == "" & rows[1].children[2].children[1].value == ""){
 				q.n_option = 0;
 				q.options = [];
 			}
@@ -373,10 +387,10 @@ function getQFromModal(){
 			{
 				var option = {}
 				var cols = rows[i].children;
-				option.index = i-1;
-				option.text = cols[0].children[0].value;
-				option.image = cols[1].children[1].value;
-				option.allow_filled = cols[2].children[0].checked;
+				option.index = cols[0].children[0].value;
+				option.text = cols[1].children[0].value;
+				option.image = cols[2].children[1].value;
+				option.allow_filled = cols[3].children[0].checked;
 				if(option.image != ""){
 					option.option_type = 1;
 				}
@@ -476,6 +490,8 @@ function getQFromModal(){
 		}
 		case 7:{
 			var rows = document.getElementById("options").rows;
+			q.title_html = $("#s_title").html();
+			q.title = $("#s_title").text();
 			if(rows[1].children[0].children[0].value == "" ){
 				q.n_option = 0;
 				q.options = [];
@@ -522,7 +538,7 @@ function getQFromModal(){
 		else{
 			q.jump_from = false;
 		}
-		if(q.s_type == 2){
+		if(q.s_type == 2 || q.s_type ==5){
 			q.min_select = cols[3].children[0].value;
 			q.max_select = cols[4].children[0].value;
 		}
@@ -547,7 +563,7 @@ function createHtml(q){
 			for(var i = 0; i < q.n_option; i ++)
 			{
 				var option = q.options[i];
-				HTMLContent += "<p class=\"q_item\"><input type=\"radio\" name=\"single\"> "+String.fromCharCode(i + 65)+". ";
+				HTMLContent += "<p class=\"q_item\"><input type=\"radio\" name=\"single\"> "+option.index+". ";
 				if(option.option_type==0){
 					HTMLContent += option.text;
 				}
@@ -595,7 +611,7 @@ function createHtml(q){
 			for(var i = 0; i < q.n_option; i ++)
 			{
 				var option = q.options[i];
-				HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" name=\"single\"> "+String.fromCharCode(i + 65)+". ";
+				HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" name=\"single\"> "+option.index+". ";
 				if(option.option_type==0){
 					HTMLContent += option.text;
 				}
@@ -697,20 +713,21 @@ function createHtml(q){
 		}
 		case 7:{
 			var index = q.index;
-			HTMLContent += "<div><font class=\"h3\">"+(index + 1).toString()+ ".</font>";
-			for(var i = 0; i < q.n_option; i++){
-				var option = q.options[i];
-				if(i != 0 & i % 3 ==0){
-					HTMLContent += "<br>";
-				}
-				HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\">&nbsp&nbsp";
-			}
+			HTMLContent += "<div class=\"h3\">"+(index + 1).toString()+  "." +q.title_html;
 			if(q.must_answer == true){
 				HTMLContent += "*</div>";
 			}
 			else{
 				HTMLContent += "</div>";
 			}
+			for(var i = 0; i < q.n_option; i++){
+			var option = q.options[i];
+			if(i != 0 & i % 3 ==0){
+				HTMLContent += "<br>";
+			}
+			HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\">&nbsp&nbsp";
+			}
+			HTMLContent += "<br>";
 			break;
 		}
 		case 8:{
@@ -719,9 +736,80 @@ function createHtml(q){
 			break;
 		}
 	}
-	HTMLContent += "<br><div><button class=\"btn btn-primary btn-sm\" onclick=\"addQAfter(this)\">插入</button><button class=\"btn btn-danger btn-sm\" onclick=\"deleteQ(this)\">删除</button><button data-toggle=\"modal\" data-target=\"#myModal\" class=\"btn btn-warning btn-sm\" onclick=\"modifyQ(this)\">修改</button></div><hr>";
+	HTMLContent += "<br><div><button class=\"btn btn-primary btn-sm\" onclick=\"addQAfter(this)\">插入</button><button class=\"btn btn-danger btn-sm\" onclick=\"deleteQ(this)\">删除</button><button data-toggle=\"modal\" data-target=\"#myModal\" class=\"btn btn-warning btn-sm\" onclick=\"modifyQ(this)\">修改</button>";
+	HTMLContent += "<button class=\"btn btn-success btn-sm\" onclick=\"moveQup(this)\">上移</button><button class=\"btn btn-success btn-sm\" onclick=\"moveQdown(this)\">下移</button><button class=\"btn btn-success btn-sm\" onclick=\"copyQ(this)\">复制</button></div><hr>";
 	HTMLContent += "</td>";
 	return HTMLContent;
+}
+
+function moveQup(b){
+	var $b = $(b);
+	var index = $b.parents("tr").index();
+	if(index == 0){
+		return;
+	}
+	var swap_index = index - 1;
+	if(questions[index].s_type == 8 || questions[swap_index].s_type == 8){
+		var temp_q = questions[index];
+		questions.splice(index, 1);
+		questions.splice(swap_index,0,temp_q);
+	}
+	else{
+		var temp_q = questions[index];
+		temp_q.index -= 1;
+		questions[swap_index].index += 1;
+		questions.splice(index, 1);
+		questions.splice(swap_index,0,temp_q);
+	}
+	var rows = q_table.rows;
+	for(var i = 0; i < questions.length; i++){
+		rows[i].innerHTML = createHtml(questions[i]);
+	}
+}
+
+function copyQ(b){
+	var $b = $(b);
+	var index = $b.parents("tr").index();
+	var temp_q = questions[index];
+	temp_q.index += 1
+	questions.splice(index+1,0,temp_q);
+	var new_row = q_table.insertRow(index+1);
+	new_row.innerHTML = createHtml(temp_q);
+	var rows = q_table.rows;
+	for(var i = index+2; i < questions.length; i++){
+		if(temp_q.s_type != 8){
+			questions[i].index ++;
+		}
+		rows[i].innerHTML = createHtml(questions[i]);
+	}
+	current_status.index ++;
+	operate_index = current_status.index;
+
+}
+
+function moveQdown(b){
+	var $b = $(b);
+	var index = $b.parents("tr").index();
+	if(index == questions.length-1){
+		return;
+	}
+	var swap_index = index + 1;
+	if(questions[index].s_type == 8 || questions[swap_index].s_type == 8){
+		var temp_q = questions[index];
+		questions.splice(index, 1);
+		questions.splice(swap_index,0,temp_q);
+	}
+	else{
+		var temp_q = questions[index];
+		temp_q.index += 1;
+		questions[swap_index].index -= 1;
+		questions.splice(index, 1);
+		questions.splice(swap_index,0,temp_q);
+	}
+	var rows = q_table.rows;
+	for(var i = 0; i < questions.length; i++){
+		rows[i].innerHTML = createHtml(questions[i]);
+	}
 }
 
 function addQAfter(b){
@@ -749,10 +837,11 @@ function modifyQ(b){
 			$mymodal_table.eq(1).addClass("table-striped");
 			$mymodal_table.eq(1).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
-			var single_table_title = "<tr><td class=\"text_col\">选项文字</td>"
-										+"<td class=\"img_col\">图片</td>"
-										+"<td class=\"fill_col\">允许填空</td>"
-										+"<td class=\"op_col\">操作</td></tr>";
+			var single_table_title = "<tr><td class=\"id_col\">选项序号</td>"
+									+"<td class=\"text_col\">选项文字</td>"
+									+"<td class=\"img_col\">图片</td>"
+									+"<td class=\"fill_col\">允许填空</td>"
+									+"<td class=\"op_col\">操作</td></tr>";
 			$mymodal_tbody.append(single_table_title);
 			for(var i = 0; i < q.n_option; i++){
 				$mymodal_tbody.append("<tr>"+option_html+"</tr>");
@@ -762,8 +851,9 @@ function modifyQ(b){
 			}
 			for(var i = 0; i < q.n_option; i++){
 				var option = q.options[i];
+				$mymodal_tbody.find("input[id=\"option_index\"]").eq(i).val(option.index);
 				if(option.option_type == 0){
-					$mymodal_tbody.find("input[type=\"text\"]").eq(i).val(option.text);
+					$mymodal_tbody.find("input[id=\"option_text\"]").eq(i).val(option.text);
 				}
 				else{
 					$mymodal_tbody.find("input[id=\"image_fn\"]").eq(i).val(option.image);
@@ -793,10 +883,11 @@ function modifyQ(b){
 			$mymodal_table.eq(1).addClass("table-striped");
 			$mymodal_table.eq(1).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
-			var single_table_title = "<tr><td class=\"text_col\">选项文字</td>"
-										+"<td class=\"img_col\">图片</td>"
-										+"<td class=\"fill_col\">允许填空</td>"
-										+"<td class=\"op_col\">操作</td></tr>";
+			var single_table_title = "<tr><td class=\"id_col\">选项序号</td>"
+									+"<td class=\"text_col\">选项文字</td>"
+									+"<td class=\"img_col\">图片</td>"
+									+"<td class=\"fill_col\">允许填空</td>"
+									+"<td class=\"op_col\">操作</td></tr>";
 			$mymodal_tbody.append(single_table_title);
 			for(var i = 0; i < q.n_option; i++){
 				$mymodal_tbody.append("<tr>"+option_html+"</tr>");
@@ -806,8 +897,9 @@ function modifyQ(b){
 			}
 			for(var i = 0; i < q.n_option; i++){
 				var option = q.options[i];
+				$mymodal_tbody.find("input[id=\"option_index\"]").eq(i).val(option.index);
 				if(option.option_type == 0){
-					$mymodal_tbody.find("input[type=\"text\"]").eq(i).val(option.text);
+					$mymodal_tbody.find("input[id=\"option_text\"]").eq(i).val(option.text);
 				}
 				else{
 					$mymodal_tbody.find("input[id=\"image_fn\"]").eq(i).val(option.image);
@@ -976,12 +1068,14 @@ function modifyQ(b){
 		}
 		case 7:{
 			$("#myModal_body").empty();
-			$("#myModal_body").append(table_html,table_html);
+			$("#myModal_body").append(table_html,table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
-			$mymodal_table.eq(0).attr("id","options");
-			$mymodal_table.eq(0).addClass("table-striped");
-			$mymodal_table.eq(0).append("<tbody></tbody>");
-			$mymodal_tbody = $mymodal_table.eq(0).children().eq(0);
+			$mymodal_table.eq(0).append(table_title_html);
+			$("#s_title").html(q.title_html);
+			$mymodal_table.eq(1).attr("id","options");
+			$mymodal_table.eq(1).addClass("table-striped");
+			$mymodal_table.eq(1).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
 			$mymodal_tbody.append("<tr><td class=\"text_col\">小标题</td>"
 							+"<td class=\"op_col\">操作</td></tr>");
 			for(var i = 0; i < q.n_option; i++){
@@ -994,10 +1088,13 @@ function modifyQ(b){
 				var option = q.options[i];
 				$('.option_text').eq(i).children().eq(0).children().eq(0).prop("value",option.text);
 			}
-			$mymodal_table.eq(1).attr("id","conditions");
-			$mymodal_table.eq(1).append("<tbody></tbody>");
-			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
+			$mymodal_table.eq(2).attr("id","conditions");
+			$mymodal_table.eq(2).append("<tbody></tbody>");
+			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
 			$mymodal_tbody.append(condition_html);
+			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
+			myNicEditor.setPanel('myNicPanel');
+			myNicEditor.addInstance('s_title');
 			break;
 		}
 		case 8:{
@@ -1100,6 +1197,8 @@ function createPage(){
 
 function addOption(b)
 {
+	var $b = $(b);
+	var index = $b.parents("tr").index();
 	var current_row = b.parentNode.parentNode;
 	var row_type = current_row.getAttribute("class");
 	var current_index = current_row.rowIndex;
@@ -1111,6 +1210,7 @@ function addOption(b)
 	}
 	else{
 		new_row.innerHTML = option_html;
+		$b.parents("table").find("input[id=\"option_index\"]").eq(index).val(String.fromCharCode(65 +index));
 	}
 }
 function delOption(b)
