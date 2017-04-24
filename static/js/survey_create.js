@@ -19,6 +19,14 @@ function getindex(){
 	operate_index = current_status.index;
 }
 
+function clone(myObj){  
+    if(typeof(myObj) != 'object' || myObj == null) return myObj;  
+    var newObj = new Object();  
+    for(var i in myObj){  
+      newObj[i] = clone(myObj[i]); 
+    }  
+    return newObj;  
+} 
 
 function createSurvey(s_type){
 	current_status.s_type = s_type;
@@ -770,7 +778,7 @@ function moveQup(b){
 function copyQ(b){
 	var $b = $(b);
 	var index = $b.parents("tr").index();
-	var temp_q = questions[index];
+	var temp_q = clone(questions[index]);
 	temp_q.index += 1
 	questions.splice(index+1,0,temp_q);
 	var new_row = q_table.insertRow(index+1);
