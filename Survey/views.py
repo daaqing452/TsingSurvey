@@ -94,11 +94,6 @@ def survey(request, qid):
 				if op == 'save':
 					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
 					questionaire.save()
-
-
-					print([questionaire.title, '1'])
-
-
 					return HttpResponse(json.dumps({}))
 				# 发布问卷请求
 				elif op == 'release':
@@ -118,7 +113,6 @@ def survey(request, qid):
 						qid_dict[questionaire.id] = 0
 						suser.qid_list = json.dumps(qid_dict)
 						suser.save()
-
 					questionaire.status = 1
 					questionaire.release_time = now
 					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
@@ -143,7 +137,7 @@ def survey(request, qid):
 			# 提交问卷请求
 			if op == 'submit':
 				# 获取信息
-				if request.META.has_key('HTTP_X_FORWARDED_FOR'):
+				if 'HTTP_X_FORWARDED_FOR' in request.META:
 				    ip = request.META['HTTP_X_FORWARDED_FOR']
 				else:
 				    ip = request.META['REMOTE_ADDR']
