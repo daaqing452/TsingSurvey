@@ -94,11 +94,6 @@ def survey(request, qid):
 				if op == 'save':
 					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
 					questionaire.save()
-
-
-					print([questionaire.title, '1'])
-
-
 					return HttpResponse(json.dumps({}))
 				# 发布问卷请求
 				elif op == 'release':
@@ -118,7 +113,6 @@ def survey(request, qid):
 						qid_dict[questionaire.id] = 0
 						suser.qid_list = json.dumps(qid_dict)
 						suser.save()
-
 					questionaire.status = 1
 					questionaire.release_time = now
 					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))

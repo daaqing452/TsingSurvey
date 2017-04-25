@@ -3,7 +3,10 @@ import time
 import collections
 
 def username_to_password(username):
-	return str((hash(str(username)) ^ 3968766407) % 104939997)
+	h = 0
+	username = str(username)
+	for c in username: h = h * ord(c) % 10499997
+	return str(h)
 
 def remake_questionaire(questionaire, qid_dict):
 	d = {}
