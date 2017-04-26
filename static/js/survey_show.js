@@ -124,7 +124,7 @@ function createSurveyHtml(q){
 			break;
 		}
 		case 6:{
-			HTMLContent += "<table class=\"table \"><tbody><tr><td></td>";
+			HTMLContent += "<table class=\"table \" style=\"table-layout:fixed;word-break:break-all\"><tbody><tr><td></td>";
 			var n_col = q.n_option / q.n_set;
 			var n_row = q.n_set;
 			for(var i = 0; i < n_col; i++){
@@ -645,7 +645,7 @@ function createReportHtml(result){
 	var HTMLContent = "<td>";
 	switch(result.s_type){
 		case 1:{
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + result.title + "</div>";
+			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + result.title+"</font></div>";
 			HTMLContent += "<table class=\"table\"><tr><td>选项</td><td>小计</td><td>比例</td></tr>";
 			for(var i = 0; i < result.n_option; i ++){
 				HTMLContent += "<tr>";
@@ -668,7 +668,7 @@ function createReportHtml(result){
 			break;
 		}
 		case 2:{
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + result.title + "</div>";
+			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + result.title+"</font></div>";
 			HTMLContent += "<table class=\"table\"><tr><td>选项</td><td>小计</td><td>比例</td></tr>";
 			for(var i = 0; i < result.n_option; i ++){
 				HTMLContent += "<tr>";
@@ -691,7 +691,7 @@ function createReportHtml(result){
 			break;
 		}
 		case 4:{
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + result.title + "</div>";
+			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + result.title+"</font></div>";
 			HTMLContent += "<table class=\"table\"><tr><td>选项</td><td>小计</td><td>比例</td></tr>";
 			for(var i = 0; i < result.n_option; i ++){
 				HTMLContent += "<tr>";
@@ -714,7 +714,7 @@ function createReportHtml(result){
 			break;
 		}
 		case 5:{
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + result.title + "</div>";
+			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + result.title+"</font></div>";
 			HTMLContent += "<table class=\"table\"><tr><td>选项</td><td>排序</td><td>小计</td><td>比例</td></tr>";
 			for(var i = 0; i < result.n_option * 2; i ++){
 				HTMLContent += "<tr>";
@@ -736,8 +736,8 @@ function createReportHtml(result){
 			break;
 		}
 		case 6:{
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + result.title + "</div>";
-			HTMLContent += "<table class=\"table\" style=\"table-layout:fixed;word-break:break-all\"><tr><td>选项</td><td>小计</td><td>比例</td></tr>";
+			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + result.title+"</font></div>";
+			HTMLContent += "<table class=\"table\"><tr><td>选项</td><td>小计</td><td>比例</td></tr>";
 			for(var i = 0; i < result.n_option; i ++){
 				HTMLContent += "<tr>";
 				var option = result.options[i];
