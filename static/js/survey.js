@@ -5,7 +5,7 @@ $(document).ready(function(){
 		data: {'op': 'load'},
 		success: function(data) {
 			data = JSON.parse(data);
-			situation = data['status'];
+			status = data['status'];
 			title = data['title'];
 			qstring = data['qstring'];
 			now_time = new Date();
@@ -16,12 +16,12 @@ $(document).ready(function(){
 			if(qstring == ""){
 				return;
 			}
-			if(situation == 0){
+			if(status == 0){
 				questions = JSON.parse(qstring);
 				createPage();
 				getindex();
 			}
-			if(situation == 1){
+			if(status == 1){
 				//定时保存
 				window.setInterval(function(){ 
 					tempSave(); 
@@ -32,7 +32,7 @@ $(document).ready(function(){
 				getindex();
 				fillAnswer();
 			}
-			if(situation == 2){
+			if(status == 2){
 				results = JSON.parse(qstring);
 				showReport();
 				//alert(questions[0].s_type);

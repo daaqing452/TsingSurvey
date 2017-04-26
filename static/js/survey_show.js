@@ -15,10 +15,10 @@ function createSurveyHtml(q){
 		var HTMLContent = "<td>";
 	}
 	if(q.s_type == 8){
-		HTMLContent += "<div class=\"h3\">"+q.title_html;
+		HTMLContent += "<div><font size=\"3\">"+ q.title_html;
 	}
 	else{
-		HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title_html;
+		HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title_html;
 	}
 	if(q.s_type == 2 || q.s_type == 5){
 		var flag = 0;
@@ -44,7 +44,7 @@ function createSurveyHtml(q){
 	if(q.must_answer == true){
 		HTMLContent += "*";
 	}
-	HTMLContent += "</div>";
+	HTMLContent += "</font></div>";
 	switch(q.s_type){
 		case 1:{
 			HTMLContent += "<div><form>";
@@ -737,7 +737,7 @@ function createReportHtml(result){
 		}
 		case 6:{
 			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + result.title + "</div>";
-			HTMLContent += "<table class=\"table\"><tr><td>选项</td><td>小计</td><td>比例</td></tr>";
+			HTMLContent += "<table class=\"table\" style=\"table-layout:fixed;word-break:break-all\"><tr><td>选项</td><td>小计</td><td>比例</td></tr>";
 			for(var i = 0; i < result.n_option; i ++){
 				HTMLContent += "<tr>";
 				var option = result.options[i];

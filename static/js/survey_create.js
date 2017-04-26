@@ -560,7 +560,7 @@ function createHtml(q){
 	switch(q.s_type){
 		case 1:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title_html;
+			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title_html+"</font>";
 			if(q.must_answer == true){
 				HTMLContent += "*</div>";
 			}
@@ -590,7 +590,7 @@ function createHtml(q){
 		}
 		case 2:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title_html;
+			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title_html+"</font>";
 			if(q.s_type == 2){
 				var flag = 0;
 				var HTMLtemp = "";
@@ -638,7 +638,7 @@ function createHtml(q){
 		}
 		case 3:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title_html;
+			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title_html+"</font>";
 			if(q.must_answer == true){
 				HTMLContent += "*</div>";
 			}
@@ -652,7 +652,7 @@ function createHtml(q){
 		}
 		case 4:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title_html;
+			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title_html+"</font>";
 			if(q.must_answer == true){
 				HTMLContent += "*</div>";
 			}
@@ -670,7 +670,7 @@ function createHtml(q){
 		}
 		case 5:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title_html;
+			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title_html+"</font>";
 			if(q.must_answer == true){
 				HTMLContent += "*</div>";
 			}
@@ -695,14 +695,14 @@ function createHtml(q){
 		}
 		case 6:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString() + "." + q.title_html;
+			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title_html+"</font>";
 			if(q.must_answer == true){
 				HTMLContent += "*</div>";
 			}
 			else{
 				HTMLContent += "</div>";
 			}
-			HTMLContent += "<table class=\"table \"><tbody><tr><td></td>";
+			HTMLContent += "<table class=\"table \" style=\"table-layout:fixed;word-break:break-all\"><tbody><tr><td></td>";
 			var n_col = q.n_option / q.n_set;
 			var n_row = q.n_set;
 			for(var i = 0; i < n_col; i++){
@@ -721,7 +721,7 @@ function createHtml(q){
 		}
 		case 7:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">"+(index + 1).toString()+  "." +q.title_html;
+			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title_html+"</font>";
 			if(q.must_answer == true){
 				HTMLContent += "*</div>";
 			}
@@ -740,7 +740,7 @@ function createHtml(q){
 		}
 		case 8:{
 			var index = q.index;
-			HTMLContent += "<div class=\"h3\">" + q.title_html + "</div>";
+			HTMLContent += "<div><font size=\"3\">"+ q.title_html+"</font></div>";
 			break;
 		}
 	}
