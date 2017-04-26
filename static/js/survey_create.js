@@ -92,6 +92,7 @@ function createModal(){
 			$mymodal_table.eq(2).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
 			$mymodal_tbody.append(condition_html);
+			$mymodal_tbody.find("#must_answer").children().eq(0).prop("checked",true);
 			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
 		    myNicEditor.setPanel('myNicPanel');
 		    myNicEditor.addInstance('s_title');
@@ -125,6 +126,7 @@ function createModal(){
 			                           "<td id=\"min_select\">至少选<input type=\"text\" style=\"width:40px\">项</td>"+
 			                           "<td id=\"max_select\">至多选<input type=\"text\" style=\"width:40px\">项</td><tr>";
 			$mymodal_tbody.append(condition_multi_html);
+			$mymodal_tbody.find("#must_answer").children().eq(0).prop("checked",true);
 			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
 		    myNicEditor.setPanel('myNicPanel');
 		    myNicEditor.addInstance('s_title');
@@ -141,6 +143,7 @@ function createModal(){
 			$mymodal_table.eq(1).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
 			$mymodal_tbody.append(condition_html);
+			$mymodal_tbody.find("#must_answer").children().eq(0).prop("checked",true);
 			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
 		    myNicEditor.setPanel('myNicPanel');
 		    myNicEditor.addInstance('s_title');
@@ -167,6 +170,7 @@ function createModal(){
 			$mymodal_table.eq(3).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(3).children().eq(0);
 			$mymodal_tbody.append(condition_html);
+			$mymodal_tbody.find("#must_answer").children().eq(0).prop("checked",true);
 			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
 		    myNicEditor.setPanel('myNicPanel');
 		    myNicEditor.addInstance('s_title');
@@ -194,6 +198,7 @@ function createModal(){
 			                           "<td id=\"min_select\">至少选<input type=\"text\" style=\"width:40px\">项</td>"+
 			                           "<td id=\"max_select\">至多选<input type=\"text\" style=\"width:40px\">项</td><tr>";
 			$mymodal_tbody.append(condition_multi_html);
+			$mymodal_tbody.find("#must_answer").children().eq(0).prop("checked",true);
 			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
 		    myNicEditor.setPanel('myNicPanel');
 		    myNicEditor.addInstance('s_title');
@@ -222,6 +227,7 @@ function createModal(){
 			$mymodal_table.eq(3).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(3).children().eq(0);
 			$mymodal_tbody.append(condition_html);
+			$mymodal_tbody.find("#must_answer").children().eq(0).prop("checked",true);
 			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
 		    myNicEditor.setPanel('myNicPanel');
 		    myNicEditor.addInstance('s_title');
@@ -243,6 +249,7 @@ function createModal(){
 			$mymodal_table.eq(2).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
 			$mymodal_tbody.append(condition_html);
+			$mymodal_tbody.find("#must_answer").children().eq(0).prop("checked",true);
 			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
 		    myNicEditor.setPanel('myNicPanel');
 		    myNicEditor.addInstance('s_title');
