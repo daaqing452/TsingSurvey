@@ -426,10 +426,10 @@ function verify(a,submit_type){
 	}
 	if(submit_type == 0){
 		if(flag == false){
-			$("#Q_"+(a.index+1)).parents("tr").addClass("danger");
+			$("#Q_"+(a.index+1)).parents("tr").css('background-color','#f2dede');
 		}
 		else{
-			$("#Q_"+(a.index+1)).parents("tr").removeClass("danger");
+			$("#Q_"+(a.index+1)).parents("tr").css('background-color','');
 		}
 	}
 	return flag;
