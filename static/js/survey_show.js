@@ -6,6 +6,22 @@ var submit_time_format = 0;
 var temp = 0;
 var answers = new Array();
 var answers_from_database = new Array();
+
+function IsPC() {
+    var userAgentInfo = navigator.userAgent;
+    var Agents = ["Android", "iPhone",
+                "SymbianOS", "Windows Phone",
+                "iPad", "iPod"];
+    var flag = true;
+    for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+            flag = false;
+            break;
+        }
+    }
+    return flag;
+}
+
 function createSurveyHtml(q){
 	var index = q.index;
 	if(q.s_type != 8){
@@ -124,33 +140,63 @@ function createSurveyHtml(q){
 			break;
 		}
 		case 6:{
-			HTMLContent += "<table class=\"table \" style=\"table-layout:fixed;word-break:break-all\"><tbody><tr><td></td>";
-			var n_col = q.n_option / q.n_set;
-			var n_row = q.n_set;
-			for(var i = 0; i < n_col; i++){
-				HTMLContent += "<td>" + q.options[i].image + "</td>";
-			}
-			HTMLContent += "</tr>";
-			for(var i = 0; i < n_row; i++){
-				HTMLContent += "<tr><td>" + q.options[i*n_col].text +"</td>";
-				for(var j = 0; j < n_col; j++){
-					HTMLContent += "<td><input type=\"radio\" onclick = \"showBase(this)\" name=\"Q_"+(index+1).toString()+"_"+(i+1).toString()+"\" id=\"Q_"+(index+1).toString()+"_"+(i*n_col+j+1).toString() +"\"></td>";
+			if(IsPC()){
+				HTMLContent += "<table class=\"table \" style=\"table-layout:fixed;word-break:break-all\"><tbody><tr><td></td>";
+				var n_col = q.n_option / q.n_set;
+				var n_row = q.n_set;
+				for(var i = 0; i < n_col; i++){
+					HTMLContent += "<td align=\"center\">" + q.options[i].image + "</td>";
 				}
 				HTMLContent += "</tr>";
+				for(var i = 0; i < n_row; i++){
+					HTMLContent += "<tr><td>" + q.options[i*n_col].text +"</td>";
+					for(var j = 0; j < n_col; j++){
+						HTMLContent += "<td align=\"center\"><input type=\"radio\" onclick = \"showBase(this)\" name=\"Q_"+(index+1).toString()+"_"+(i+1).toString()+"\" id=\"Q_"+(index+1).toString()+"_"+(i*n_col+j+1).toString() +"\"></td>";
+					}
+					HTMLContent += "</tr>";
+				}
+				HTMLContent += "</tbody></table>";
 			}
-			HTMLContent += "</tbody></table>";
+			else{
+				HTMLContent += "<table class=\"table \" style=\"table-layout:fixed;word-break:break-all\"><tbody><tr>";
+				var n_col = q.n_option / q.n_set;
+				var n_row = q.n_set;
+				for(var i = 0; i < n_col; i++){
+					HTMLContent += "<td align=\"center\">" + q.options[i].image + "</td>";
+				}
+				HTMLContent += "</tr>";
+				for(var i = 0; i < n_row; i++){
+					HTMLContent += "<tr><td colspan=\"3\">" + q.options[i*n_col].text +"</td><tr>";
+					HTMLContent += "<tr>";
+					for(var j = 0; j < n_col; j++){
+						HTMLContent += "<td align=\"center\"><input type=\"radio\" onclick = \"showBase(this)\" name=\"Q_"+(index+1).toString()+"_"+(i+1).toString()+"\" id=\"Q_"+(index+1).toString()+"_"+(i*n_col+j+1).toString() +"\"></td>";
+					}
+					HTMLContent += "</tr>";
+				}
+				HTMLContent += "</tbody></table>";
+			}
 			break;
 		}
 		case 7:{
-			for(var i = 0; i < q.n_option; i++){
-				var option = q.options[i];
-				if(i != 0 & i % 3 ==0){
-					HTMLContent += "<br>";
-				}
-				HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\">&nbsp&nbsp";
+			if(IsPC()){
+				for(var i = 0; i < q.n_option; i++){
+					var option = q.options[i];
+					if(i != 0 & i % 3 ==0){
+						HTMLContent += "<br>";
+					}
+					HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\">&nbsp&nbsp";
 				}
 				HTMLContent += "<br>";
 			}
+			else{
+				for(var i = 0; i < q.n_option; i++){
+					var option = q.options[i];
+					HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\"><br>";
+				}
+				HTMLContent += "<br>";
+			}
+			break;
+		}
 	}
 	HTMLContent += "</td>";
 	return HTMLContent;
@@ -368,6 +414,21 @@ function addToSort(b){
 	var option_index = $b.prop("value");
 	var is_selected = $('#'+id_str).get(0).checked;
 	var text = $('#'+id_str).parent().text();
+	var option_length = 0;
+	if(is_selected){
+		option_length = $('#'+id_str).parent().parent().parent().find('select')[0].options.length+1;
+	}
+	else{
+		option_length = $('#'+id_str).parent().parent().parent().find('select')[0].options.length-1;
+	}
+	var index = $b.parents("tr").index();
+	var max_select = questions[index].max_select;
+	if(is_selected){
+		if(option_length > max_select){
+			$('#'+id_str).get(0).checked = false;
+			return;
+		}
+	}
 	if(is_selected){
 		//在select中加入该option
 		$('#'+id_str).parent().parent().parent().find('select').append("<option value=\"" + option_index + "\" >" + text + "</option>");

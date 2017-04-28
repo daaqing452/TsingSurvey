@@ -1026,7 +1026,18 @@ function modifyQ(b){
 			$mymodal_table.eq(2).attr("id","conditions");
 			$mymodal_table.eq(2).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
-			$mymodal_tbody.append(condition_html);
+			var condition_multi_html = "<tr><td id=\"must_answer\"><input type=\"checkbox\"> 必答</td>"+
+			                           "<td id=\"jump_to\"><input type=\"checkbox\" onclick=\"jump(1)\"> 无条件跳题</td>"+
+			                           "<td id=\"jump_from\"><input type=\"checkbox\" onclick=\"jump(2)\"> 关联逻辑</td>"+
+			                           "<td id=\"min_select\">至少选<input type=\"text\" style=\"width:40px\">项</td>"+
+			                           "<td id=\"max_select\">至多选<input type=\"text\" style=\"width:40px\">项</td><tr>";
+			$mymodal_tbody.append(condition_multi_html);
+			if(q.min_select != ""){
+				$mymodal_tbody.find("#min_select").children("input[type=\"text\"]").val(q.min_select);
+			}
+			if(q.max_select != ""){
+				$mymodal_tbody.find("#max_select").children("input[type=\"text\"]").val(q.max_select);
+			}
 			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
 		    myNicEditor.setPanel('myNicPanel');
 		    myNicEditor.addInstance('s_title');
