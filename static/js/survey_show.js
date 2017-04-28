@@ -166,7 +166,7 @@ function createSurveyHtml(q){
 				}
 				HTMLContent += "</tr>";
 				for(var i = 0; i < n_row; i++){
-					HTMLContent += "<tr><td colspan=\"3\">" + q.options[i*n_col].text +"</td><tr>";
+					HTMLContent += "<tr><td colspan=\""+n_col+"\">" + q.options[i*n_col].text +"</td><tr>";
 					HTMLContent += "<tr>";
 					for(var j = 0; j < n_col; j++){
 						HTMLContent += "<td align=\"center\"><input type=\"radio\" onclick = \"showBase(this)\" name=\"Q_"+(index+1).toString()+"_"+(i+1).toString()+"\" id=\"Q_"+(index+1).toString()+"_"+(i*n_col+j+1).toString() +"\"></td>";
