@@ -311,6 +311,24 @@ function showBase(b){
 	var jump_to = $b.parents("td").attr("jump_to");
 	var tr_index = $b.parents("tr").index();   //从0开始，行号
 	//跳转题目展示变化
+	if($b.prop("type") == "checkbox"){
+		var option_length = 0;
+		var check_group_name = $b.prop("name");
+		var $check_group = $("input[name=\""+check_group_name+"\"]");
+		for(var i = 0; i < $check_group.length; i++){
+			if($check_group[i].checked){
+				option_length += 1;
+			}
+		}
+		var max_select = questions[tr_index].max_select;
+		if(is_selected){
+			if(option_length > max_select){
+				$b.prop("checked",false);
+				return;
+			}
+		}
+	}
+
 	if($b.prop("type") == "radio"){
 		for(var line_id = tr_index+2; line_id < jump_to; line_id++){
 			$('#Q_'+line_id.toString()).parent().hide();
@@ -394,18 +412,27 @@ function showPage(){
 	}
 }
 
-function verify(a){
+function verify(a,submit_type){
+	var flag = true;
 	if(a.must_answer == true & a.select.length < a.n_set & a.show){
 		wrong_info += "第"+(a.index+1)+"题为必答题!\n";
-		return false;
+		flag = false;
 	}
 	if(a.s_type == 2 || a.s_type == 5){
 		if((a.min_select != "" & a.select.length < a.min_select) || (a.max_select != "" & a.select.length > a.max_select)){
 			wrong_info += "第"+(a.index+1)+"题选择选项数量有误!\n";
-			return false;
+			flag = false;
 		}
 	}
-	return true;
+	if(submit_type == 0){
+		if(flag == false){
+			$("#Q_"+(a.index+1)).parents("tr").addClass("danger");
+		}
+		else{
+			$("#Q_"+(a.index+1)).parents("tr").removeClass("danger");
+		}
+	}
+	return flag;
 }
 
 function addToSort(b){
@@ -635,7 +662,7 @@ function submit(flag){
 			a.show = false;
 		}
 		answers.push(a);
-		if(verify(a) == false){
+		if(verify(a,flag) == false){
 			legal = false;
 		}
 	}
