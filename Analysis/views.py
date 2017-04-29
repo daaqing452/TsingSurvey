@@ -167,7 +167,7 @@ def export(qid):
 			n_option = question['n_option']
 			options = question['options']
 			n_set = question['n_set']
-			n_column = n_option / n_set
+			n_column = int(n_option / n_set)
 			qtitles = [options[i]['text'] for i in range(0, n_option, n_column)]
 			for qtitle in qtitles:
 				col += 1

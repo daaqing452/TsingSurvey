@@ -142,10 +142,10 @@
 	{% endifequal %}
 
 	{% ifequal status 2 %}
-	{% ifequal permission_submit 1 %}
+	{% if user.is_staff %}
 	<button id="export_btn" class="btn btn-success btn-sm" onclick="exportt()" style="float:right"> 导出 </button>
 	<a id='download'> </a>
-	{% endifequal %}
+	{% endif %}
 	{% endifequal %}
 
 	</div>
