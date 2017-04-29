@@ -164,9 +164,9 @@ def export(qid):
 					sheet2.write(row, col, select[0][2])
 		# 矩阵题
 		elif s_type == 6:
-			n_option = question['n_option']
+			n_option = int(question['n_option'])
 			options = question['options']
-			n_set = question['n_set']
+			n_set = int(question['n_set'])
 			n_column = int(n_option / n_set)
 			qtitles = [options[i]['text'] for i in range(0, n_option, n_column)]
 			for qtitle in qtitles:
@@ -177,12 +177,12 @@ def export(qid):
 				row += 1
 				for selected_option in select:
 					index2 = selected_option[0]
-					qrow, qcol = index2 / n_column, index2 % n_column
+					qrow, qcol = int(index2 / n_column), int(index2 % n_column)
 					sheet1.write(row, col - n_set + qrow + 1, int(qcol))
 					sheet2.write(row, col - n_set + qrow + 1, selected_option[3])
 		# 多选题
 		elif s_type == 2:
-			n_option = question['n_option']
+			n_option = int(question['n_option'])
 			options = question['options']
 			for i in range(len(options)):
 				option = options[i]
@@ -198,12 +198,12 @@ def export(qid):
 			for select in selects:
 				row += 1
 				for selected_option in select:
-					idx = selected_option[0]
+					idx = int(selected_option[0])
 					sheet1.write(row, col - n_option + idx + 1, 1)
 					sheet2.write(row, col - n_option + idx + 1, 1)
 		# 排序题
 		elif s_type == 5:
-			n_option = question['n_option']
+			n_option = int(question['n_option'])
 			options = question['options']
 			for i in range(len(options)):
 				option = options[i]
@@ -262,18 +262,18 @@ def export(qid):
 		# 矩阵题
 		elif s_type == 6:
 			n_set = int(report['n_set'])
-			n_column = n_option / n_set
+			n_column = int(n_option / n_set)
 			for option in options:
-				index = option['index']
-				r = row + 1 + index / n_column
+				index = int(option['index'])
+				r = row + 1 + int(index / n_column)
 				c = 2 + index % n_column
 				sheet3.write(row, c, option['image'])
 				sheet3.write(r, 1, option['text'])
 				sheet3.write(r, c, option['num'])
 			row += n_set + 2
 			for option in options:
-				index = option['index']
-				r = row + 1 + index / n_column
+				index = int(option['index'])
+				r = row + 1 + int(index / n_column)
 				c = 2 + index % n_column
 				sheet3.write(row, c, option['image'])
 				sheet3.write(r, 1, option['text'])
