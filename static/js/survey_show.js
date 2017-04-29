@@ -321,7 +321,7 @@ function showBase(b){
 			}
 		}
 		var max_select = questions[tr_index].max_select;
-		if(is_selected){
+		if(is_selected && max_select != ""){
 			if(option_length > max_select){
 				$b.prop("checked",false);
 				return;
@@ -450,7 +450,7 @@ function addToSort(b){
 	}
 	var index = $b.parents("tr").index();
 	var max_select = questions[index].max_select;
-	if(is_selected){
+	if(is_selected && max_select != ""){
 		if(option_length > max_select){
 			$('#'+id_str).get(0).checked = false;
 			return;
