@@ -20,12 +20,26 @@ function getindex(){
 }
 
 function clone(myObj){  
-    if(typeof(myObj) != 'object' || myObj == null) return myObj;  
-    var newObj = new Object();  
-    for(var i in myObj){  
-      newObj[i] = clone(myObj[i]); 
-    }  
-    return newObj;  
+    var new_obj = {};
+    new_obj.s_type = myObj.s_type;
+    new_obj.index = myObj.index;
+    new_obj.title_html = myObj.title_html;
+    new_obj.title = myObj.title;
+   	new_obj.n_option =  myObj.n_option;
+   	if(myObj.hasOwnProperty("n_set")){
+   		new_obj.n_set = myObj.n_set;
+   	}
+   	new_obj.options = myObj.options;
+   	new_obj.must_answer = myObj.must_answer;
+   	new_obj.jump_to = myObj.jump_to;
+   	new_obj.jump_from = myObj.jump_from;
+   	if(myObj.hasOwnProperty("min_select")){
+   		new_obj.min_select = myObj.min_select;
+   	}
+   	if(myObj.hasOwnProperty("max_select")){
+   		new_obj.max_select = myObj.max_select;
+   	}
+   	return new_obj;
 } 
 
 function createSurvey(s_type){
@@ -52,6 +66,7 @@ function save(){
 
 function release() {
 	var Qstring = JSON.stringify(questions);
+	console.log(Qstring);
 	var title = $('input#title').val();
 	var sample_list_id = $('select#sample_list').val();
 	$.ajax({
