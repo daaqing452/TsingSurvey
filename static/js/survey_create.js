@@ -66,7 +66,6 @@ function save(){
 
 function release() {
 	var Qstring = JSON.stringify(questions);
-	console.log(Qstring);
 	var title = $('input#title').val();
 	var sample_list_id = $('select#sample_list').val();
 	$.ajax({
