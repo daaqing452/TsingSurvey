@@ -57,11 +57,11 @@ function createSurveyHtml(q){
 	if(q.jump_to != false){
 		HTMLContent += "(填写此题后将跳转到第"+q.jump_to+"题)"; 
 	}
-	if((q.must_answer == true && q.s_type != 7) || (q.must_answer == true && q.s_type == 7 && q.title != " ")){
+	if((q.must_answer == true && q.s_type != 7) || (q.must_answer == true && q.s_type == 7 && q.title.replace(" ", "").length != 0)){
 		HTMLContent += "*";
 	}
 
-	if(q.s_type == 7 && q.title == " "){
+	if(q.s_type == 7 && q.title.replace(" ", "").length == 0){
 		HTMLContent += "</font>";
 	}
 	else{
@@ -200,7 +200,7 @@ function createSurveyHtml(q){
 				}
 			}
 
-			if(q.must_answer == true && q.title == " "){
+			if(q.must_answer == true && q.title.replace(" ", "").length == 0){
 				HTMLContent += "*<br>";
 			}
 			else{

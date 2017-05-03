@@ -743,7 +743,7 @@ function createHtml(q){
 		case 7:{
 			var index = q.index;
 			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title_html+"</font>";
-			if(q.must_answer == true && q.title != " "){
+			if(q.must_answer == true && q.title.replace(" ", "").length != 0){
 				HTMLContent += "*</div>";
 			}
 			for(var i = 0; i < q.n_option; i++){
@@ -753,7 +753,7 @@ function createHtml(q){
 				}
 				HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\">&nbsp&nbsp";
 			}
-			if(q.must_answer == true && q.title == " "){
+			if(q.must_answer == true && q.title.replace(" ", "").length == 0){
 				HTMLContent += "*";
 			}
 			HTMLContent += "<br>";
