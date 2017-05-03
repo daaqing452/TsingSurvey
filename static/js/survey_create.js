@@ -743,18 +743,18 @@ function createHtml(q){
 		case 7:{
 			var index = q.index;
 			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title_html+"</font>";
-			if(q.must_answer == true){
+			if(q.must_answer == true && q.title != " "){
 				HTMLContent += "*</div>";
 			}
-			else{
-				HTMLContent += "</div>";
-			}
 			for(var i = 0; i < q.n_option; i++){
-			var option = q.options[i];
-			if(i != 0 & i % 3 ==0){
-				HTMLContent += "<br>";
+				var option = q.options[i];
+				if(i != 0 & i % 3 ==0){
+					HTMLContent += "<br>";
+				}
+				HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\">&nbsp&nbsp";
 			}
-			HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\">&nbsp&nbsp";
+			if(q.must_answer == true && q.title == " "){
+				HTMLContent += "*";
 			}
 			HTMLContent += "<br>";
 			break;

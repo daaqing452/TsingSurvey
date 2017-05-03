@@ -57,10 +57,16 @@ function createSurveyHtml(q){
 	if(q.jump_to != false){
 		HTMLContent += "(填写此题后将跳转到第"+q.jump_to+"题)"; 
 	}
-	if(q.must_answer == true){
+	if((q.must_answer == true && q.s_type != 7) || (q.must_answer == true && q.s_type == 7 && q.title != " ")){
 		HTMLContent += "*";
 	}
-	HTMLContent += "</font></div>";
+
+	if(q.s_type == 7 && q.title == " "){
+		HTMLContent += "</font>";
+	}
+	else{
+		HTMLContent += "</font></div>";
+	}
 	switch(q.s_type){
 		case 1:{
 			HTMLContent += "<div><form>";
@@ -186,19 +192,24 @@ function createSurveyHtml(q){
 					}
 					HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\">&nbsp&nbsp";
 				}
-				HTMLContent += "<br>";
 			}
 			else{
 				for(var i = 0; i < q.n_option; i++){
 					var option = q.options[i];
 					HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\"><br>";
 				}
+			}
+
+			if(q.must_answer == true && q.title == " "){
+				HTMLContent += "*<br>";
+			}
+			else{
 				HTMLContent += "<br>";
 			}
 			break;
 		}
 	}
-	HTMLContent += "</td>";
+	HTMLContent += "<br></td>";
 	return HTMLContent;
 
 }
