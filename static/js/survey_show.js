@@ -692,8 +692,7 @@ function submit(flag){
 					success: function(data) {
 						data = JSON.parse(data);
 						alert('提交成功');
-						$('input#credit').val(data['credit']);
-						$('form#goto_bonus').submit();
+						window.location.href = '/bonus?credit=' + data['credit'];
 					}
 				});
 			}

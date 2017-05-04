@@ -31,6 +31,7 @@ def remake_questionaire(questionaire, qid_dict):
 		d['status'] = '已发布'
 	elif questionaire.status == 2:
 		d['status'] = '已关闭'
+		d['fill'] = '已关闭'
 	elif questionaire.status == 3:
 		d['status'] = '已生成报告'
 	else:
