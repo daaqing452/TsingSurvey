@@ -202,7 +202,7 @@ def bonus(request):
 		return HttpResponseRedirect('../login/')
 	rdata = {}
 	rdata['user'] = request.user
-	rdata['credit'] = request.POST.get('credit')
+	rdata['credit'] = request.GET.get('credit', 0)
 	op = request.POST.get('op')
 
 	return render(request, 'bonus.html', rdata)
