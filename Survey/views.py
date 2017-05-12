@@ -81,11 +81,14 @@ def survey(request, qid):
 
 		# 导出问卷
 		if op == 'export':
-			excel_name = Analysis.export(qid)
-			if excel_name == None:
-				return HttpResponse(json.dumps({'result': 'no'}))
+			if status == 1 or status == 2:
+				excel_name = Analysis.export(qid)
+				if excel_name == None:
+					return HttpResponse(json.dumps({'result': 'no', 'info': '尚未有人填写问卷！'}))
+				else:
+					return HttpResponse(json.dumps({'result': 'yes', 'export_path': excel_name}))
 			else:
-				return HttpResponse(json.dumps({'result': 'yes', 'export_path': excel_name}))
+				return HttpResponse(json.dumps({'result': 'no', 'info': '问卷尚未发布！'}))
 
 		# 问卷修改状态
 		if status == 0:
