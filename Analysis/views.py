@@ -41,6 +41,7 @@ def get_report(qid):
 	for answeraire in answeraires:
 		for answer in answeraire:
 			s_type = answer['s_type']
+			if s_type == 8: continue
 			qindex = int(answer['index'])
 			selects = answer['select']
 			for i in range(len(selects)):

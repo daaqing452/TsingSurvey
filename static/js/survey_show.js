@@ -147,7 +147,7 @@ function createSurveyHtml(q){
 		}
 		case 6:{
 			if(IsPC()){
-				HTMLContent += "<table class=\"table \" style=\"table-layout:fixed;word-break:break-all\"><tbody><tr><td></td>";
+				HTMLContent += "<table class=\"table \" style=\"table-layout:fixed;word-break:break-all\"><tbody><tr class=\"info\"><td></td>";
 				var n_col = q.n_option / q.n_set;
 				var n_row = q.n_set;
 				for(var i = 0; i < n_col; i++){
@@ -164,14 +164,24 @@ function createSurveyHtml(q){
 				HTMLContent += "</tbody></table>";
 			}
 			else{
-				HTMLContent += "<table class=\"table \" style=\"table-layout:fixed;word-break:break-all\"><tbody><tr>";
+				HTMLContent += "<table class=\"table \" style=\"table-layout:fixed;word-break:break-all\"><tbody><tr class=\"info\">";
 				var n_col = q.n_option / q.n_set;
 				var n_row = q.n_set;
 				for(var i = 0; i < n_col; i++){
 					HTMLContent += "<td align=\"center\">" + q.options[i].image + "</td>";
 				}
 				HTMLContent += "</tr>";
+				var row_cnt = 0
 				for(var i = 0; i < n_row; i++){
+					row_cnt += 1;
+					if(row_cnt == 6){
+						HTMLContent += "<tr class=\"info\">";
+						for(var col_j = 0; col_j < n_col; col_j++){
+							HTMLContent += "<td align=\"center\">" + q.options[col_j].image + "</td>";
+						}
+						HTMLContent += "<tr>";
+						row_cnt = 1;
+					}
 					HTMLContent += "<tr><td colspan=\""+n_col+"\">" + q.options[i*n_col].text +"</td><tr>";
 					HTMLContent += "<tr>";
 					for(var j = 0; j < n_col; j++){
