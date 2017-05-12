@@ -71,6 +71,11 @@ function exportt() {
 		data: {'op': 'export'},
 		success: function(data) {
 			data = JSON.parse(data);
+			result = data['result'];
+			if (result == 'no') {
+				alert('尚未有人填写问卷！');
+				return;
+			}
 			export_path = '/' + data['export_path'];
 			$('a#download').attr('href', export_path);
 			document.getElementById("download").click();

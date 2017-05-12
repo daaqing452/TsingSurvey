@@ -86,10 +86,11 @@ def get_report(qid):
 					report['options'].append(roption)
 		reports.append(report)
 	report_str = json.dumps(reports)
-	report = Report.objects.create(qid=qid, report=report_str)
-	questionaire.report_id = report.id
-	questionaire.save()
-	return report.report
+	if questionaire.status == 2:
+		report = Report.objects.create(qid=qid, report=report_str)
+		questionaire.report_id = report.id
+		questionaire.save()
+	return report_str
 
 def export(qid):
 	questionaires = Questionaire.objects.filter(id=qid)
@@ -97,6 +98,7 @@ def export(qid):
 		return HttpResponse(json.dumps({'info': 'no that'}))
 	questionaire = json.loads(questionaires[0].questions)
 	answeraires = Answeraire.objects.filter(qid=qid)
+	if len(answeraires) == 0: return None
 	answers = [json.loads(answeraire.answers) for answeraire in answeraires]
 	reports = json.loads(get_report(qid))
 	# 写入excel

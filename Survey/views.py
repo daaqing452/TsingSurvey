@@ -79,6 +79,13 @@ def survey(request, qid):
 			new_questionaire.save()
 			return HttpResponse(json.dumps({}));
 
+		# 导出问卷
+		if op == 'export':
+			excel_name = Analysis.export(qid)
+			if excel_name == None:
+				return HttpResponse(json.dumps({'result': 'no'}))
+			else:
+				return HttpResponse(json.dumps({'result': 'yes', 'export_path': excel_name}))
 
 		# 问卷修改状态
 		if status == 0:
@@ -183,10 +190,6 @@ def survey(request, qid):
 			if not user.is_staff:
 				rdata['viewable'] = 0
 				rdata['info'] = 'Closed'
-
-			if op == 'export':
-				excel_name = Analysis.export(qid)
-				return HttpResponse(json.dumps({'export_path': excel_name}))
 
 		# 问卷出错状态
 		else:
