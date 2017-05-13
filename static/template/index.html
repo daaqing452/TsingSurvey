@@ -62,6 +62,7 @@
 		<td align=center> 填写人数 </td>
 		<td> </td>
 		<td> </td>
+		<td> </td>
 		{% endif %}
 	</tr>
 	{% for rq in rq_list %}
@@ -74,6 +75,7 @@
 		<td align=center> {{ rq.filled_number }} </td>
 		<td qid='{{ rq.id }}' onclick='delete_questionaire(this)'> <span class='glyphicon glyphicon-remove'> </span> </td>
 		<td qid='{{ rq.id }}' onclick='copy_questionaire(this)'> <span class='glyphicon glyphicon-plus'> </span> </td>
+		<td qid='{{ rq.id }}' onclick='export_index(this)'> <span class='glyphicon glyphicon-arrow-down'> </span> <a id='download'> </a> </td>
 		{% endif %}
 	</tr>
 	{% endfor %}

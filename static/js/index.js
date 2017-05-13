@@ -41,3 +41,23 @@ function copy_questionaire(obj) {
 		}
 	});
 }
+
+function export_index(obj) {
+	var td = $(obj);
+	var qid = td.attr('qid');
+	$.ajax({
+		url: '/survey/' + qid + '/',
+		type: 'POST',
+		data: {'op': 'export'},
+		success: function(data) {
+			data = JSON.parse(data);
+			if (data['result'] == 'no') {
+				alert(data['info']);
+				return;
+			}
+			export_path = '/' + data['export_path'];
+			$('a#download').attr('href', export_path);
+			document.getElementById("download").click();
+		}
+	});
+}
