@@ -223,7 +223,6 @@ $(document).ready(function(){
 				}
 				select.show();
 				div.append(select);
-				div.append('<br/>');
 			}
 		});
 	});

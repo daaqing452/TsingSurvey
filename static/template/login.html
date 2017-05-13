@@ -8,11 +8,11 @@
 	<link href='{% static 'bootstrap/css/bootstrap.min.css' %}' rel="stylesheet">
 </head>
 
-<body style="background-color:#FFFACD; text-align:center;">
+<body style="text-align:center; background-size:cover" background="{% static 'img/background.jpg' %}" >
 <div class="row">
 	<div class="col-md-4"></div>
 	<div class="col-md-4">
-	<p class="text-center" style="color:#A0522D; font-size:40px; margin:100px 0px 50px 0px"><span class="glyphicon glyphicon-search"> </span>TsingSurvey</p>
+	<p class="text-center" style="color:#A0522D; font-size:40px; margin:100px 0px 50px 0px"><span class="glyphicon glyphicon-search"> </span>YouthResearch</p>
 	<form method='post' enctype='multipart/form-data'>
 		{% csrf_token %}
 		<input type='text' name='username' class="form-control" placeholder="学号" />
