@@ -1,5 +1,5 @@
 import urllib
-# import urllib2
+import urllib.request
 import json
 
 def get_ip(request):
@@ -36,4 +36,4 @@ def auth_tsinghua(request, username, password):
         return False
 
 if __name__ == "__main__":
-    auth('request', 'username', 'password')
+    print(auth_tsinghua('request', 'username', 'password'))
