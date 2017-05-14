@@ -12,10 +12,10 @@
 <div class="row">
 	<div class="col-md-4"></div>
 	<div class="col-md-4">
-	<p class="text-center" style="color:#A0522D; font-size:40px; margin:100px 0px 50px 0px"><span class="glyphicon glyphicon-search"> </span>YouthResearch</p>
-	<form method='post' enctype='multipart/form-data'>
+	<p class="text-center" style="color:#A0522D; font-size:40px; margin:100px 0px 100px 0px"><span class="glyphicon glyphicon-search"> </span>YouthResearch</p>
+	<form method='post' enctype='multipart/form-data' style="margin:10px 10px 10px 10px;">
 		{% csrf_token %}
-		<input type='text' name='username' class="form-control" placeholder="学号" />
+		<input type='text' name='username' class="form-control" placeholder="学号"/>
 		<br />
 		<input type='password' name='password' class="form-control" placeholder="密码"/>
 		<br />
