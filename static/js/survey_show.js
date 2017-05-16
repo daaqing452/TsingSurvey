@@ -81,7 +81,7 @@ function createSurveyHtml(q){
 					HTMLContent += "<img src=\"" + option.image + "\" width=\"20%\">";
 				}
 				if(option.allow_filled == true){
-					HTMLContent += "<input type=\"text\"></p>";
+					HTMLContent += "<input type=\"text\" style=\"width:50px\"></p>";
 				}
 				else{
 					HTMLContent += "</p>";
@@ -103,7 +103,7 @@ function createSurveyHtml(q){
 					HTMLContent += "<img src=\"" + option.image + "\">";
 				}
 				if(option.allow_filled == true){
-					HTMLContent += "<input type=\"text\"></p>";
+					HTMLContent += "<input type=\"text\" style=\"width:50px\"></p>";
 				}
 				else{
 					HTMLContent += "</p>";
@@ -114,7 +114,7 @@ function createSurveyHtml(q){
 		}
 		case 3:{
 			HTMLContent += "<form>";
-			HTMLContent += "<p class=\"q_item\"><input type=\"text\"></p>";
+			HTMLContent += "<p class=\"q_item\"><input type=\"text\" style=\"width:50px\"></p>";
 			HTMLContent += "</form></div>";
 			break;
 		}
@@ -200,13 +200,13 @@ function createSurveyHtml(q){
 					if(i != 0 & i % 3 ==0){
 						HTMLContent += "<br>";
 					}
-					HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\">&nbsp&nbsp";
+					HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\" style=\"width:50px\">&nbsp&nbsp";
 				}
 			}
 			else{
 				for(var i = 0; i < q.n_option; i++){
 					var option = q.options[i];
-					HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\"><br>";
+					HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\" style=\"width:50px\"><br>";
 				}
 			}
 
