@@ -138,10 +138,13 @@ def export(qid):
 		sheet2.write(i + 1, 5, answeraire.agent)
 	# 文件内容
 	col = 5
+	cnt = -1
 	for question in questionaire:
 		s_type = question['s_type']
+		cnt += 1
 		if s_type == 8: continue
-		index = question['index']
+		# index = question['index']
+		index = cnt
 		title = question['title']
 		selects = [answer[index]['select'] for answer in answers]
 		row = 0

@@ -56,8 +56,8 @@ function export_index(obj) {
 				return;
 			}
 			export_path = '/' + data['export_path'];
-			$('a#download').attr('href', export_path);
-			document.getElementById("download").click();
+			$('a#' + qid + 'download').attr('href', export_path);
+			document.getElementById(qid + "download").click();
 		}
 	});
 }

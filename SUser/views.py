@@ -384,7 +384,7 @@ def profile(request, uid):
 def install(request):
 	html = ''
 	username = 'root'
-	password = '123'
+	password = 'tsing2017hua'
 	user = auth.authenticate(username=username, password=password)
 	if user is None:
 		user = User.objects.create_user(username=username, password=password, is_superuser=1, is_staff=1)
