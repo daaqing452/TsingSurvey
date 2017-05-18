@@ -21,7 +21,7 @@ def get_report(qid):
 		return Report.objects.get(id=questionaire.report_id).report
 	# 还没生成报告
 	questions = json.loads(questionaire.questions)
-	answeraire_list = Answeraire.objects.filter(qid=qid)
+	answeraire_list = Answeraire.objects.filter(qid=qid, submitted=True)
 	answeraires = [json.loads(answeraire.answers) for answeraire in answeraire_list]
 	# 预处理+清空
 	counters = []
@@ -98,7 +98,7 @@ def export(qid):
 	if len(questionaires) == 0:
 		return HttpResponse(json.dumps({'info': 'no that'}))
 	questionaire = json.loads(questionaires[0].questions)
-	answeraires = Answeraire.objects.filter(qid=qid)
+	answeraires = Answeraire.objects.filter(qid=qid, submitted=True)
 	if len(answeraires) == 0: return None
 	answers = [json.loads(answeraire.answers) for answeraire in answeraires]
 	reports = json.loads(get_report(qid))

@@ -161,6 +161,7 @@ def user_list(request):
 	if op == 'delete':
 		username_list = json.loads(request.POST.get('username_list'))
 		for username in username_list:
+			if username == 'root': continue
 			susers = SUser.objects.filter(username=username)
 			if len(susers) > 0:
 				suser = susers[0]
@@ -384,7 +385,7 @@ def profile(request, uid):
 def install(request):
 	html = ''
 	username = 'root'
-	password = 'tsing2017hua'
+	password = '123'
 	user = auth.authenticate(username=username, password=password)
 	if user is None:
 		user = User.objects.create_user(username=username, password=password, is_superuser=1, is_staff=1)

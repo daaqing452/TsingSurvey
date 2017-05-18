@@ -139,7 +139,7 @@ def survey(request, qid):
 				rdata['info'] = 'Not found 10'
 			if qid in qid_dict:
 				if qid_dict[str(qid)] == 1:
-					rdata['info'] = 'Already filled'
+					rdata['info'] = '已经填写该问卷'
 				else:
 					permission_submit = 1
 			rdata['permission_submit'] = permission_submit
@@ -172,6 +172,8 @@ def survey(request, qid):
 				if complete == 'yes':
 					qid_dict[str(qid)] = 1
 					suser.qid_list = json.dumps(qid_dict)
+					answeraire.submitted = True
+					answeraire.save()
 					# 计算积分
 					k = (len(json.loads(astring)) - 1) / 5 + 1
 					credit = int(k * math.pow(1.05, len(qid_dict)))
