@@ -8,7 +8,6 @@ class SUser(models.Model):
 	is_sample = models.BooleanField(default=1)
 	credit = models.IntegerField(default=0)
 
-<<<<<<< HEAD
 	username                    = models.CharField(max_length=62)
 	name                        = models.CharField(max_length=62, default='')
 	name_english                = models.CharField(max_length=62, default='')

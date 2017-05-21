@@ -183,6 +183,22 @@ $(document).ready(function(){
 		}
 	});
 
+
+	//	删除所有用户
+	$('button#delete_all').click(function(){
+		if (confirm('确认删除所有用户？')) {
+			$.ajax({
+				url: window.location.href,
+				type: 'POST',
+				data: {'op': 'delete_all'},
+				success: function(data) {
+					data = JSON.parse(data);
+					refreshUserList(data['user_list']);
+				}
+			});
+		}
+	});
+
 	//	添加用户
 	$('button#add_new_user').click(function(){
 		var username = $('input#add_new_user').val();

@@ -169,8 +169,20 @@ def user_list(request):
 				users = User.objects.filter(id=uid)
 				if len(users) > 0:
 					user = users[0]
-					suser.delete()
 					user.delete()
+				suser.delete()
+		return HttpResponse(json.dumps({'user_list': get_suser_list()}))
+
+	# 删除所有用户
+	if op == 'delete_all':
+		susers = SUser.objects.filter(~Q(username='root'))
+		for suser in susers:
+			uid = suser.uid
+			users = User.objects.filter(id=uid)
+			if len(users) > 0:
+				user = users[0]
+				user.delete()
+			suser.delete()
 		return HttpResponse(json.dumps({'user_list': get_suser_list()}))
 
 	# 添加用户
