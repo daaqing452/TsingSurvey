@@ -98,7 +98,7 @@ def user_list(request):
 	rdata['user'] = user = request.user
 	op = request.POST.get('op')
 
-	ITEM_PER_PAGE = 20
+	ITEM_PER_PAGE = 50
 	lis = request.GET.get('list', 'all')
 	page_n = int(request.GET.get('page', 1))
 
@@ -202,14 +202,34 @@ def user_list(request):
 		f_path = Utils.upload_file(f)
 		# 读入每一行
 		f = codecs.open(f_path, 'r', 'gbk')
+		# f = open(f_path, 'r', encoding='gbk')
 		line_no = -1
 		while True:
 			line_no += 1
-			line = f.readline()
+			try:
+				line = f.readline()
+			except:
+				print(line_no, 'ignore')
+				continue
 			if len(line) == 0: break
 			if line_no == 0: continue
 			if line[-2:] == '\r\n': line = line[:-2]
-			a = line.split(',')
+			# a = line.split(',')
+			a = []
+			s = ''
+			inquote = False
+			for i in range(len(line)):
+				c = line[i]
+				if c == '\"':
+					if i > 0 and line[i - 1] == '\"': s += '\"'
+					inquote = not inquote
+				elif c == ',' and not inquote:
+					a.append(s)
+					s = ''
+				else:
+					s += c
+			a.append(s)
+			print(line_no)
 			username = a[0]
 			users = User.objects.filter(username=username)
 			if len(users) > 0:
@@ -383,7 +403,6 @@ def profile(request, uid):
 	return render(request, 'profile.html', rdata)
 
 def install(request):
-	html = ''
 	username = 'root'
 	password = '123'
 	user = auth.authenticate(username=username, password=password)
