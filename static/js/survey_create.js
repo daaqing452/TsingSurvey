@@ -368,6 +368,9 @@ function getQFromModal(){
 				q.index = questions[i].index+1; 
 				break;
 			}
+			if(i == 0 && questions[0].s_type == 8){
+				q.index = 0;
+			}
 		}
 	}
 	switch(current_status.s_type){
