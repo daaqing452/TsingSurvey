@@ -143,7 +143,7 @@ def export(qid):
 		s_type = question['s_type']
 		cnt += 1
 		if s_type == 8: continue
-		# index = question['index']
+		index_show = question['index']
 		index = cnt
 		title = question['title']
 		selects = [answer[index]['select'] for answer in answers]
@@ -151,8 +151,8 @@ def export(qid):
 		# 单选题、下拉题
 		if s_type in [1, 4]:
 			col += 1
-			sheet1.write(row, col, '第' + str(index + 1) + '题（' + title + '）')
-			sheet2.write(row, col, '第' + str(index + 1) + '题（' + title + '）')
+			sheet1.write(row, col, '第' + str(index_show + 1) + '题（' + title + '）')
+			sheet2.write(row, col, '第' + str(index_show + 1) + '题（' + title + '）')
 			for select in selects:
 				row += 1
 				if len(select) > 0:
@@ -162,8 +162,8 @@ def export(qid):
 		# 填空题
 		elif s_type == 3:
 			col += 1
-			sheet1.write(row, col, '第' + str(index + 1) + '题（' + title + '）')
-			sheet2.write(row, col, '第' + str(index + 1) + '题（' + title + '）')
+			sheet1.write(row, col, '第' + str(index_show + 1) + '题（' + title + '）')
+			sheet2.write(row, col, '第' + str(index_show + 1) + '题（' + title + '）')
 			for select in selects:
 				row += 1
 				if len(select) > 0:
@@ -177,8 +177,8 @@ def export(qid):
 			qtitles = [options[i]['text'] for i in range(0, n_option, n_column)]
 			for qtitle in qtitles:
 				col += 1
-				sheet1.write(row, col, '第' + str(index + 1) + '题（' + qtitle + '）')
-				sheet2.write(row, col, '第' + str(index + 1) + '题（' + qtitle + '）')
+				sheet1.write(row, col, '第' + str(index_show + 1) + '题（' + qtitle + '）')
+				sheet2.write(row, col, '第' + str(index_show + 1) + '题（' + qtitle + '）')
 			for select in selects:
 				row += 1
 				for selected_option in select:
@@ -193,7 +193,7 @@ def export(qid):
 			for i in range(len(options)):
 				option = options[i]
 				col += 1
-				str0 = '第' + str(index + 1) + '题第' + str(i + 1) + '项（'
+				str0 = '第' + str(index_show + 1) + '题第' + str(i + 1) + '项（'
 				if option['option_type'] == 0:
 					str0 += option['text']
 				else:
@@ -214,7 +214,7 @@ def export(qid):
 			for i in range(len(options)):
 				option = options[i]
 				col += 1
-				str0 = '第' + str(index + 1) + '题第' + str(i + 1) + '项（'
+				str0 = '第' + str(index_show + 1) + '题第' + str(i + 1) + '项（'
 				if option['option_type'] == 0:
 					str0 += option['text']
 				else:
