@@ -168,6 +168,18 @@ def export(qid):
 				row += 1
 				if len(select) > 0:
 					sheet2.write(row, col, select[0][2])
+		# 多项填空题
+		elif s_type == 7:
+			options = question['options']
+			n_option = len(options)
+			for option in options:
+				col += 1
+				sheet1.write(row, col, '第' + str(index_show + 1) + '题（' + option['text'] + '）')
+				sheet2.write(row, col, '第' + str(index_show + 1) + '题（' + option['text'] + '）')
+			for select in selects:
+				row += 1
+				for selected_option in select:
+					sheet2.write(row, col - n_option + selected_option[0] + 1, selected_option[2])
 		# 矩阵题
 		elif s_type == 6:
 			n_option = int(question['n_option'])
