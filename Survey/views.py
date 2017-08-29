@@ -120,7 +120,7 @@ def survey(request, qid):
 									susers.append(suser[0])
 					for suser in susers:
 						qid_dict = json.loads(suser.qid_list)
-						qid_dict[questionaire.id] = 0
+						qid_dict[str(questionaire.id)] = 0
 						suser.qid_list = json.dumps(qid_dict)
 						suser.save()
 					questionaire.status = 1
@@ -172,6 +172,7 @@ def survey(request, qid):
 				if complete == 'yes':
 					qid_dict[str(qid)] = 1
 					suser.qid_list = json.dumps(qid_dict)
+					suser.save()
 					answeraire.submitted = True
 					answeraire.save()
 					# 计算积分

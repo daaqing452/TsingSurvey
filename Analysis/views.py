@@ -46,6 +46,7 @@ def get_report(qid):
 			selects = answer['select']
 			for i in range(len(selects)):
 				select = selects[i]
+				if select[0] is None: select[0] = 0
 				oindex = int(select[0])
 				if s_type in [1, 2, 4, 6]:
 					counters[qindex][0, oindex] += 1
@@ -157,6 +158,7 @@ def export(qid):
 				row += 1
 				if len(select) > 0:
 					selected_option = select[0]
+					if selected_option[0] is None: selected_option[0] = 0
 					sheet1.write(row, col, int(selected_option[0]))
 					sheet2.write(row, col, selected_option[int(selected_option[1]) + 2])
 		# 填空题
