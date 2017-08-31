@@ -108,6 +108,7 @@ def survey(request, qid):
 				# 发布问卷请求
 				elif op == 'release':
 					sample_list_id = int(request.POST.get('sample_list_id'))
+					ifpublic = bool(int(request.POST.get('ifpublic')))
 					susers = SUser.objects.filter(is_sample=1)
 					if sample_list_id != -1:
 						sample_list = SampleList.objects.filter(id=sample_list_id)
@@ -125,6 +126,7 @@ def survey(request, qid):
 						suser.save()
 					questionaire.status = 1
 					questionaire.release_time = now
+					questionaire.public = ifpublic
 					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
 					questionaire.save()
 					return HttpResponse(json.dumps({}))

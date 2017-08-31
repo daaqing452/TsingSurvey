@@ -43,6 +43,9 @@ def index(request):
 			questionaires = Questionaire.objects.filter(id=int(qid))
 			if len(questionaires) > 0:
 				rq_list.append(Utils.remake_questionaire(questionaires[0], qid_dict))
+		for questionaire in Questionaire.objects.filter(public=True):
+			if str(questionaire.id) in qid_dict: continue
+			rq_list.append(Utils.remake_questionaire(questionaire, qid_dict))
 
 	rdata['rq_list'] = rq_list
 	return render(request, 'index.html', rdata)
@@ -416,6 +419,9 @@ def profile(request, uid):
 		if len(questionaires) > 0:
 			questionaire = questionaires[0]
 			rq_list.append(Utils.remake_questionaire(questionaire, qid_dict))
+	for questionaire in Questionaire.objects.filter(public=True):
+		if str(questionaire.id) in qid_dict: continue
+		rq_list.append(Utils.remake_questionaire(questionaire, qid_dict))
 	rdata['rq_list'] = rq_list
 
 	return render(request, 'profile.html', rdata)

@@ -13,6 +13,7 @@ class Questionaire(models.Model):
 	questions = models.TextField(default='')
 	comment = models.TextField(default='')
 	report_id = models.IntegerField(default=-1)
+	public = models.BooleanField(default=False)
 
 class Answeraire(models.Model):
 	qid = models.IntegerField()

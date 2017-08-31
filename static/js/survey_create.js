@@ -68,10 +68,11 @@ function release() {
 	var Qstring = JSON.stringify(questions);
 	var title = $('input#title').val();
 	var sample_list_id = $('select#sample_list').val();
+	var ifpublic = $('#ifpublic').prop('checked') ? 1 : 0;
 	$.ajax({
 		url: window.location.pathname,
 		type: 'POST',
-		data: {'op': 'release', 'title': title, 'qstring': Qstring, 'sample_list_id': sample_list_id},
+		data: {'op': 'release', 'title': title, 'qstring': Qstring, 'sample_list_id': sample_list_id, 'ifpublic': ifpublic},
 		success: function(data) {
 			data = JSON.parse(data);
 			alert('发布成功');
