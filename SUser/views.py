@@ -59,15 +59,21 @@ def login(request):
 	password = request.POST.get('password')
 
 	if username is not None and password is not None:
-		users = User.objects.filter(username=username)
+		'''users = User.objects.filter(username=username)
 		if len(users) == 0:
 			rdata['info'] = '用户名不存在'
-		else:
+		else:'''
+		if True:
 			# 如果不是root进行清华验证
 			if username != 'root':
 				yes = auth_tsinghua(request, username, password)
 				if yes:
 					password = Utils.username_to_password(username)
+					users = User.objects.filter(username=username)
+					# 新用户
+					if len(users) == 0:
+						user = User.objects.create_user(username=username, password=password)
+						suser = SUser.objects.create(uid=user.id, username=username)
 				else:
 					password = ''
 			
