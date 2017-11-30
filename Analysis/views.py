@@ -350,3 +350,21 @@ def search(request):
 		return HttpResponse(json.dumps({'result': result}))
 
 	return render(request, 'search.html', rdata)
+
+def prize(request):
+	# 验证身份
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/login/')
+	rdata = {}
+	rdata['user'] = user = request.user
+
+	return render(request, 'prize.html', rdata)
+
+def my_prize(request):
+	# 验证身份
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/login/')
+	rdata = {}
+	rdata['user'] = user = request.user
+
+	return render(request, 'my_prize.html', rdata)
