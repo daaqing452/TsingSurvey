@@ -8,7 +8,7 @@ class Prize(models.Model):
 	credit = models.IntegerField(default=0)
 	expired_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
 
-class PrizeGot(modesl.Model):
+class PrizeGot(models.Model):
 	uid = models.IntegerField(default=-1)
 	pid = models.IntegerField(default=-1)
 	count = models.IntegerField(default=0)
