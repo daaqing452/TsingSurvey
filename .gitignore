@@ -4,10 +4,13 @@
 /TsingSurvey/*.pyc
 /SUser/.DS_Store
 /SUser/migrations/*
+/SUser/__pycache__/*
 /Survey/.DS_Store
 /Survey/migrations/*
+/Survey/__pycache__/*
 /Analysis/.DS_Store
 /Analysis/migrations/*
+/Analysis/__pycache__/*
 /static/.DS_Store
 /static/js/.DS_Store
 /static/template/.DS_Store
