@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+	{% load static %}
+    {% block context %}
+<script src='{% static 'js/prize.js' %}'> </script>
+<div class="col-md-offset-1 col-md-10 ">
+
+<h3>积分兑换</h3>
+{% if user.is_staff %}
+<div id="control-bar" style="float:left">
+	<button class="btn btn-sm btn-primary">添加新物品</button>
+</div>
+{% endif %}
+<table class="table table-hover">
+</table>
+
+</div>
+{% endblock context %}

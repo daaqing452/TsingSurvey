@@ -6,6 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
 from Survey.models import Questionaire, Answeraire, Report
+from Analysis.models import *
 import json
 import math
 import numpy as np
@@ -358,13 +359,24 @@ def prize(request):
 	rdata = {}
 	rdata['user'] = user = request.user
 
+	rdata['prizes'] = prizes = list(reversed(Prize.objects.all()))
+
 	return render(request, 'prize.html', rdata)
 
-def my_prize(request):
+def prize_my(request):
 	# 验证身份
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('/login/')
 	rdata = {}
 	rdata['user'] = user = request.user
 
-	return render(request, 'my_prize.html', rdata)
+	return render(request, 'prize_my.html', rdata)
+
+def prize_add(request):
+	# 验证身份
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/login/')
+	rdata = {}
+	rdata['user'] = user = request.user
+
+	return render(request, 'prize_add.html', rdata)
