@@ -5,12 +5,15 @@
 /SUser/.DS_Store
 /SUser/migrations/*
 /SUser/__pycache__/*
+/SUser/*.pyc
 /Survey/.DS_Store
 /Survey/migrations/*
 /Survey/__pycache__/*
+/Survey/*.pyc
 /Analysis/.DS_Store
 /Analysis/migrations/*
 /Analysis/__pycache__/*
+/Analysis/*.pyc
 /static/.DS_Store
 /static/js/.DS_Store
 /static/template/.DS_Store
