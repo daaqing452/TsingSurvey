@@ -4,7 +4,28 @@
 <script src='{% static 'js/prize_add.js' %}'> </script>
 <div class="col-md-offset-1 col-md-10 ">
 
-<h3>添加新物品</h3>
+<h3>添加新奖品</h3>
+<div>
+	<table>
+		<tr>
+			<td>奖品名称</td>
+			<td><input type="text" id="title"/></td>
+		</tr>
+		<tr>
+			<td>奖品描述</td>
+			<td><input type="text" id="description"/></td>
+		</tr>
+		<tr>
+			<td>兑换积分</td>
+			<td><input type="text" id="credit"/></td>
+		</tr>
+		<tr>
+			<td>截止日期</td>
+			<td><input type="text" id="expire_time"/></td>
+		</tr>
+	</table>
+	<button onclick="add_prize()">添加</button>
+</div>
 
 </div>
 {% endblock context %}

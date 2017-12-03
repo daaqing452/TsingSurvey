@@ -358,9 +358,16 @@ def prize(request):
 		return HttpResponseRedirect('/login/')
 	rdata = {}
 	rdata['user'] = user = request.user
+	op = request.POST.get('op')
+
+	if op == 'delete':
+		pid = int(request.POST.get('pid'))
+		prizes = Prize.objects.filter(id=pid)
+		if len(prizes) > 0:
+			prizes[0].delete()
+		return HttpResponse(HttpResponse(json.dumps({})))
 
 	rdata['prizes'] = prizes = list(reversed(Prize.objects.all()))
-
 	return render(request, 'prize.html', rdata)
 
 def prize_my(request):
@@ -369,6 +376,7 @@ def prize_my(request):
 		return HttpResponseRedirect('/login/')
 	rdata = {}
 	rdata['user'] = user = request.user
+	op = request.POST.get('op')
 
 	return render(request, 'prize_my.html', rdata)
 
@@ -378,5 +386,14 @@ def prize_add(request):
 		return HttpResponseRedirect('/login/')
 	rdata = {}
 	rdata['user'] = user = request.user
+	op = request.POST.get('op')
+
+	if op == 'add_prize':
+		title = request.POST.get('title')
+		description = request.POST.get('description')
+		credit = int(request.POST.get('credit'))
+		expire_time = request.POST.get('expire_time')
+		prize = Prize.objects.create(title=title, description=description, credit=credit, expire_time=expire_time)
+		return HttpResponse(HttpResponse(json.dumps({})))
 
 	return render(request, 'prize_add.html', rdata)

@@ -6,12 +6,35 @@
 
 <h3>积分兑换</h3>
 {% if user.is_staff %}
-<div id="control-bar" style="float:left">
-	<button class="btn btn-sm btn-primary">添加新物品</button>
+<div style="float:left">
+	<a href="/prize_add/"><button class="btn btn-sm btn-primary">添加新奖品</button></a>
 </div>
+<br/>
+<br/>
 {% endif %}
-<table class="table table-hover">
-</table>
-
+<div>
+	<table>
+	{% for prize in prizes %}
+	<tr style="border: solid 2px #000000">
+		<td>
+			<h4>{{ prize.title }}</h4>
+			<p>{{ prize.description }}</p>
+		</td>
+		<td>
+			<p>兑换积分</p>
+			<p>{{ prize.credit }}</p>
+		</td>
+		<td>
+			<p>截止时间</p>
+			<p>{{ prize.expire_time | date:"Y-m-d"}}</p>
+		</td>
+		{% if user.is_staff %}
+		<td>
+			<p pid="{{ prize.id }}" onclick="deletee(this)">删除</p>
+		</td>
+		{% endif %}
+	</tr>
+	{% endfor %}
+	</table>
 </div>
 {% endblock context %}
