@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
+from SUser.models import SUser
 from Survey.models import Questionaire, Answeraire, Report
 from Analysis.models import *
 import json
@@ -368,6 +369,7 @@ def prize(request):
 		return HttpResponse(HttpResponse(json.dumps({})))
 
 	rdata['prizes'] = prizes = list(reversed(Prize.objects.all()))
+	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
 	return render(request, 'prize.html', rdata)
 
 def prize_my(request):
