@@ -363,9 +363,13 @@ def prize(request):
 
 	if op == 'delete':
 		pid = int(request.POST.get('pid'))
-		prizes = Prize.objects.filter(id=pid)
-		if len(prizes) > 0:
-			prizes[0].delete()
+		Prize.objects.filter(id=pid).delete()
+		return HttpResponse(HttpResponse(json.dumps({})))
+
+	if op == 'change_credit':
+		pid = int(request.POST.get('pid'))
+		credit = int(request.POST.get('credit'))
+		Prize.objects.filter(id=pid).update(credit=credit)
 		return HttpResponse(HttpResponse(json.dumps({})))
 
 	rdata['prizes'] = prizes = list(reversed(Prize.objects.all()))
