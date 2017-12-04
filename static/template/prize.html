@@ -19,7 +19,7 @@
 	<tr style="border: solid 2px #000000" pid="{{ prize.id }}">
 		<td>
 			<h4>{{ prize.title }}</h4>
-			<p>{{ prize.description }}</p>
+			<p>{{ prize.description }}<p>
 		</td>
 		<td
 			{% if user.is_staff %}
@@ -33,7 +33,13 @@
 			<p>截止时间</p>
 			<p>{{ prize.expire_time | date:"Y-m-d"}}</p>
 		</td>
+		<td onclick="exchange(this)">
+			<button>兑换</button>
+		</td>
 		{% if user.is_staff %}
+		<td onclick="view_exchange(this)">
+			<p>查看兑换情况</p>
+		</td>
 		<td onclick="deletee(this)">
 			<p>删除</p>
 		</td>

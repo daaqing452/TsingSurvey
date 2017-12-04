@@ -33,3 +33,36 @@ function change_credit(node) {
 		}
 	});
 }
+
+function exchange(node) {
+	var pid = $(node).parent().attr("pid");
+	if (confirm("确认兑换？")) {
+		$.ajax({
+			url: window.location.href,
+			type: "POST",
+			data: {"op": "exchange", "pid": pid},
+			success: function(data) {
+				var data = JSON.parse(data);
+				var result = data["result"];
+				if (result == "ok") {
+					alert("兑换成功！");
+					window.location.reload();
+				} else {
+					alert(result);
+				}
+			}
+		});
+	}
+}
+
+function view_exchange(node) {
+	var pid = $(node).parent().attr("pid");
+	$.ajax({
+		url: window.location.href,
+		type: 'POST',
+		data: {'op': 'view_exchange', 'pid': pid},
+		success: function(data) {
+			var data = JSON.parse(data);
+		}
+	});
+}

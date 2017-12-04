@@ -359,6 +359,7 @@ def prize(request):
 		return HttpResponseRedirect('/login/')
 	rdata = {}
 	rdata['user'] = user = request.user
+	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
 	op = request.POST.get('op')
 
 	if op == 'delete':
@@ -372,8 +373,23 @@ def prize(request):
 		Prize.objects.filter(id=pid).update(credit=credit)
 		return HttpResponse(HttpResponse(json.dumps({})))
 
+	if op == 'exchange':
+		jdata = {'result': 'ok'}
+		pid = int(request.POST.get('pid'))
+		prize = Prize.objects.get(id=pid)
+		if suser.credit < prize.credit:
+			jdata['result'] = '没有足够积分'
+			return HttpResponse(HttpResponse(json.dumps(jdata)))
+		suser.credit -= prize.credit
+		suser.save()
+		PrizeGot.objects.create(uid=suser.id, pid=pid, count=1, used=False)
+		return HttpResponse(HttpResponse(json.dumps(jdata)))
+
+	if op == 'view_exchange':
+		pid = int(request.POST.get('pid'))
+		return HttpResponse(HttpResponse(json.dumps({})))
+
 	rdata['prizes'] = prizes = list(reversed(Prize.objects.all()))
-	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
 	return render(request, 'prize.html', rdata)
 
 def prize_my(request):
