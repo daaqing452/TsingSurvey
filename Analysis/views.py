@@ -403,6 +403,10 @@ def prize_my(request, pid=-1):
 	else:
 		rdata['personal'] = False
 		prizeTickets = PrizeTicket.objects.filter(pid=pid)
+		rdata['total'] = len(prizeTickets)
+		used = 0
+		for ticket in prizeTickets: used += int(ticket.used)
+		rdata['used'] = used
 	rdata['prizeTickets'] = [{'ticket': ticket, 'prize': Prize.objects.get(id=ticket.pid), 'username': SUser.objects.get(id=ticket.uid).username} for ticket in prizeTickets]
 
 	return render(request, 'prize_my.html', rdata)
