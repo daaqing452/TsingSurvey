@@ -7,8 +7,9 @@ class Prize(models.Model):
 	description = models.TextField(default='')
 	credit = models.IntegerField(default=0)
 	expire_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
+	owner = models.IntegerField(default=-1)
 
-class PrizeGot(models.Model):
+class PrizeTicket(models.Model):
 	uid = models.IntegerField(default=-1)
 	pid = models.IntegerField(default=-1)
 	count = models.IntegerField(default=0)

@@ -385,20 +385,25 @@ def prize(request):
 		PrizeGot.objects.create(uid=suser.id, pid=pid, count=1, used=False)
 		return HttpResponse(HttpResponse(json.dumps(jdata)))
 
-	if op == 'view_exchange':
-		pid = int(request.POST.get('pid'))
-		return HttpResponse(HttpResponse(json.dumps({})))
-
 	rdata['prizes'] = prizes = list(reversed(Prize.objects.all()))
 	return render(request, 'prize.html', rdata)
 
-def prize_my(request):
+def prize_my(request, pid=-1):
 	# 验证身份
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('/login/')
 	rdata = {}
 	rdata['user'] = user = request.user
+	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
 	op = request.POST.get('op')
+
+	if pid == -1:
+		rdata['personal'] = True
+		prizeTickets = PrizeTicket.objects.filter(uid=suser.id)
+	else:
+		rdata['personal'] = False
+		prizeTickets = PrizeTicket.objects.filter(pid=pid)
+	rdata['prizeTickets'] = [{'ticket': ticket, 'prize': Prize.objects.get(id=ticket.pid), 'username': SUser.objects.get(id=ticket.uid).username} for ticket in prizeTickets]
 
 	return render(request, 'prize_my.html', rdata)
 

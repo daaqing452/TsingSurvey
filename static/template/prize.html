@@ -37,11 +37,11 @@
 			<button>兑换</button>
 		</td>
 		{% if user.is_staff %}
-		<td onclick="view_exchange(this)">
-			<p>查看兑换情况</p>
+		<td>
+			<a href="/prize_my/{{ prize.id }}">查看兑换情况</a>
 		</td>
 		<td onclick="deletee(this)">
-			<p>删除</p>
+			删除
 		</td>
 		{% endif %}
 	</tr>

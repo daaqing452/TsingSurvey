@@ -39,6 +39,7 @@ urlpatterns = [
     url(r'^search/$', search),
     url(r'^prize/$', prize),
     url(r'^prize_my/$', prize_my),
+    url(r'^prize_my/(\d{1,10})/$', prize_my),
     url(r'^prize_add/$', prize_add),
 
     url(r'^install/$', install),
