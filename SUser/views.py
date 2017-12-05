@@ -67,8 +67,8 @@ def login(request):
 			rdata['info'] = '用户名不存在'
 		else:'''
 		if True:
-			# 如果不是root进行清华验证
-			if username != 'root':
+			# 如果是清华账号进行清华验证
+			if username.isdigit() and len(username) == 10:
 				yes = auth_tsinghua(request, username, password)
 				if yes:
 					password = Utils.username_to_password(username)
@@ -102,7 +102,7 @@ def user_list(request):
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('/login/')
 	if not request.user.is_staff:
-		return HttpResponseRedirect('/index/')
+		return render(request, 'permission_denied.html', {})
 	rdata = {}
 	rdata['user'] = user = request.user
 	op = request.POST.get('op')
@@ -361,7 +361,7 @@ def admin_list(request):
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('/login/')
 	if not request.user.is_superuser:
-		return HttpResponseRedirect('/index/')
+		return render(request, 'permission_denied.html', {})
 	rdata = {}
 	rdata['user'] = user = request.user
 	op = request.POST.get('op')
@@ -405,7 +405,7 @@ def profile(request, uid):
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('/login/')
 	if (not request.user.is_staff) and (str(request.user.id) != uid):
-		return HttpResponseRedirect('/index/')
+		return render(request, 'permission_denied.html', {})
 	rdata = {}
 	rdata['user'] = user = request.user
 	rdata['puser'] = puser = User.objects.get(id=uid)

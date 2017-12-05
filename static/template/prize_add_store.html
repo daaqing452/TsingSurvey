@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+	{% load static %}
+    {% block context %}
+<script src='{% static 'js/prize_add_store.js' %}'> </script>
+<div class="col-md-offset-1 col-md-10 ">
+
+<h3>添加新商家</h3>
+<div>
+	<table>
+		<tr>
+			<td>用户名</td>
+			<td><input type="text" id="username"/></td>
+		</tr>
+		<tr>
+			<td>密码</td>
+			<td><input type="password" id="password"/></td>
+		</tr>
+	</table>
+	<div>
+	<br/>
+	<br/>
+	<div>
+		<p style="float:left">允许操作的商品</p><br/>
+		{% for prize in prizes %}
+		<div style="float:left"><input name="item" type="checkbox" pid={{ prize.id }} />{{ prize.title }}<br/></div>
+		{% endfor %}
+		</div>
+	</div>
+	<button onclick="add_store()">添加</button>
+</div>
+
+</div>
+{% endblock context %}

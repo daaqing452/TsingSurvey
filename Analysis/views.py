@@ -8,6 +8,7 @@ from django.template import RequestContext
 from SUser.models import SUser
 from Survey.models import Questionaire, Answeraire, Report
 from Analysis.models import *
+import datetime
 import json
 import math
 import numpy as np
@@ -373,6 +374,12 @@ def prize(request):
 		Prize.objects.filter(id=pid).update(credit=credit)
 		return HttpResponse(HttpResponse(json.dumps({})))
 
+	if op == 'change_price':
+		pid = int(request.POST.get('pid'))
+		price = int(request.POST.get('price'))
+		Prize.objects.filter(id=pid).update(price=price)
+		return HttpResponse(HttpResponse(json.dumps({})))
+
 	if op == 'exchange':
 		jdata = {'result': 'ok'}
 		pid = int(request.POST.get('pid'))
@@ -382,13 +389,13 @@ def prize(request):
 			return HttpResponse(HttpResponse(json.dumps(jdata)))
 		suser.credit -= prize.credit
 		suser.save()
-		PrizeGot.objects.create(uid=suser.id, pid=pid, count=1, used=False)
+		PrizeGot.objects.create(uid=suser.id, pid=pid, count=1, used=False, exchange_time=datetime.datetime.now())
 		return HttpResponse(HttpResponse(json.dumps(jdata)))
 
 	rdata['prizes'] = prizes = list(reversed(Prize.objects.all()))
 	return render(request, 'prize.html', rdata)
 
-def prize_my(request, pid=-1):
+def prize_ticket(request, pid=-1):
 	# 验证身份
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('/login/')
@@ -401,20 +408,25 @@ def prize_my(request, pid=-1):
 		rdata['personal'] = True
 		prizeTickets = PrizeTicket.objects.filter(uid=suser.id)
 	else:
+		if not request.user.is_staff:
+			return render(request, 'permission_denied.html', {})
 		rdata['personal'] = False
 		prizeTickets = PrizeTicket.objects.filter(pid=pid)
 		rdata['total'] = len(prizeTickets)
 		used = 0
 		for ticket in prizeTickets: used += int(ticket.used)
 		rdata['used'] = used
-	rdata['prizeTickets'] = [{'ticket': ticket, 'prize': Prize.objects.get(id=ticket.pid), 'username': SUser.objects.get(id=ticket.uid).username} for ticket in prizeTickets]
 
-	return render(request, 'prize_my.html', rdata)
+	rdata['prizeTickets'] = list(reversed([{'ticket': ticket, 'prize': Prize.objects.get(id=ticket.pid), 'username': SUser.objects.get(id=ticket.uid).username} for ticket in prizeTickets]))
+
+	return render(request, 'prize_ticket.html', rdata)
 
 def prize_add(request):
 	# 验证身份
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('/login/')
+	if not request.user.is_staff:
+		return render(request, 'permission_denied.html', {})
 	rdata = {}
 	rdata['user'] = user = request.user
 	op = request.POST.get('op')
@@ -423,8 +435,43 @@ def prize_add(request):
 		title = request.POST.get('title')
 		description = request.POST.get('description')
 		credit = int(request.POST.get('credit'))
+		price = int(request.POST.get('price'))
 		expire_time = request.POST.get('expire_time')
-		prize = Prize.objects.create(title=title, description=description, credit=credit, expire_time=expire_time)
+		prize = Prize.objects.create(title=title, description=description, credit=credit, price=price, expire_time=expire_time)
 		return HttpResponse(HttpResponse(json.dumps({})))
 
 	return render(request, 'prize_add.html', rdata)
+
+def prize_add_store(request):
+	# 验证身份
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/login/')
+	if not request.user.is_staff:
+		return render(request, 'permission_denied.html', {})
+	rdata = {}
+	rdata['user'] = user = request.user
+	op = request.POST.get('op')
+
+	if op == 'add_store':
+		jdata = {'result': 'ok'}
+		username = request.POST.get('username')
+		if username.isdigit() and len(username) == 10:
+			jdata['result'] = '请勿使用清华学号'
+		elif len(SUser.objects.filter(username=username)) > 0:
+			jdata['result'] = '用户名已存在'
+		else:
+			password = request.POST.get('password')
+			pid_list = json.loads(request.POST.get('pid_list'))
+			user = User.objects.create_user(username=username, password=password, is_superuser=0, is_staff=0)
+			suser = SUser.objects.create(username=username, uid=user.id, is_sample=0, is_store=1)
+			for pid in pid_list:
+				prize = Prize.objects.get(id=int(pid))
+				store = json.loads(prize.store)
+				store.append(suser.id)
+				prize.store=json.dumps(store)
+				prize.save()
+		return HttpResponse(HttpResponse(json.dumps(jdata)))
+
+	rdata['prizes'] = prizes = list(reversed(Prize.objects.all()))
+
+	return render(request, 'prize_add_store.html', rdata)
