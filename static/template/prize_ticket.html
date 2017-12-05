@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 	{% load static %}
     {% block context %}
-<script src='{% static 'js/prize_my.js' %}'> </script>
+<script src='{% static 'js/prize_ticket.js' %}'> </script>
 
+<div class="col-md-offset-1 col-md-10 ">
 {% if personal %}
 <h3>已兑换物品</h3>
 {% else %}
 <h3>兑换记录</h3>
-{% endif %}
-<div class="col-md-offset-1 col-md-10 ">
 <p style="float:right">已使用/总共兑换：{{ used }}/{{ total }}</p>
+{% endif %}
 <table>
 	<tr>
 		<td> 物品名称 </td>

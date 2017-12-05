@@ -394,7 +394,7 @@ def prize(request):
 	rdata['prizes'] = prizes = list(reversed(Prize.objects.all()))
 	return render(request, 'prize.html', rdata)
 
-def prize_my(request, pid=-1):
+def prize_ticket(request, pid=-1):
 	# 验证身份
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('/login/')
@@ -407,20 +407,25 @@ def prize_my(request, pid=-1):
 		rdata['personal'] = True
 		prizeTickets = PrizeTicket.objects.filter(uid=suser.id)
 	else:
+		if not request.user.is_staff:
+			return render(request, 'permission_denied.html', {})
 		rdata['personal'] = False
 		prizeTickets = PrizeTicket.objects.filter(pid=pid)
 		rdata['total'] = len(prizeTickets)
 		used = 0
 		for ticket in prizeTickets: used += int(ticket.used)
 		rdata['used'] = used
+
 	rdata['prizeTickets'] = [{'ticket': ticket, 'prize': Prize.objects.get(id=ticket.pid), 'username': SUser.objects.get(id=ticket.uid).username} for ticket in prizeTickets]
 
-	return render(request, 'prize_my.html', rdata)
+	return render(request, 'prize_ticket.html', rdata)
 
 def prize_add(request):
 	# 验证身份
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('/login/')
+	if not request.user.is_staff:
+		return render(request, 'permission_denied.html', {})
 	rdata = {}
 	rdata['user'] = user = request.user
 	op = request.POST.get('op')
@@ -435,3 +440,15 @@ def prize_add(request):
 		return HttpResponse(HttpResponse(json.dumps({})))
 
 	return render(request, 'prize_add.html', rdata)
+
+def prize_add_store(request):
+	# 验证身份
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/login/')
+	if not request.user.is_staff:
+		return render(request, 'permission_denied.html', {})
+	rdata = {}
+	rdata['user'] = user = request.user
+	op = request.POST.get('op')
+
+	return render(request, 'prize_add_store.html', rdata)

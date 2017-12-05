@@ -6,6 +6,7 @@ class SUser(models.Model):
 	uid = models.IntegerField()
 	qid_list = models.TextField(default='{}')
 	is_sample = models.BooleanField(default=1)
+	is_store = models.BooleanField(default=0)
 	credit = models.IntegerField(default=0)
 
 	username                    = models.CharField(max_length=62)

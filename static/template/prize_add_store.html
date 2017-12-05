@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+	{% load static %}
+    {% block context %}
+<script src='{% static 'js/prize_add_store.js' %}'> </script>
+<div class="col-md-offset-1 col-md-10 ">
+
+<h3>添加新商家</h3>
+<div>
+	<table>
+		<tr>
+			<td>用户名</td>
+			<td><input type="text" id="title"/></td>
+		</tr>
+		<tr>
+			<td>密码</td>
+			<td><input type="password" id="description"/></td>
+		</tr>
+	</table>
+	<button onclick="add_prize()">添加</button>
+</div>
+
+</div>
+{% endblock context %}

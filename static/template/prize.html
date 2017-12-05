@@ -8,7 +8,7 @@
 <div>
 {% if user.is_staff %}
 	<a style="float:left" href="/prize_add/"><button class="btn btn-sm btn-primary">添加新奖品</button></a>
-	<a style="float:left" href="/prize_store/"><button class="btn btn-sm btn-success">添加新商家</button></a>
+	<a style="float:left" href="/prize_add_store/"><button class="btn btn-sm btn-success">添加新商家</button></a>
 {% endif %}
 	<p style="float:right">我的积分：{{ suser.credit }}</p>
 </div>
@@ -45,7 +45,7 @@
 		</td>
 		{% if user.is_staff %}
 		<td>
-			<a href="/prize_my/{{ prize.id }}">查看兑换情况</a>
+			<a href="/prize_ticket/{{ prize.id }}/">查看兑换情况</a>
 		</td>
 		<td onclick="deletee(this)">
 			删除
