@@ -42,6 +42,7 @@ urlpatterns = [
     url(r'^prize_ticket/(\d{1,10})/$', prize_ticket),
     url(r'^prize_add/$', prize_add),
     url(r'^prize_add_store/$', prize_add_store),
+    url(r'^prize_exchange/(\d{1,10})/$', prize_exchange),
 
     url(r'^install/$', install),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

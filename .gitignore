@@ -2,6 +2,7 @@
 /文档/*
 /media/*
 /TsingSurvey/*.pyc
+/TsingSurvey/__pycache__/*
 /SUser/.DS_Store
 /SUser/migrations/*
 /SUser/__pycache__/*
