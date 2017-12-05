@@ -366,19 +366,19 @@ def prize(request):
 	if op == 'delete':
 		pid = int(request.POST.get('pid'))
 		Prize.objects.filter(id=pid).delete()
-		return HttpResponse(HttpResponse(json.dumps({})))
+		return HttpResponse(json.dumps({}))
 
 	if op == 'change_credit':
 		pid = int(request.POST.get('pid'))
 		credit = int(request.POST.get('credit'))
 		Prize.objects.filter(id=pid).update(credit=credit)
-		return HttpResponse(HttpResponse(json.dumps({})))
+		return HttpResponse(json.dumps({}))
 
 	if op == 'change_price':
 		pid = int(request.POST.get('pid'))
 		price = int(request.POST.get('price'))
 		Prize.objects.filter(id=pid).update(price=price)
-		return HttpResponse(HttpResponse(json.dumps({})))
+		return HttpResponse(json.dumps({}))
 
 	if op == 'exchange':
 		jdata = {'result': 'ok'}
@@ -386,11 +386,11 @@ def prize(request):
 		prize = Prize.objects.get(id=pid)
 		if suser.credit < prize.credit:
 			jdata['result'] = '没有足够积分'
-			return HttpResponse(HttpResponse(json.dumps(jdata)))
+			return HttpResponse(json.dumps(jdata))
 		suser.credit -= prize.credit
 		suser.save()
 		PrizeTicket.objects.create(uid=suser.id, pid=pid, count=1, used=False, exchange_time=datetime.datetime.now())
-		return HttpResponse(HttpResponse(json.dumps(jdata)))
+		return HttpResponse(json.dumps(jdata))
 
 	rdata['prizes'] = prizes = list(reversed(Prize.objects.all()))
 	return render(request, 'prize.html', rdata)
@@ -445,7 +445,7 @@ def prize_add(request):
 		price = int(request.POST.get('price'))
 		expire_time = request.POST.get('expire_time')
 		prize = Prize.objects.create(title=title, description=description, credit=credit, price=price, expire_time=expire_time)
-		return HttpResponse(HttpResponse(json.dumps({})))
+		return HttpResponse(json.dumps({}))
 
 	return render(request, 'prize_add.html', rdata)
 
@@ -477,8 +477,32 @@ def prize_add_store(request):
 				store.append(suser.id)
 				prize.store=json.dumps(store)
 				prize.save()
-		return HttpResponse(HttpResponse(json.dumps(jdata)))
+		return HttpResponse(json.dumps(jdata))
 
 	rdata['prizes'] = prizes = list(reversed(Prize.objects.all()))
 
 	return render(request, 'prize_add_store.html', rdata)
+
+def prize_exchange(request, tid):
+	# 验证身份
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/login/')
+	rdata = {}
+	rdata['user'] = user = request.user
+	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
+	rdata['ticket'] = ticket = PrizeTicket.objects.get(id=tid)
+	rdata['prize'] = prize = Prize.objects.get(id=ticket.pid)
+	if suser.is_store:
+		store = json.loads(prize.store)
+		if not suser.id in store:
+			return render(request, 'permission_denied.html', {})
+	else:
+		if ticket.uid != suser.id:
+			return render(request, 'permission_denied.html', {})
+	op = request.POST.get("op")
+
+	if op == "exchange":
+		print("yes")
+		return HttpResponse(json.dumps({}))
+
+	return render(request, 'prize_exchange.html', rdata)

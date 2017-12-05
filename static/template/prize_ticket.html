@@ -31,7 +31,7 @@
 		<!--<td> {{ pair.ticket.count }}-->
 		<td> {% if pair.ticket.used %} √ {% else %}  {% endif %} </td>
 		<td> {% if pair.ticket.used %} √ {% else %}  {% endif %} </td>
-		<td> <a id="qrcode" href="#"><button>使用</button></a> </td>
+		<td> <button tid="{{ pair.ticket.id }}" onclick="exchange(this)">使用</button> </td>
 	</tr>
 	{% endfor %}
 </table>
