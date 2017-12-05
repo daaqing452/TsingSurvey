@@ -34,6 +34,23 @@ function change_credit(node) {
 	});
 }
 
+function change_price(node) {
+	var pid = $(node).parent().attr("pid");
+	var p = $("p#price");
+	var new_price = prompt('新的金额', '');
+	if (new_price == null) new_price = p.html();
+	if (new_price == '') new_price = p.html();
+	$.ajax({
+		url: window.location.href,
+		type: 'POST',
+		data: {'op': 'change_price', 'price': new_price, 'pid': pid},
+		success: function(data) {
+			var data = JSON.parse(data);
+			p.html(new_price);
+		}
+	});
+}
+
 function exchange(node) {
 	var pid = $(node).parent().attr("pid");
 	if (confirm("确认兑换？")) {

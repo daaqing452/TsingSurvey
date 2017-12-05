@@ -8,6 +8,7 @@
 <div>
 {% if user.is_staff %}
 	<a style="float:left" href="/prize_add/"><button class="btn btn-sm btn-primary">添加新奖品</button></a>
+	<a style="float:left" href="/prize_store/"><button class="btn btn-sm btn-success">添加新商家</button></a>
 {% endif %}
 	<p style="float:right">我的积分：{{ suser.credit }}</p>
 </div>
@@ -17,10 +18,8 @@
 	<table>
 	{% for prize in prizes %}
 	<tr style="border: solid 2px #000000" pid="{{ prize.id }}">
-		<td>
-			<h4>{{ prize.title }}</h4>
-			<p>{{ prize.description }}<p>
-		</td>
+		<td><h4>{{ prize.title }}</h4></td>
+		<td><p>{{ prize.description }}<p></td>
 		<td
 			{% if user.is_staff %}
 			onclick="change_credit(this)"
@@ -29,10 +28,18 @@
 			<p>兑换积分</p>
 			<p id="credit">{{ prize.credit }}</p>
 		</td>
-		<td>
+		<td
+			{% if user.is_staff %}
+			onclick="change_price(this)"
+			{% endif %}
+		>
+			<p>金额</p>
+			<p id="price">{{ prize.price }}</p>
+		</td>
+		<!--<td>
 			<p>截止时间</p>
 			<p>{{ prize.expire_time | date:"Y-m-d"}}</p>
-		</td>
+		</td>-->
 		<td onclick="exchange(this)">
 			<button>兑换</button>
 		</td>

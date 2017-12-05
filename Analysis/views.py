@@ -373,6 +373,12 @@ def prize(request):
 		Prize.objects.filter(id=pid).update(credit=credit)
 		return HttpResponse(HttpResponse(json.dumps({})))
 
+	if op == 'change_price':
+		pid = int(request.POST.get('pid'))
+		price = int(request.POST.get('price'))
+		Prize.objects.filter(id=pid).update(price=price)
+		return HttpResponse(HttpResponse(json.dumps({})))
+
 	if op == 'exchange':
 		jdata = {'result': 'ok'}
 		pid = int(request.POST.get('pid'))
@@ -423,8 +429,9 @@ def prize_add(request):
 		title = request.POST.get('title')
 		description = request.POST.get('description')
 		credit = int(request.POST.get('credit'))
+		price = int(request.POST.get('price'))
 		expire_time = request.POST.get('expire_time')
-		prize = Prize.objects.create(title=title, description=description, credit=credit, expire_time=expire_time)
+		prize = Prize.objects.create(title=title, description=description, credit=credit, price=price, expire_time=expire_time)
 		return HttpResponse(HttpResponse(json.dumps({})))
 
 	return render(request, 'prize_add.html', rdata)
