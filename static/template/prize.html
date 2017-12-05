@@ -5,13 +5,47 @@
 <div class="col-md-offset-1 col-md-10 ">
 
 <h3>积分兑换</h3>
+<div>
 {% if user.is_staff %}
-<div id="control-bar" style="float:left">
-	<button class="btn btn-sm btn-primary">添加新物品</button>
-</div>
+	<a style="float:left" href="/prize_add/"><button class="btn btn-sm btn-primary">添加新奖品</button></a>
 {% endif %}
-<table class="table table-hover">
-</table>
-
+	<p style="float:right">我的积分：{{ suser.credit }}</p>
+</div>
+<br/>
+<br/>
+<div>
+	<table>
+	{% for prize in prizes %}
+	<tr style="border: solid 2px #000000" pid="{{ prize.id }}">
+		<td>
+			<h4>{{ prize.title }}</h4>
+			<p>{{ prize.description }}<p>
+		</td>
+		<td
+			{% if user.is_staff %}
+			onclick="change_credit(this)"
+			{% endif %}
+		>
+			<p>兑换积分</p>
+			<p id="credit">{{ prize.credit }}</p>
+		</td>
+		<td>
+			<p>截止时间</p>
+			<p>{{ prize.expire_time | date:"Y-m-d"}}</p>
+		</td>
+		<td onclick="exchange(this)">
+			<button>兑换</button>
+		</td>
+		{% if user.is_staff %}
+		<td>
+			<a href="/prize_my/{{ prize.id }}">查看兑换情况</a>
+		</td>
+		<td onclick="deletee(this)">
+			删除
+		</td>
+		{% endif %}
+	</tr>
+	{% endfor %}
+	</table>
 </div>
 {% endblock context %}

@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
+from SUser.models import SUser
 from Survey.models import Questionaire, Answeraire, Report
 from Analysis.models import *
 import json
@@ -358,17 +359,55 @@ def prize(request):
 		return HttpResponseRedirect('/login/')
 	rdata = {}
 	rdata['user'] = user = request.user
+	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
+	op = request.POST.get('op')
+
+	if op == 'delete':
+		pid = int(request.POST.get('pid'))
+		Prize.objects.filter(id=pid).delete()
+		return HttpResponse(HttpResponse(json.dumps({})))
+
+	if op == 'change_credit':
+		pid = int(request.POST.get('pid'))
+		credit = int(request.POST.get('credit'))
+		Prize.objects.filter(id=pid).update(credit=credit)
+		return HttpResponse(HttpResponse(json.dumps({})))
+
+	if op == 'exchange':
+		jdata = {'result': 'ok'}
+		pid = int(request.POST.get('pid'))
+		prize = Prize.objects.get(id=pid)
+		if suser.credit < prize.credit:
+			jdata['result'] = '没有足够积分'
+			return HttpResponse(HttpResponse(json.dumps(jdata)))
+		suser.credit -= prize.credit
+		suser.save()
+		PrizeGot.objects.create(uid=suser.id, pid=pid, count=1, used=False)
+		return HttpResponse(HttpResponse(json.dumps(jdata)))
 
 	rdata['prizes'] = prizes = list(reversed(Prize.objects.all()))
-
 	return render(request, 'prize.html', rdata)
 
-def prize_my(request):
+def prize_my(request, pid=-1):
 	# 验证身份
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('/login/')
 	rdata = {}
 	rdata['user'] = user = request.user
+	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
+	op = request.POST.get('op')
+
+	if pid == -1:
+		rdata['personal'] = True
+		prizeTickets = PrizeTicket.objects.filter(uid=suser.id)
+	else:
+		rdata['personal'] = False
+		prizeTickets = PrizeTicket.objects.filter(pid=pid)
+		rdata['total'] = len(prizeTickets)
+		used = 0
+		for ticket in prizeTickets: used += int(ticket.used)
+		rdata['used'] = used
+	rdata['prizeTickets'] = [{'ticket': ticket, 'prize': Prize.objects.get(id=ticket.pid), 'username': SUser.objects.get(id=ticket.uid).username} for ticket in prizeTickets]
 
 	return render(request, 'prize_my.html', rdata)
 
@@ -378,5 +417,14 @@ def prize_add(request):
 		return HttpResponseRedirect('/login/')
 	rdata = {}
 	rdata['user'] = user = request.user
+	op = request.POST.get('op')
+
+	if op == 'add_prize':
+		title = request.POST.get('title')
+		description = request.POST.get('description')
+		credit = int(request.POST.get('credit'))
+		expire_time = request.POST.get('expire_time')
+		prize = Prize.objects.create(title=title, description=description, credit=credit, expire_time=expire_time)
+		return HttpResponse(HttpResponse(json.dumps({})))
 
 	return render(request, 'prize_add.html', rdata)
