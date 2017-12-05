@@ -389,7 +389,7 @@ def prize(request):
 			return HttpResponse(HttpResponse(json.dumps(jdata)))
 		suser.credit -= prize.credit
 		suser.save()
-		PrizeGot.objects.create(uid=suser.id, pid=pid, count=1, used=False, exchange_time=datetime.datetime.now())
+		PrizeTicket.objects.create(uid=suser.id, pid=pid, count=1, used=False, exchange_time=datetime.datetime.now())
 		return HttpResponse(HttpResponse(json.dumps(jdata)))
 
 	rdata['prizes'] = prizes = list(reversed(Prize.objects.all()))
