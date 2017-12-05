@@ -8,6 +8,7 @@ from django.template import RequestContext
 from SUser.models import SUser
 from Survey.models import Questionaire, Answeraire, Report
 from Analysis.models import *
+import datetime
 import json
 import math
 import numpy as np
@@ -388,7 +389,7 @@ def prize(request):
 			return HttpResponse(HttpResponse(json.dumps(jdata)))
 		suser.credit -= prize.credit
 		suser.save()
-		PrizeGot.objects.create(uid=suser.id, pid=pid, count=1, used=False)
+		PrizeGot.objects.create(uid=suser.id, pid=pid, count=1, used=False, exchange_time=datetime.datetime.now())
 		return HttpResponse(HttpResponse(json.dumps(jdata)))
 
 	rdata['prizes'] = prizes = list(reversed(Prize.objects.all()))
@@ -416,7 +417,7 @@ def prize_ticket(request, pid=-1):
 		for ticket in prizeTickets: used += int(ticket.used)
 		rdata['used'] = used
 
-	rdata['prizeTickets'] = [{'ticket': ticket, 'prize': Prize.objects.get(id=ticket.pid), 'username': SUser.objects.get(id=ticket.uid).username} for ticket in prizeTickets]
+	rdata['prizeTickets'] = list(reversed([{'ticket': ticket, 'prize': Prize.objects.get(id=ticket.pid), 'username': SUser.objects.get(id=ticket.uid).username} for ticket in prizeTickets]))
 
 	return render(request, 'prize_ticket.html', rdata)
 
@@ -450,5 +451,27 @@ def prize_add_store(request):
 	rdata = {}
 	rdata['user'] = user = request.user
 	op = request.POST.get('op')
+
+	if op == 'add_store':
+		jdata = {'result': 'ok'}
+		username = request.POST.get('username')
+		if username.isdigit() and len(username) == 10:
+			jdata['result'] = '请勿使用清华学号'
+		elif len(SUser.objects.filter(username=username)) > 0:
+			jdata['result'] = '用户名已存在'
+		else:
+			password = request.POST.get('password')
+			pid_list = json.loads(request.POST.get('pid_list'))
+			user = User.objects.create_user(username=username, password=password, is_superuser=0, is_staff=0)
+			suser = SUser.objects.create(username=username, uid=user.id, is_sample=0, is_store=1)
+			for pid in pid_list:
+				prize = Prize.objects.get(id=int(pid))
+				store = json.loads(prize.store)
+				store.append(suser.id)
+				prize.store=json.dumps(store)
+				prize.save()
+		return HttpResponse(HttpResponse(json.dumps(jdata)))
+
+	rdata['prizes'] = prizes = list(reversed(Prize.objects.all()))
 
 	return render(request, 'prize_add_store.html', rdata)
