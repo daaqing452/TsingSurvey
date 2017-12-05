@@ -3,7 +3,8 @@ $(document).ready(function(){
 });
 
 function exchange(item) {
-	var url = window.location.href.replace(window.location.pathname, "");
+	$('#qrcode').html('')
 	var tid = $(item).attr("tid");
-	window.location.href = "https://cli.im/api/qrcode/code?text=" + url + "/prize_exchange/" + tid + "/";
+	var url = window.location.href.replace(window.location.pathname, "") + "/prize_exchange/" + tid + "/";
+	$('#qrcode').qrcode(url);
 }

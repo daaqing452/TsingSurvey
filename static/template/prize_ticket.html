@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 	{% load static %}
     {% block context %}
+<script src='{% static 'js/jquery.qrcode.js' %}'> </script>
+<script src='{% static 'js/qrcode.js' %}'> </script>
 <script src='{% static 'js/prize_ticket.js' %}'> </script>
 
+<div id="qrcode"></div> 
 <div class="col-md-offset-1 col-md-10 ">
 {% if personal %}
 <h3>已兑换物品</h3>
