@@ -411,11 +411,18 @@ def prize_ticket(request, pid=-1):
 		if not request.user.is_staff:
 			return render(request, 'permission_denied.html', {})
 		rdata['personal'] = False
-		prizeTickets = PrizeTicket.objects.filter(pid=pid)
-		rdata['total'] = len(prizeTickets)
+
 		used = 0
-		for ticket in prizeTickets: used += int(ticket.used)
+		cleared = 0
+		prize = Prize.objects.get(id=pid)
+		prizeTickets = PrizeTicket.objects.filter(pid=pid)
+		for ticket in prizeTickets:
+			used += int(ticket.used)
+			cleared += int(ticket.cleared)
+		rdata['total'] = len(prizeTickets)
 		rdata['used'] = used
+		rdata['cleared'] = cleared
+		rdata['money'] = (used - cleared) * prize.price
 
 	rdata['prizeTickets'] = list(reversed([{'ticket': ticket, 'prize': Prize.objects.get(id=ticket.pid), 'username': SUser.objects.get(id=ticket.uid).username} for ticket in prizeTickets]))
 
