@@ -506,8 +506,6 @@ def prize_exchange(request, tid):
 	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
 	rdata['ticket'] = ticket = PrizeTicket.objects.get(id=tid)
 	rdata['prize'] = prize = Prize.objects.get(id=ticket.pid)
-	if ticket.used == True:
-		return render(request, 'permission_denied.html', {}) 
 	if suser.is_store:
 		store = json.loads(prize.store)
 		if not suser.id in store:
@@ -520,6 +518,7 @@ def prize_exchange(request, tid):
 	if op == "exchange":
 		if suser.is_store:
 			ticket.use_status = ticket.use_status | 2
+			ticket.oid = suser.id
 		else:
 			ticket.use_status = ticket.use_status | 4
 		if ticket.use_status == 7:
@@ -534,6 +533,8 @@ def prize_exchange(request, tid):
 			jdata['result'] = 'confirmed'
 		return HttpResponse(json.dumps(jdata))
 
+	if ticket.used == True:
+		return render(request, 'permission_denied.html', {})
 	if suser.is_store:
 		ticket.use_status = ticket.use_status | 1
 		ticket.save()
