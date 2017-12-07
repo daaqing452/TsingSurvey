@@ -519,7 +519,6 @@ def prize_exchange(request, tid):
 		return HttpResponse(json.dumps({}))
 
 	if suser.is_store:
-		ticket = PrizeTicket.objects.get(id=tid)
 		ticket.use_status &= 1
 		ticket.save()
 
