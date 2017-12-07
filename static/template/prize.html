@@ -7,9 +7,10 @@
 <h3>积分兑换</h3>
 <div>
 {% if user.is_staff %}
-	<a style="float:left" href="/prize_add/"><button class="btn btn-sm btn-primary">添加新奖品</button></a>
-	<a style="float:left" href="/prize_add_store/"><button class="btn btn-sm btn-success">添加新商家</button></a>
+	<a style="float:left" href="/prize_add/"><button class="btn btn-sm btn-primary">添加新商品</button></a>
+	<a style="float:left" href="/prize_add_store/"><button class="btn btn-sm btn-warning">添加新商家</button></a>
 {% endif %}
+	<a style="float:left" href="/prize_ticket/"><button class="btn btn-sm btn-success">已兑换商品</button></a>
 	<p style="float:right">我的积分：{{ suser.credit }}</p>
 </div>
 <br/>

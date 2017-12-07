@@ -6,7 +6,7 @@
 <script src='{% static 'js/prize_ticket.js' %}'> </script>
 
 <div id="qrcode"></div> 
-<div class="col-md-offset-1 col-md-10 ">
+<div id="main" class="col-md-offset-1 col-md-10 ">
 {% if personal %}
 <h3>已兑换物品</h3>
 {% else %}
@@ -21,9 +21,12 @@
 		<!--<td> 过期时间 </td>-->
 		<td> 金额 </td>
 		<!--<td> 数量 </td>-->
+		{% if personal %}
+		<td> </td>
+		{% else %}
 		<td> 是否消费 </td>
 		<td> 是否结算 </td>
-		<td>  </td>
+		{% endif %}
 	</tr>
 	{% for pair in prizeTickets %}
 	<tr>
@@ -32,9 +35,16 @@
 		<!--<td> {{ pair.prize.expire_time | date:"Y-m-d" }} </td>-->
 		<td> {{ pair.ticket.price }} </td>
 		<!--<td> {{ pair.ticket.count }}-->
+		{% if personal %}
+			{% if pair.ticket.used %}
+			<td>已消费</td>
+			{% else %}
+			<td> <button tid="{{ pair.ticket.id }}" onclick="exchange(this)">使用</button> </td>
+			{% endif %}
+		{% else %}
 		<td> {% if pair.ticket.used %} √ {% else %}  {% endif %} </td>
-		<td> {% if pair.ticket.used %} √ {% else %}  {% endif %} </td>
-		<td> <button tid="{{ pair.ticket.id }}" onclick="exchange(this)">使用</button> </td>
+		<td> {% if pair.ticket.cleared %} √ {% else %}  {% endif %} </td>
+		{% endif %}
 	</tr>
 	{% endfor %}
 </table>

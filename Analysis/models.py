@@ -13,9 +13,10 @@ class Prize(models.Model):
 class PrizeTicket(models.Model):
 	uid = models.IntegerField(default=-1)
 	pid = models.IntegerField(default=-1)
+	oid = models.IntegerField(default=-1)
 	count = models.IntegerField(default=0)
-	owner = models.IntegerField(default=-1)
 	used = models.BooleanField(default=0)
 	cleared = models.BooleanField(default=0)
 	exchange_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
+	use_status = models.IntegerField(default=0)
 	use_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')

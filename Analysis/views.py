@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 from django.contrib import auth
 from django.contrib.auth.models import User
+from django.core.signals import request_finished
+from django.dispatch import receiver
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
@@ -405,13 +407,14 @@ def prize_ticket(request, pid=-1):
 	op = request.POST.get('op')
 
 	if pid == -1:
+		# 用户兑换记录
 		rdata['personal'] = True
 		prizeTickets = PrizeTicket.objects.filter(uid=suser.id)
 	else:
+		# 商品兑换记录
 		if not request.user.is_staff:
 			return render(request, 'permission_denied.html', {})
 		rdata['personal'] = False
-
 		used = 0
 		cleared = 0
 		prize = Prize.objects.get(id=pid)
@@ -423,6 +426,17 @@ def prize_ticket(request, pid=-1):
 		rdata['used'] = used
 		rdata['cleared'] = cleared
 		rdata['money'] = (used - cleared) * prize.price
+
+	if op == 'clear_scaned':
+		tid = int(request.POST.get('tid'))
+		PrizeTicket.objects.filter(id=tid).update(use_status=0)
+		return HttpResponse(json.dumps({}))
+
+	if op == 'if_scan_qrcode':
+		jdata = {'result': 'not scaned'}
+		tid = int(request.POST.get('tid'))
+		if PrizeTicket.objects.get(id=tid).use_status > 0: jdata['result'] = 'scaned'
+		return HttpResponse(json.dumps(jdata))
 
 	rdata['prizeTickets'] = list(reversed([{'ticket': ticket, 'prize': Prize.objects.get(id=ticket.pid), 'username': SUser.objects.get(id=ticket.uid).username} for ticket in prizeTickets]))
 
@@ -484,7 +498,7 @@ def prize_add_store(request):
 	return render(request, 'prize_add_store.html', rdata)
 
 def prize_exchange(request, tid):
-	# 验证身份
+	# 验证身份，只有特定商家和特定用户
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('/login/')
 	rdata = {}
@@ -502,7 +516,11 @@ def prize_exchange(request, tid):
 	op = request.POST.get("op")
 
 	if op == "exchange":
-		print("yes")
 		return HttpResponse(json.dumps({}))
+
+	if suser.is_store:
+		ticket = PrizeTicket.objects.get(id=tid)
+		ticket.use_status &= 1
+		ticket.save()
 
 	return render(request, 'prize_exchange.html', rdata)
