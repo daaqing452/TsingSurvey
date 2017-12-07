@@ -520,7 +520,7 @@ def prize_exchange(request, tid):
 
 	if suser.is_store:
 		ticket = PrizeTicket.objects.get(id=tid)
-		ticket.use_status &= 1
+		ticket.use_status = ticket.use_status | 1
 		ticket.save()
 
 	return render(request, 'prize_exchange.html', rdata)
