@@ -516,10 +516,19 @@ def prize_exchange(request, tid):
 	op = request.POST.get("op")
 
 	if op == "exchange":
+		if suser.is_store:
+			ticket.use_status = ticket.use_status | 2
+		else:
+			ticket.use_status = ticket.use_status | 4
 		return HttpResponse(json.dumps({}))
 
+	if op == "if_confirm":
+		jdata = {'result': 'not confirmed'}
+		if ticket.use_status == 7: jdata['result'] = 'confirmed'
+		return HttpResponse(json.dumps(jdata))
+
 	if suser.is_store:
-		ticket.use_status &= 1
+		ticket.use_status = ticket.use_status | 1
 		ticket.save()
 
 	return render(request, 'prize_exchange.html', rdata)

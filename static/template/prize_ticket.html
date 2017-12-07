@@ -39,7 +39,7 @@
 			{% if pair.ticket.used %}
 			<td>已消费</td>
 			{% else %}
-			<td> <button tid="{{ pair.ticket.id }}" onclick="exchange(this)">使用</button> </td>
+			<td> <button tid="{{ pair.ticket.id }}" onclick="exchange(this)">消费</button> </td>
 			{% endif %}
 		{% else %}
 		<td> {% if pair.ticket.used %} √ {% else %}  {% endif %} </td>

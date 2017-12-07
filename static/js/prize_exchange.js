@@ -9,7 +9,8 @@ function exchange() {
 		data: {"op": "exchange"},
 		success: function(data) {
 			var data = JSON.parse(data);
-			alert("!");
+			$("#confirm").hide();
+			
 		}
 	})
 }
