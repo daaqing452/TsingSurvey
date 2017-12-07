@@ -520,6 +520,9 @@ def prize_exchange(request, tid):
 			ticket.use_status = ticket.use_status | 2
 		else:
 			ticket.use_status = ticket.use_status | 4
+		if ticket.use_status == 7:
+			print("消费")
+		ticket.save()
 		return HttpResponse(json.dumps({}))
 
 	if op == "if_confirm":

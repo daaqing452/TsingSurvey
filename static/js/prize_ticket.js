@@ -30,5 +30,5 @@ function exchange(item) {
 				}
 			}
 		})
-	}, 2000);
+	}, 1000);
 }

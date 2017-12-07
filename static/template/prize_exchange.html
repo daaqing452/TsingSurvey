@@ -6,7 +6,7 @@
 
 <h3>兑换</h3>
 <div id="confirm">
-	<p> {{ prize.title }} </p>
+	<h5> {{ prize.title }} </h5>
 	<p> {{ prize.description }} </p>
 	<button onclick="exchange()">消费</button>
 </div>
@@ -15,5 +15,6 @@
 </div>
 <div id="success" style="display:none">
 	<p>消费成功！</p>
+	<a href="/prize_ticket/"><button>返回</button></a>
 </div>
 {% endblock context %}
