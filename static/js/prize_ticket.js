@@ -7,6 +7,7 @@ function exchange(item) {
 	var tid = $(item).attr("tid");
 	var url = window.location.href;
 	alert(url);
+	alert(window.location.pathname);
 	url = window.location.href.replace(window.location.pathname, "") + "/prize_exchange/" + tid + "/";
 	$('#qrcode').qrcode(url);
 	$('#main').hide();
