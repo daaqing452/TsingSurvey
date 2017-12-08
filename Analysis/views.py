@@ -366,6 +366,10 @@ def prize(request):
 	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
 	op = request.POST.get('op')
 
+	# 商家重导向
+	if suser.is_store:
+		return HttpResponseRedirect('/prize_ticket/')
+
 	if op == 'delete':
 		pid = int(request.POST.get('pid'))
 		Prize.objects.filter(id=pid).delete()
@@ -410,7 +414,14 @@ def prize_ticket(request, pid=-1):
 	if pid == -1:
 		# 用户兑换记录
 		rdata['personal'] = True
-		tickets = PrizeTicket.objects.filter(uid=suser.id)
+		tickets = []
+		if suser.is_store:
+			for prize in Prize.objects.all():
+				store = json.loads(prize.store)
+				if suser.id in store:
+					tickets += PrizeTicket.objects.filter(pid=prize.id)
+		else:
+			tickets = PrizeTicket.objects.filter(uid=suser.id)
 	else:
 		# 商品兑换记录
 		if not request.user.is_staff:
