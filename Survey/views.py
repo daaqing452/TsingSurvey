@@ -22,7 +22,7 @@ import math
 def survey(request, qid):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
+		return Utils.redirect_login(request)
 	rdata = {}
 	rdata['user'] = user = request.user
 	rdata['viewable'] = 1
@@ -210,7 +210,7 @@ def survey(request, qid):
 def bonus(request):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('../login/')
+		return Utils.redirect_login(request, '../login/')
 	rdata = {}
 	rdata['user'] = request.user
 	rdata['credit'] = request.GET.get('credit', 0)
@@ -221,7 +221,7 @@ def bonus(request):
 def upload_file(request):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
+		return Utils.redirect_login(request)
 
 	f = request.FILES.get('file', None)
 	if not f is None:
