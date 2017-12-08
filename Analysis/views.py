@@ -443,9 +443,7 @@ def prize_ticket(request, ptype, qid=-1):
 			rdata['personal'] = False
 			rdata['is_store'] = True
 			tickets = []
-			for prize in Prize.objects.all():
-				if qsuser.id in json.loads(prize.store):
-					tickets += PrizeTicket.objects.filter(pid=prize.id)
+			tickets += PrizeTicket.objects.filter(oid=qid)
 		else:
 			# 用户兑换记录
 			rdata['personal'] = True
