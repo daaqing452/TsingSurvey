@@ -10,17 +10,19 @@
 {% if personal %}
 <h3>已兑换奖品</h3>
 {% else %}
-<h3>兑换记录</h3>
-<p style="float:right">已结算/已消费/总共兑换：{{ cleared }}/{{ used }}/{{ total }}</p><br/>
+<h3>交易记录</h3>
+<p style="float:right">已结算/已消费/已兑换：{{ cleared }}/{{ used }}/{{ total }}</p><br/>
 <p style="float:right">待结算金额：{{ money }}</p><br/>
 {% endif %}
+{% if user.is_staff and is_store %}
+<button onclick="clear_money()">一键结算</button>
+{% endif %}
 <table>
-	<tr>
+	<tr id="ticket_item" tid={{ pair.ticket }}>
 		<td> 奖品名称 </td>
 		<td> 兑换人 </td>
-		<!--<td> 过期时间 </td>-->
+		<td> 积分 </td>
 		<td> 金额 </td>
-		<!--<td> 数量 </td>-->
 		{% if personal %}
 		<td> </td>
 		{% else %}
@@ -29,12 +31,11 @@
 		{% endif %}
 	</tr>
 	{% for pair in tickets %}
-	<tr>
+	<tr tid={{ pair.ticket.id }}>
 		<td> {{ pair.prize.title }} </td>
 		<td> {{ pair.username }} </td>
-		<!--<td> {{ pair.prize.expire_time | date:"Y-m-d" }} </td>-->
-		<td> {{ pair.ticket.price }} </td>
-		<!--<td> {{ pair.ticket.count }}-->
+		<td> {{ pair.prize.credit }} </td>
+		<td> {{ pair.prize.price }} </td>
 		{% if personal %}
 			{% if pair.ticket.used %}
 			<td>已消费</td>

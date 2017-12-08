@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+	{% load static %}
+    {% block context %}
+<script src='{% static 'js/prize_add.js' %}'> </script>
+<div class="col-md-offset-1 col-md-10 ">
+
+<h3>查看商家</h3>
+<div>
+	{% for store in stores %}
+	<a href="/prize_ticket/u/{{ store.id }}/">{{ store.username }}</a>
+	{% endfor %}
+</div>
+
+</div>
+{% endblock context %}

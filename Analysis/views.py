@@ -368,7 +368,7 @@ def prize(request):
 
 	# 商家重导向
 	if suser.is_store:
-		return HttpResponseRedirect('/prize_ticket/')
+		return HttpResponseRedirect('/prize_ticket/u/' + str(suser.id) + '/')
 
 	if op == 'delete':
 		pid = int(request.POST.get('pid'))
@@ -402,7 +402,7 @@ def prize(request):
 	rdata['prizes'] = prizes = list(reversed(Prize.objects.all()))
 	return render(request, 'prize.html', rdata)
 
-def prize_ticket(request, pid=-1):
+def prize_ticket(request, ptype, qid=-1):
 	# 验证身份
 	if not request.user.is_authenticated():
 		return Utils.redirect_login(request)
@@ -410,34 +410,7 @@ def prize_ticket(request, pid=-1):
 	rdata['user'] = user = request.user
 	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
 	op = request.POST.get('op')
-
-	if pid == -1:
-		# 用户兑换记录
-		rdata['personal'] = True
-		tickets = []
-		if suser.is_store:
-			for prize in Prize.objects.all():
-				store = json.loads(prize.store)
-				if suser.id in store:
-					tickets += PrizeTicket.objects.filter(pid=prize.id)
-		else:
-			tickets = PrizeTicket.objects.filter(uid=suser.id)
-	else:
-		# 商品兑换记录
-		if not request.user.is_staff:
-			return render(request, 'permission_denied.html', {})
-		rdata['personal'] = False
-		used = 0
-		cleared = 0
-		prize = Prize.objects.get(id=pid)
-		tickets = PrizeTicket.objects.filter(pid=pid)
-		for ticket in tickets:
-			used += int(ticket.used)
-			cleared += int(ticket.cleared)
-		rdata['total'] = len(tickets)
-		rdata['used'] = used
-		rdata['cleared'] = cleared
-		rdata['money'] = (used - cleared) * prize.price
+	qid = int(qid)
 
 	if op == 'clear_scaned':
 		tid = int(request.POST.get('tid'))
@@ -447,17 +420,73 @@ def prize_ticket(request, pid=-1):
 	if op == 'if_scan_qrcode':
 		jdata = {'result': 'not scaned'}
 		tid = int(request.POST.get('tid'))
-		if PrizeTicket.objects.get(id=tid).use_status > 0: jdata['result'] = 'scaned'
+		if PrizeTicket.objects.get(id=tid).use_status > 0:
+			jdata['result'] = 'scaned'
 		return HttpResponse(json.dumps(jdata))
 
+	if ptype == 'p':
+		# 某商品交易记录
+		rdata['personal'] = False
+		prizes = Prize.objects.filter(id=qid)
+		if len(prizes) == 0:
+			return render(request, 'permission_denied.html', {})
+		prize = prizes[0]
+		if (not user.is_staff) and (not suser.id in json.loads(prize.store)):
+			return render(request, 'permission_denied.html', {})
+		tickets = PrizeTicket.objects.filter(pid=qid)
+	elif ptype == 'u':
+		if (not user.is_staff) and (suser.id != qid):
+			return render(request, 'permission_denied.html', {})
+		qsuser = SUser.objects.get(id=qid)
+		if qsuser.is_store:
+			# 商家交易记录
+			rdata['personal'] = False
+			rdata['is_store'] = True
+			tickets = []
+			for prize in Prize.objects.all():
+				if qsuser.id in json.loads(prize.store):
+					tickets += PrizeTicket.objects.filter(pid=prize.id)
+		else:
+			# 用户兑换记录
+			rdata['personal'] = True
+			tickets = PrizeTicket.objects.filter(uid=qid)
+	else:
+		return render(request, 'permission_denied.html', {})
+
+	# 去掉不合法的
 	ticket_list = []
 	for ticket in tickets:
 		prizes = Prize.objects.filter(id=ticket.pid)
 		if len(prizes) == 0: continue
 		susers = SUser.objects.filter(id=ticket.uid)
-		if len(susers) == 0: continue
-		ticket_list.append({'ticket': ticket, 'prize': prizes[0], 'username': susers[0].username})
+		if len(susers) == 0:
+			username = '已删除'
+		else:
+			username = susers[0].username
+		ticket_list.append({'ticket': ticket, 'prize': prizes[0], 'username': username})
 	rdata['tickets'] = list(reversed(ticket_list))
+
+	if op == 'clear_money':
+		money = 0
+		for pair in rdata['tickets']:
+			money += (int(pair['ticket'].used) - int(pair['ticket'].cleared)) * pair['prize'].price
+			pair['ticket'].cleared = True
+			pair['ticket'].save()
+		return HttpResponse(json.dumps({'money': money}))
+
+	# 计算金额
+	if not rdata['personal']:
+		used = 0
+		cleared = 0
+		money = 0
+		for pair in rdata['tickets']:
+			used += int(pair['ticket'].used)
+			cleared += int(pair['ticket'].cleared)
+			money += (int(pair['ticket'].used) - int(pair['ticket'].cleared)) * pair['prize'].price
+		rdata['total'] = len(rdata['tickets'])
+		rdata['used'] = used
+		rdata['cleared'] = cleared
+		rdata['money'] = money
 
 	return render(request, 'prize_ticket.html', rdata)
 
@@ -559,3 +588,16 @@ def prize_exchange(request, tid):
 		ticket.save()
 
 	return render(request, 'prize_exchange.html', rdata)
+
+def prize_store(request):
+	if not request.user.is_authenticated():
+		return Utils.redirect_login(request)
+	if not request.user.is_staff:
+		return render(request, 'permission_denied.html', {})
+	rdata = {}
+	rdata['user'] = user = request.user
+	op = request.POST.get('op')
+
+	rdata['stores'] = stores = SUser.objects.filter(is_store=True)
+
+	return render(request, 'prize_store.html', rdata)

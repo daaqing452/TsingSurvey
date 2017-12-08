@@ -38,11 +38,11 @@ urlpatterns = [
 
     url(r'^search/$', search),
     url(r'^prize/$', prize),
-    url(r'^prize_ticket/$', prize_ticket),
-    url(r'^prize_ticket/(\d{1,10})/$', prize_ticket),
+    url(r'^prize_ticket/([p,u])/(\d{1,10})/$', prize_ticket),
     url(r'^prize_add/$', prize_add),
     url(r'^prize_add_store/$', prize_add_store),
     url(r'^prize_exchange/(\d{1,10})/$', prize_exchange),
+    url(r'^prize_store/$', prize_store),
 
     url(r'^install/$', install),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

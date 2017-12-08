@@ -32,3 +32,19 @@ function exchange(item) {
 		})
 	}, 1000);
 }
+
+function clear_money() {
+	var ticket = new Array();
+	if (confirm("确定结算？")) {
+		$.ajax({
+			url: window.location.href,
+			type: "POST",
+			data: {"op": "clear_money"},
+			success: function(data) {
+				var data = JSON.parse(data);
+				alert("结算成功！结算金额：" + data["money"]);
+				window.location.reload();
+			}
+		});
+	}
+}
