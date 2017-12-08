@@ -23,7 +23,7 @@ import xlsxwriter
 def index(request):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
+		return Utils.redirect_login(request)
 	rdata = {}
 	rdata['user'] = user = request.user
 
@@ -89,7 +89,7 @@ def login(request):
 				rdata['info'] = '密码错误'
 
 	if login:
-		return HttpResponseRedirect('/index/')
+		return HttpResponseRedirect(request.session['last_url'])
 	else:
 		return render(request, 'login.html', rdata)
 
@@ -100,7 +100,7 @@ def logout(request):
 def user_list(request):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
+		return Utils.redirect_login(request)
 	if not request.user.is_staff:
 		return render(request, 'permission_denied.html', {})
 	rdata = {}
@@ -359,7 +359,7 @@ def user_list(request):
 def admin_list(request):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
+		return Utils.redirect_login(request)
 	if not request.user.is_superuser:
 		return render(request, 'permission_denied.html', {})
 	rdata = {}
@@ -403,7 +403,7 @@ def admin_list(request):
 def profile(request, uid):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
+		return Utils.redirect_login(request)
 	if (not request.user.is_staff) and (str(request.user.id) != uid):
 		return render(request, 'permission_denied.html', {})
 	rdata = {}

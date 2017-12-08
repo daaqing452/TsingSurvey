@@ -10,6 +10,7 @@ from django.template import RequestContext
 from SUser.models import SUser
 from Survey.models import Questionaire, Answeraire, Report
 from Analysis.models import *
+import SUser.utils as Utils
 import datetime
 import json
 import math
@@ -313,9 +314,9 @@ def export(qid):
 def search(request):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
+		return Utils.redirect_login(request)
 	if not request.user.is_staff:
-		return HttpResponseRedirect('/index/')
+		return render(request, 'permission_denied.html', {})
 	rdata = {}
 	rdata['user'] = user = request.user
 	op = request.POST.get('op')
@@ -359,7 +360,7 @@ def search(request):
 def prize(request):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
+		return Utils.redirect_login(request)
 	rdata = {}
 	rdata['user'] = user = request.user
 	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
@@ -400,7 +401,7 @@ def prize(request):
 def prize_ticket(request, pid=-1):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
+		return Utils.redirect_login(request)
 	rdata = {}
 	rdata['user'] = user = request.user
 	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
@@ -445,7 +446,7 @@ def prize_ticket(request, pid=-1):
 def prize_add(request):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
+		return Utils.redirect_login(request)
 	if not request.user.is_staff:
 		return render(request, 'permission_denied.html', {})
 	rdata = {}
@@ -466,7 +467,7 @@ def prize_add(request):
 def prize_add_store(request):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
+		return Utils.redirect_login(request)
 	if not request.user.is_staff:
 		return render(request, 'permission_denied.html', {})
 	rdata = {}
@@ -500,7 +501,7 @@ def prize_add_store(request):
 def prize_exchange(request, tid):
 	# 验证身份，只有特定商家和特定用户
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
+		return Utils.redirect_login(request)
 	rdata = {}
 	rdata['user'] = user = request.user
 	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
