@@ -89,7 +89,10 @@ def login(request):
 				rdata['info'] = '密码错误'
 
 	if login:
-		return HttpResponseRedirect(request.session['last_url'])
+		url = '/index/'
+		if 'last_url' in request.session:
+			url = request.session['last_url']
+		return HttpResponseRedirect(url)
 	else:
 		return render(request, 'login.html', rdata)
 
