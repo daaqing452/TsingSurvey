@@ -410,7 +410,7 @@ def prize_ticket(request, pid=-1):
 	if pid == -1:
 		# 用户兑换记录
 		rdata['personal'] = True
-		prizeTickets = PrizeTicket.objects.filter(uid=suser.id)
+		tickets = PrizeTicket.objects.filter(uid=suser.id)
 	else:
 		# 商品兑换记录
 		if not request.user.is_staff:
@@ -419,11 +419,11 @@ def prize_ticket(request, pid=-1):
 		used = 0
 		cleared = 0
 		prize = Prize.objects.get(id=pid)
-		prizeTickets = PrizeTicket.objects.filter(pid=pid)
-		for ticket in prizeTickets:
+		tickets = PrizeTicket.objects.filter(pid=pid)
+		for ticket in tickets:
 			used += int(ticket.used)
 			cleared += int(ticket.cleared)
-		rdata['total'] = len(prizeTickets)
+		rdata['total'] = len(tickets)
 		rdata['used'] = used
 		rdata['cleared'] = cleared
 		rdata['money'] = (used - cleared) * prize.price
@@ -439,7 +439,14 @@ def prize_ticket(request, pid=-1):
 		if PrizeTicket.objects.get(id=tid).use_status > 0: jdata['result'] = 'scaned'
 		return HttpResponse(json.dumps(jdata))
 
-	rdata['prizeTickets'] = list(reversed([{'ticket': ticket, 'prize': Prize.objects.get(id=ticket.pid), 'username': SUser.objects.get(id=ticket.uid).username} for ticket in prizeTickets]))
+	ticket_list = []
+	for ticket in tickets:
+		prizes = Prize.objects.filter(id=ticket.pid)
+		if len(prizes) == 0: continue
+		susers = SUser.objects.filter(id=ticket.uid)
+		if len(susers) == 0: continue
+		ticket_list.append({'ticket': ticket, 'prize': prizes[0], 'username': susers[0].username})
+	rdata['tickets'] = list(reversed(ticket_list))
 
 	return render(request, 'prize_ticket.html', rdata)
 
