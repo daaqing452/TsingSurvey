@@ -30,8 +30,14 @@
 			</tr>
     	</table>
     	</div>
-    	</div>
-    </div>
+  </div>
+  {% ifequal user.id puser.id %}
+  <div style="float:right">
+    <a href='/prize/'><button class="btn btn-sm btn-primary">积分兑换</button></a>
+    <a href='/prize_ticket/u/{{ psuser.id }}/'><button class="btn btn-sm btn-success">已兑换奖品</button></a>
+  </div>
+  {% endifequal %}
+  </div>
 </div>
 
 		

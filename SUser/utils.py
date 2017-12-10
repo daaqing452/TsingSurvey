@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
+from django.http import HttpResponseRedirect
 import time
 import collections
+
+def redirect_login(request, login_url='/login/'):
+	request.session['last_url'] = request.get_full_path()
+	return HttpResponseRedirect(login_url)
 
 def username_to_password(username):
 	h = 0

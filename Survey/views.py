@@ -22,7 +22,7 @@ import math
 def survey(request, qid):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
+		return Utils.redirect_login(request)
 	rdata = {}
 	rdata['user'] = user = request.user
 	rdata['viewable'] = 1
@@ -45,7 +45,7 @@ def survey(request, qid):
 	questionaires = Questionaire.objects.filter(id=qid)
 	if len(questionaires) == 0:
 		rdata['viewable'] = 0
-		rdata['info'] = 'Not found -1'
+		rdata['info'] = '问卷不存在'
 	else:
 		questionaire = questionaires[0]
 		status = questionaire.status
@@ -98,7 +98,7 @@ def survey(request, qid):
 			# 修改中管理员可见
 			if not user.is_staff:
 				rdata['viewable'] = 0
-				rdata['info'] = 'Not found 00'
+				rdata['info'] = '非管理员不能修改'
 			else:
 				# 修改问卷请求
 				if op == 'save':
@@ -136,9 +136,9 @@ def survey(request, qid):
 			# 检验是否可见和是否已经填写
 			permission_submit = 0
 			qid_dict = json.loads(suser.qid_list)
-			if not user.is_staff and not qid in qid_dict:
+			if not (questionaire.public) and (not user.is_staff) and (not qid in qid_dict):
 				rdata['viewable'] = 0
-				rdata['info'] = 'Not found 10'
+				rdata['info'] = '没有权限访问'
 			if qid in qid_dict:
 				if qid_dict[str(qid)] == 1:
 					rdata['info'] = '已经填写该问卷'
@@ -197,12 +197,12 @@ def survey(request, qid):
 		elif status == 2:
 			if not user.is_staff:
 				rdata['viewable'] = 0
-				rdata['info'] = 'Closed'
+				rdata['info'] = '问卷已关闭'
 
 		# 问卷出错状态
 		else:
 			rdata['viewable'] = 0
-			rdata['info'] = 'Not found 99'
+			rdata['info'] = '错误？'
 
 	rdata['status'] = status
 	return render(request, 'survey.html', rdata)
@@ -210,7 +210,7 @@ def survey(request, qid):
 def bonus(request):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('../login/')
+		return Utils.redirect_login(request, '../login/')
 	rdata = {}
 	rdata['user'] = request.user
 	rdata['credit'] = request.GET.get('credit', 0)
@@ -221,7 +221,7 @@ def bonus(request):
 def upload_file(request):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
+		return Utils.redirect_login(request)
 
 	f = request.FILES.get('file', None)
 	if not f is None:

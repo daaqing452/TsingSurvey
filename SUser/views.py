@@ -23,7 +23,7 @@ import xlsxwriter
 def index(request):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
+		return Utils.redirect_login(request)
 	rdata = {}
 	rdata['user'] = user = request.user
 
@@ -67,8 +67,8 @@ def login(request):
 			rdata['info'] = '用户名不存在'
 		else:'''
 		if True:
-			# 如果不是root进行清华验证
-			if username != 'root':
+			# 如果是清华账号进行清华验证
+			if username.isdigit() and len(username) == 10:
 				yes = auth_tsinghua(request, username, password)
 				if yes:
 					password = Utils.username_to_password(username)
@@ -89,7 +89,10 @@ def login(request):
 				rdata['info'] = '密码错误'
 
 	if login:
-		return HttpResponseRedirect('/index/')
+		url = '/index/'
+		if 'last_url' in request.session:
+			url = request.session['last_url']
+		return HttpResponseRedirect(url)
 	else:
 		return render(request, 'login.html', rdata)
 
@@ -100,9 +103,9 @@ def logout(request):
 def user_list(request):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
+		return Utils.redirect_login(request)
 	if not request.user.is_staff:
-		return HttpResponseRedirect('/index/')
+		return render(request, 'permission_denied.html', {})
 	rdata = {}
 	rdata['user'] = user = request.user
 	op = request.POST.get('op')
@@ -359,9 +362,9 @@ def user_list(request):
 def admin_list(request):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
+		return Utils.redirect_login(request)
 	if not request.user.is_superuser:
-		return HttpResponseRedirect('/index/')
+		return render(request, 'permission_denied.html', {})
 	rdata = {}
 	rdata['user'] = user = request.user
 	op = request.POST.get('op')
@@ -403,9 +406,9 @@ def admin_list(request):
 def profile(request, uid):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
+		return Utils.redirect_login(request)
 	if (not request.user.is_staff) and (str(request.user.id) != uid):
-		return HttpResponseRedirect('/index/')
+		return render(request, 'permission_denied.html', {})
 	rdata = {}
 	rdata['user'] = user = request.user
 	rdata['puser'] = puser = User.objects.get(id=uid)

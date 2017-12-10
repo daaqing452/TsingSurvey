@@ -16,9 +16,9 @@ Including another URLconf
 from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
-from SUser.views import index, login, logout, user_list, admin_list, profile, install
-from Survey.views import survey, bonus, upload_file
-from Analysis.views import search
+from SUser.views import *
+from Survey.views import *
+from Analysis.views import *
 import TsingSurvey.settings as settings
 
 urlpatterns = [
@@ -37,6 +37,12 @@ urlpatterns = [
     url(r'^upload_file/', upload_file),
 
     url(r'^search/$', search),
+    url(r'^prize/$', prize),
+    url(r'^prize_ticket/([p,u])/(\d{1,10})/$', prize_ticket),
+    url(r'^prize_add/$', prize_add),
+    url(r'^prize_add_store/$', prize_add_store),
+    url(r'^prize_exchange/(\d{1,10})/$', prize_exchange),
+    url(r'^prize_store/$', prize_store),
 
     url(r'^install/$', install),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

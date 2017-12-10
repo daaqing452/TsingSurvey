@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+	{% load static %}
+    {% block context %}
+<script src='{% static 'js/jquery.qrcode.js' %}'> </script>
+<script src='{% static 'js/qrcode.js' %}'> </script>
+<script src='{% static 'js/prize_ticket.js' %}'> </script>
+
+<div id="qrcode"></div> 
+<div id="main" class="col-md-offset-1 col-md-10 ">
+{% if personal %}
+<h3>已兑换奖品</h3>
+{% else %}
+<h3>交易记录</h3>
+<p style="float:right">已结算/已消费/已兑换：{{ cleared }}/{{ used }}/{{ total }}</p><br/>
+<p style="float:right">待结算金额：{{ money }}</p><br/>
+{% endif %}
+{% if user.is_staff and is_store %}
+<button onclick="clear_money()">一键结算</button>
+{% endif %}
+<table>
+	<tr id="ticket_item" tid={{ pair.ticket }}>
+		<td> 奖品名称 </td>
+		<td> 兑换人 </td>
+		<td> 积分 </td>
+		<td> 金额 </td>
+		{% if personal %}
+		<td> </td>
+		{% else %}
+		<td> 是否消费 </td>
+		<td> 是否结算 </td>
+		{% endif %}
+	</tr>
+	{% for pair in tickets %}
+	<tr tid={{ pair.ticket.id }}>
+		<td> {{ pair.prize.title }} </td>
+		<td> {{ pair.username }} </td>
+		<td> {{ pair.prize.credit }} </td>
+		<td> {{ pair.prize.price }} </td>
+		{% if personal %}
+			{% if pair.ticket.used %}
+			<td>已消费</td>
+			{% else %}
+			<td> <button tid="{{ pair.ticket.id }}" onclick="exchange(this)">消费</button> </td>
+			{% endif %}
+		{% else %}
+		<td> {% if pair.ticket.used %} √ {% else %}  {% endif %} </td>
+		<td> {% if pair.ticket.cleared %} √ {% else %}  {% endif %} </td>
+		{% endif %}
+	</tr>
+	{% endfor %}
+</table>
+</div>
+{% endblock context %}

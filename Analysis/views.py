@@ -2,10 +2,16 @@
 from __future__ import unicode_literals
 from django.contrib import auth
 from django.contrib.auth.models import User
+from django.core.signals import request_finished
+from django.dispatch import receiver
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
+from SUser.models import SUser
 from Survey.models import Questionaire, Answeraire, Report
+from Analysis.models import *
+import SUser.utils as Utils
+import datetime
 import json
 import math
 import numpy as np
@@ -308,9 +314,9 @@ def export(qid):
 def search(request):
 	# 验证身份
 	if not request.user.is_authenticated():
-		return HttpResponseRedirect('/login/')
+		return Utils.redirect_login(request)
 	if not request.user.is_staff:
-		return HttpResponseRedirect('/index/')
+		return render(request, 'permission_denied.html', {})
 	rdata = {}
 	rdata['user'] = user = request.user
 	op = request.POST.get('op')
@@ -350,3 +356,246 @@ def search(request):
 		return HttpResponse(json.dumps({'result': result}))
 
 	return render(request, 'search.html', rdata)
+
+def prize(request):
+	# 验证身份
+	if not request.user.is_authenticated():
+		return Utils.redirect_login(request)
+	rdata = {}
+	rdata['user'] = user = request.user
+	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
+	op = request.POST.get('op')
+
+	# 商家重导向
+	if suser.is_store:
+		return HttpResponseRedirect('/prize_ticket/u/' + str(suser.id) + '/')
+
+	if op == 'delete':
+		pid = int(request.POST.get('pid'))
+		Prize.objects.filter(id=pid).delete()
+		return HttpResponse(json.dumps({}))
+
+	if op == 'change_credit':
+		pid = int(request.POST.get('pid'))
+		credit = int(request.POST.get('credit'))
+		Prize.objects.filter(id=pid).update(credit=credit)
+		return HttpResponse(json.dumps({}))
+
+	if op == 'change_price':
+		pid = int(request.POST.get('pid'))
+		price = int(request.POST.get('price'))
+		Prize.objects.filter(id=pid).update(price=price)
+		return HttpResponse(json.dumps({}))
+
+	if op == 'exchange':
+		jdata = {'result': 'ok'}
+		pid = int(request.POST.get('pid'))
+		prize = Prize.objects.get(id=pid)
+		if suser.credit < prize.credit:
+			jdata['result'] = '没有足够积分'
+			return HttpResponse(json.dumps(jdata))
+		suser.credit -= prize.credit
+		suser.save()
+		PrizeTicket.objects.create(uid=suser.id, pid=pid, count=1, used=False, exchange_time=datetime.datetime.now())
+		return HttpResponse(json.dumps(jdata))
+
+	rdata['prizes'] = prizes = list(reversed(Prize.objects.all()))
+	return render(request, 'prize.html', rdata)
+
+def prize_ticket(request, ptype, qid=-1):
+	# 验证身份
+	if not request.user.is_authenticated():
+		return Utils.redirect_login(request)
+	rdata = {}
+	rdata['user'] = user = request.user
+	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
+	op = request.POST.get('op')
+	qid = int(qid)
+
+	if op == 'clear_scaned':
+		tid = int(request.POST.get('tid'))
+		PrizeTicket.objects.filter(id=tid).update(use_status=0)
+		return HttpResponse(json.dumps({}))
+
+	if op == 'if_scan_qrcode':
+		jdata = {'result': 'not scaned'}
+		tid = int(request.POST.get('tid'))
+		if PrizeTicket.objects.get(id=tid).use_status > 0:
+			jdata['result'] = 'scaned'
+		return HttpResponse(json.dumps(jdata))
+
+	if ptype == 'p':
+		# 某商品交易记录
+		rdata['personal'] = False
+		prizes = Prize.objects.filter(id=qid)
+		if len(prizes) == 0:
+			return render(request, 'permission_denied.html', {})
+		prize = prizes[0]
+		if (not user.is_staff) and (not suser.id in json.loads(prize.store)):
+			return render(request, 'permission_denied.html', {})
+		tickets = PrizeTicket.objects.filter(pid=qid)
+	elif ptype == 'u':
+		if (not user.is_staff) and (suser.id != qid):
+			return render(request, 'permission_denied.html', {})
+		qsuser = SUser.objects.get(id=qid)
+		if qsuser.is_store:
+			# 商家交易记录
+			rdata['personal'] = False
+			rdata['is_store'] = True
+			tickets = []
+			tickets += PrizeTicket.objects.filter(oid=qid)
+		else:
+			# 用户兑换记录
+			rdata['personal'] = True
+			tickets = PrizeTicket.objects.filter(uid=qid)
+	else:
+		return render(request, 'permission_denied.html', {})
+
+	# 去掉不合法的
+	ticket_list = []
+	for ticket in tickets:
+		prizes = Prize.objects.filter(id=ticket.pid)
+		if len(prizes) == 0: continue
+		susers = SUser.objects.filter(id=ticket.uid)
+		if len(susers) == 0:
+			username = '已删除'
+		else:
+			username = susers[0].username
+		ticket_list.append({'ticket': ticket, 'prize': prizes[0], 'username': username})
+	rdata['tickets'] = list(reversed(ticket_list))
+
+	if op == 'clear_money':
+		money = 0
+		for pair in rdata['tickets']:
+			money += (int(pair['ticket'].used) - int(pair['ticket'].cleared)) * pair['prize'].price
+			pair['ticket'].cleared = True
+			pair['ticket'].save()
+		return HttpResponse(json.dumps({'money': money}))
+
+	# 计算金额
+	if not rdata['personal']:
+		used = 0
+		cleared = 0
+		money = 0
+		for pair in rdata['tickets']:
+			used += int(pair['ticket'].used)
+			cleared += int(pair['ticket'].cleared)
+			money += (int(pair['ticket'].used) - int(pair['ticket'].cleared)) * pair['prize'].price
+		rdata['total'] = len(rdata['tickets'])
+		rdata['used'] = used
+		rdata['cleared'] = cleared
+		rdata['money'] = money
+
+	return render(request, 'prize_ticket.html', rdata)
+
+def prize_add(request):
+	# 验证身份
+	if not request.user.is_authenticated():
+		return Utils.redirect_login(request)
+	if not request.user.is_staff:
+		return render(request, 'permission_denied.html', {})
+	rdata = {}
+	rdata['user'] = user = request.user
+	op = request.POST.get('op')
+
+	if op == 'add_prize':
+		title = request.POST.get('title')
+		description = request.POST.get('description')
+		credit = int(request.POST.get('credit'))
+		price = int(request.POST.get('price'))
+		expire_time = request.POST.get('expire_time')
+		prize = Prize.objects.create(title=title, description=description, credit=credit, price=price, expire_time=expire_time)
+		return HttpResponse(json.dumps({}))
+
+	return render(request, 'prize_add.html', rdata)
+
+def prize_add_store(request):
+	# 验证身份
+	if not request.user.is_authenticated():
+		return Utils.redirect_login(request)
+	if not request.user.is_staff:
+		return render(request, 'permission_denied.html', {})
+	rdata = {}
+	rdata['user'] = user = request.user
+	op = request.POST.get('op')
+
+	if op == 'add_store':
+		jdata = {'result': 'ok'}
+		username = request.POST.get('username')
+		if username.isdigit() and len(username) == 10:
+			jdata['result'] = '请勿使用清华学号'
+		elif len(SUser.objects.filter(username=username)) > 0:
+			jdata['result'] = '用户名已存在'
+		else:
+			password = request.POST.get('password')
+			pid_list = json.loads(request.POST.get('pid_list'))
+			user = User.objects.create_user(username=username, password=password, is_superuser=0, is_staff=0)
+			suser = SUser.objects.create(username=username, uid=user.id, is_sample=0, is_store=1)
+			for pid in pid_list:
+				prize = Prize.objects.get(id=int(pid))
+				store = json.loads(prize.store)
+				store.append(suser.id)
+				prize.store=json.dumps(store)
+				prize.save()
+		return HttpResponse(json.dumps(jdata))
+
+	rdata['prizes'] = prizes = list(reversed(Prize.objects.all()))
+
+	return render(request, 'prize_add_store.html', rdata)
+
+def prize_exchange(request, tid):
+	# 验证身份，只有特定商家和特定用户
+	if not request.user.is_authenticated():
+		return Utils.redirect_login(request)
+	rdata = {}
+	rdata['user'] = user = request.user
+	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
+	rdata['ticket'] = ticket = PrizeTicket.objects.get(id=tid)
+	rdata['prize'] = prize = Prize.objects.get(id=ticket.pid)
+	if suser.is_store:
+		store = json.loads(prize.store)
+		if not suser.id in store:
+			return render(request, 'permission_denied.html', {})
+	else:
+		if ticket.uid != suser.id:
+			return render(request, 'permission_denied.html', {})
+	op = request.POST.get("op")
+
+	if op == "exchange":
+		if suser.is_store:
+			ticket.use_status = ticket.use_status | 2
+			ticket.oid = suser.id
+		else:
+			ticket.use_status = ticket.use_status | 4
+		if ticket.use_status == 7:
+			ticket.used = True
+			ticket.use_time = datetime.datetime.now()
+		ticket.save()
+		return HttpResponse(json.dumps({}))
+
+	if op == "if_confirm":
+		jdata = {'result': 'not confirmed'}
+		if ticket.use_status == 7:
+			jdata['result'] = 'confirmed'
+		return HttpResponse(json.dumps(jdata))
+
+	if ticket.used == True:
+		return render(request, 'permission_denied.html', {})
+	if suser.is_store:
+		ticket.use_status = ticket.use_status | 1
+		ticket.save()
+
+	return render(request, 'prize_exchange.html', rdata)
+
+def prize_store(request):
+	if not request.user.is_authenticated():
+		return Utils.redirect_login(request)
+	if not request.user.is_staff:
+		return render(request, 'permission_denied.html', {})
+	rdata = {}
+	rdata['user'] = user = request.user
+	op = request.POST.get('op')
+
+	rdata['stores'] = stores = SUser.objects.filter(is_store=True)
+
+	return render(request, 'prize_store.html', rdata)

@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 	{% load static %}
     {% block context %}
-<link href='{% static 'css/survey.css' %}' rel="stylesheet">
-
 
 {% ifequal viewable 1 %}
 <div class="col-md-offset-2 col-md-8 ">
@@ -126,6 +124,7 @@
 <br/>
 {{ info }}
 
+<link href='{% static 'css/survey.css' %}' rel="stylesheet">
 <script src='{% static 'js/nicEdit-latest.js' %}'> </script>
 <script src='{% static 'js/echarts.min.js' %}'></script>
 <script src='{% static 'js/echart_basic.js' %}'></script>
