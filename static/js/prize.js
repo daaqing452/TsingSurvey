@@ -3,7 +3,7 @@ $(document).ready(function(){
 });
 
 function deletee(node) {
-	var pid = $(node).parent().attr("pid");
+	var pid = $(node).parents("tr").eq(0).attr("pid");
 	if (confirm("确认删除？")) {
 		$.ajax({
 			url: window.location.href,
@@ -18,7 +18,7 @@ function deletee(node) {
 }
 
 function change_credit(node) {
-	var pid = $(node).parent().attr("pid");
+	var pid = $(node).parents("tr").eq(0).attr("pid");
 	var p = $("p#credit");
 	var new_credit = prompt('新的积分', '');
 	if (new_credit == null) new_credit = p.html();
@@ -35,7 +35,7 @@ function change_credit(node) {
 }
 
 function change_price(node) {
-	var pid = $(node).parent().attr("pid");
+	var pid = $(node).parents("tr").eq(0).attr("pid");
 	var p = $("p#price");
 	var new_price = prompt('新的金额', '');
 	if (new_price == null) new_price = p.html();
@@ -52,7 +52,7 @@ function change_price(node) {
 }
 
 function exchange(node) {
-	var pid = $(node).parent().attr("pid");
+	var pid = $(node).parents("tr").eq(0).attr("pid");
 	if (confirm("确认兑换？")) {
 		$.ajax({
 			url: window.location.href,
@@ -73,7 +73,7 @@ function exchange(node) {
 }
 
 function view_exchange(node) {
-	var pid = $(node).parent().attr("pid");
+	var pid = $(node).parents("tr").eq(0).attr("pid");
 	$.ajax({
 		url: window.location.href,
 		type: 'POST',

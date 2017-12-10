@@ -11,13 +11,12 @@
 <h3>已兑换奖品</h3>
 {% else %}
 <h3>交易记录</h3>
-<p style="float:right">已结算/已消费/已兑换：{{ cleared }}/{{ used }}/{{ total }}</p><br/>
-<p style="float:right">待结算金额：{{ money }}</p><br/>
+<p style="float:right">已结算/已消费/已兑换：{{ cleared }}/{{ used }}/{{ total }} 待结算金额：{{ money }}</p><br/>
 {% endif %}
 {% if user.is_staff and is_store %}
 <button onclick="clear_money()">一键结算</button>
 {% endif %}
-<table>
+<table class="table">
 	<tr id="ticket_item" tid={{ pair.ticket }}>
 		<td> 奖品名称 </td>
 		<td> 兑换人 </td>
@@ -40,7 +39,7 @@
 			{% if pair.ticket.used %}
 			<td>已消费</td>
 			{% else %}
-			<td> <button tid="{{ pair.ticket.id }}" onclick="exchange(this)">消费</button> </td>
+			<td> <button class="btn-success" tid="{{ pair.ticket.id }}" onclick="exchange(this)">消费</button> </td>
 			{% endif %}
 		{% else %}
 		<td> {% if pair.ticket.used %} √ {% else %}  {% endif %} </td>

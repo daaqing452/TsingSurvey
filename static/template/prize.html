@@ -17,17 +17,24 @@
 <br/>
 <br/>
 <div>
-	<table>
+	<table class="table">
+	<tr >
+		<td>奖品名称</td>
+		<td>奖品描述</td>
+		<td>兑换积分</td>
+		<td>金额</td>
+		<td>操作</td>
+	</tr>
 	{% for prize in prizes %}
-	<tr style="border: solid 2px #000000" pid="{{ prize.id }}">
-		<td><h4>{{ prize.title }}</h4></td>
-		<td><p>{{ prize.description }}<p></td>
+	<tr  pid="{{ prize.id }}">
+		<td>{{ prize.title }}</td>
+		<td>{{ prize.description }}</td>
 		<td
 			{% if user.is_staff %}
 			onclick="change_credit(this)"
 			{% endif %}
 		>
-			<p>兑换积分</p>
+			
 			<p id="credit">{{ prize.credit }}</p>
 		</td>
 		<td
@@ -35,24 +42,22 @@
 			onclick="change_price(this)"
 			{% endif %}
 		>
-			<p>金额</p>
 			<p id="price">{{ prize.price }}</p>
 		</td>
 		<!--<td>
 			<p>截止时间</p>
 			<p>{{ prize.expire_time | date:"Y-m-d"}}</p>
 		</td>-->
-		<td onclick="exchange(this)">
-			<button>兑换</button>
-		</td>
+		<td >
+			<button class="btn-success" onclick="exchange(this)">兑换</button>
+		
 		{% if user.is_staff %}
-		<td>
-			<a href="/prize_ticket/p/{{ prize.id }}/">查看交易记录</a>
-		</td>
-		<td onclick="deletee(this)">
-			删除
-		</td>
+		
+			<button class="btn-warning" onclick="deletee(this)">删除</button>
+			<button class="btn-default "><a href="/prize_ticket/p/{{ prize.id }}/">查看交易记录</a></button>
+		
 		{% endif %}
+		</td>
 	</tr>
 	{% endfor %}
 	</table>
