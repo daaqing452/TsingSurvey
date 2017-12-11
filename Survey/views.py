@@ -109,6 +109,7 @@ def survey(request, qid):
 				elif op == 'release':
 					sample_list_id = int(request.POST.get('sample_list_id'))
 					ifpublic = bool(int(request.POST.get('ifpublic')))
+					credit = int(request.POST.get('credit'))
 					susers = SUser.objects.filter(is_sample=1)
 					if sample_list_id != -1:
 						sample_list = SampleList.objects.filter(id=sample_list_id)
@@ -127,6 +128,7 @@ def survey(request, qid):
 					questionaire.status = 1
 					questionaire.release_time = now
 					questionaire.public = ifpublic
+					questionaire.credit = credit
 					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
 					questionaire.save()
 					return HttpResponse(json.dumps({}))
@@ -180,6 +182,8 @@ def survey(request, qid):
 					# 计算积分
 					k = (len(json.loads(astring)) - 1) / 5 + 1
 					credit = int(k * math.pow(1.05, len(qid_dict)))
+					if questionaire.credit != -1:
+						credit = questionaire.credit;
 					suser.credit += credit
 					suser.save()
 					return HttpResponse(json.dumps({'credit': credit}))

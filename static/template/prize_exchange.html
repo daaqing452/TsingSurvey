@@ -4,17 +4,18 @@
 <script src='{% static 'js/prize_exchange.js' %}'> </script>
 <div class="col-md-offset-1 col-md-10 ">
 
-<h3>兑换</h3>
+<h3>消费</h3>
+<br/>
+<br/>
 <div id="confirm">
-	<h5> {{ prize.title }} </h5>
-	<p> {{ prize.description }} </p>
-	<button onclick="exchange()">消费</button>
+	<h4> {{ prize.title }} </h4>
+	<button style="width:100px; height:50px" class="btn-success" onclick="exchange()">消费</button>
 </div>
 <div id="wait" style="display:none">
 	<p>等待对方确认...</p>
 </div>
 <div id="success" style="display:none">
 	<p>消费成功！</p>
-	<a href="/prize/"><button>返回</button></a>
+	<a href="/prize/"><button style="width:100px; height:50px" class="btn-primary">返回</button></a>
 </div>
 {% endblock context %}

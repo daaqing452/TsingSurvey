@@ -11,11 +11,13 @@
 <h3>已兑换奖品</h3>
 {% else %}
 <h3>交易记录</h3>
-<p style="float:right">已结算/已消费/已兑换：{{ cleared }}/{{ used }}/{{ total }} 待结算金额：{{ money }}</p><br/>
+<p style="float:right">已结算/已消费/已兑换：{{ cleared }}/{{ used }}/{{ total }} &nbsp;&nbsp;&nbsp;&nbsp; 待结算金额：{{ money }}</p>
 {% endif %}
 {% if user.is_staff and is_store %}
-<button onclick="clear_money()">一键结算</button>
+<button class="btn-primary" style="float:left" onclick="clear_money()">一键结算</button>
 {% endif %}
+<br/>
+<br/>
 <table class="table">
 	<tr id="ticket_item" tid={{ pair.ticket }}>
 		<td> 奖品名称 </td>

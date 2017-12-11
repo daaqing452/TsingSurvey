@@ -28,7 +28,7 @@
 	{% for prize in prizes %}
 	<tr  pid="{{ prize.id }}">
 		<td>{{ prize.title }}</td>
-		<td>{{ prize.description }}</td>
+		<td style="width:40%;text-align:left">{{ prize.description }}</td>
 		<td
 			{% if user.is_staff %}
 			onclick="change_credit(this)"
