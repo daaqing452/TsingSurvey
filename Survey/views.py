@@ -138,7 +138,7 @@ def survey(request, qid):
 			# 检验是否可见和是否已经填写
 			permission_submit = 0
 			qid_dict = json.loads(suser.qid_list)
-			if not (questionaire.public) and (not user.is_staff) and (not qid in qid_dict):
+			if (not questionaire.public) and (not user.is_staff) and (not qid in qid_dict):
 				rdata['viewable'] = 0
 				rdata['info'] = '没有权限访问'
 			if qid in qid_dict:
@@ -146,6 +146,8 @@ def survey(request, qid):
 					rdata['info'] = '已经填写该问卷'
 				else:
 					permission_submit = 1
+			else:
+				permission_submit = 1
 			rdata['permission_submit'] = permission_submit
 
 			# 提交问卷请求

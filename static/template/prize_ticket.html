@@ -29,6 +29,7 @@
 		{% else %}
 		<td> 是否消费 </td>
 		<td> 是否结算 </td>
+		<td> 消费时间 </td>
 		{% endif %}
 	</tr>
 	{% for pair in tickets %}
@@ -46,6 +47,7 @@
 		{% else %}
 		<td> {% if pair.ticket.used %} √ {% else %}  {% endif %} </td>
 		<td> {% if pair.ticket.cleared %} √ {% else %}  {% endif %} </td>
+		<td> {% pair.ticket.use_time | date:"Y-m-d H:i:s" %} </td>
 		{% endif %}
 	</tr>
 	{% endfor %}
