@@ -21,16 +21,14 @@ import xlsxwriter
 # sys.setdefaultencoding('utf-8')
 
 def index(request):
-	# 验证身份
-	if not request.user.is_authenticated():
+	rdata, op, suser = Utils.get_request_basis(request)
+
+	# 检查身份
+	if not rdata['login']:
 		return Utils.redirect_login(request)
-	rdata = {}
-	rdata['user'] = user = request.user
 
-	# 问卷列表
-	suser = SUser.objects.get(uid=request.user.id)
 	qid_dict = json.loads(suser.qid_list)
-
+ 
 	if user.is_staff:
 		questionaire_list = Questionaire.objects.all()
 		rq_list = [Utils.remake_questionaire(questionaire, qid_dict) for questionaire in questionaire_list]
