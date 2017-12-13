@@ -21,11 +21,13 @@
 <table class="table">
 	<tr id="ticket_item" tid={{ pair.ticket }}>
 		<td> 奖品名称 </td>
+		{% if personal %}
+		<td> 奖品描述 </td>
+		{% endif %
 		<td> 兑换人 </td>
 		<td> 积分 </td>
 		<td> 金额 </td>
 		{% if personal %}
-		<td> </td>
 		{% else %}
 		<td> 是否消费 </td>
 		<td> 是否结算 </td>
@@ -35,6 +37,9 @@
 	{% for pair in tickets %}
 	<tr tid={{ pair.ticket.id }}>
 		<td> {{ pair.prize.title }} </td>
+		{% if personal %}
+		<td> {{ pair.prize.description }} </td>
+		{% endif %
 		<td> {{ pair.username }} </td>
 		<td> {{ pair.prize.credit }} </td>
 		<td> {{ pair.prize.price }} </td>
