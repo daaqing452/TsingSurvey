@@ -27,6 +27,7 @@ def index(request):
 	if not rdata['login']:
 		return Utils.redirect_login(request)
 
+	user = request.user
 	qid_dict = json.loads(suser.qid_list)
  
 	if user.is_staff:
