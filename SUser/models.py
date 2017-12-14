@@ -4,6 +4,7 @@ from django.db import models
 
 class SUser(models.Model):
 	uid = models.IntegerField()
+	level = models.IntegerField(default=0)
 	qid_list = models.TextField(default='{}')
 	is_sample = models.BooleanField(default=1)
 	is_store = models.BooleanField(default=0)
