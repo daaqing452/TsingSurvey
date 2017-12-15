@@ -28,7 +28,7 @@
 	{% for prize in prizes %}
 	<tr  pid="{{ prize.id }}">
 		<td>{{ prize.title }}</td>
-		<td style="width:40%;text-align:left">{{ prize.description }}</td>
+		<td style="width: 25%"><button content="{{ prize.description }}" onclick="show_description(this)" class="btn-primary">查看</button></td>
 		<td
 			{% if user.is_staff %}
 			onclick="change_credit(this)"
@@ -54,7 +54,7 @@
 		{% if user.is_staff %}
 		
 			<button class="btn-warning" onclick="deletee(this)">删除</button>
-			<button class="btn-default "><a href="/prize_ticket/p/{{ prize.id }}/">查看交易记录</a></button>
+			<button class="btn-default "><a href="/prize_ticket/p/{{ prize.id }}/">交易记录</a></button>
 		
 		{% endif %}
 		</td>

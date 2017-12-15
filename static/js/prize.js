@@ -17,6 +17,12 @@ function deletee(node) {
 	}
 }
 
+function show_description(node){
+	var description = $(node).attr("content");
+	alert(description);
+
+}
+
 function change_credit(node) {
 	var pid = $(node).parents("tr").eq(0).attr("pid");
 	var p = $("p#credit");

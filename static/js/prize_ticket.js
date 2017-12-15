@@ -33,6 +33,12 @@ function exchange(item) {
 	}, 1000);
 }
 
+function show_description(node){
+	var description = $(node).attr("content");
+	alert(description);
+
+}
+
 function clear_money() {
 	var ticket = new Array();
 	if (confirm("确定结算？")) {

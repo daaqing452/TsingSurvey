@@ -28,6 +28,7 @@
 		<td> 积分 </td>
 		<td> 金额 </td>
 		{% if personal %}
+		<td></td>
 		{% else %}
 		<td> 是否消费 </td>
 		<td> 是否结算 </td>
@@ -38,7 +39,8 @@
 	<tr tid={{ pair.ticket.id }}>
 		<td> {{ pair.prize.title }} </td>
 		{% if personal %}
-		<td> {{ pair.prize.description }} </td>
+		
+		<td style="width: 25%"><button content="{{ pair.prize.description }}" onclick="show_description(this)" class="btn-primary">查看</button></td>
 		{% endif %}
 		<td> {{ pair.username }} </td>
 		<td> {{ pair.prize.credit }} </td>
@@ -47,7 +49,7 @@
 			{% if pair.ticket.used %}
 			<td>已消费</td>
 			{% else %}
-			<td> <button class="btn-success" tid="{{ pair.ticket.id }}" onclick="exchange(this)">消费</button> </td>
+			<td style="width: 25%"> <button class="btn-success" tid="{{ pair.ticket.id }}" onclick="exchange(this)">消费</button> </td>
 			{% endif %}
 		{% else %}
 		<td> {% if pair.ticket.used %} √ {% else %}  {% endif %} </td>
