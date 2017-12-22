@@ -414,6 +414,11 @@ def profile(request, uid):
 	rdata['psuser'] = psuser = SUser.objects.get(uid=puser.id)
 	op = request.POST.get('op')
 
+	if op == 'change_nickname':
+		psuser.nickname = request.POST.get('nickname')
+		psuser.save()
+		return HttpResponse(json.dumps({}))
+
 	qid_dict = json.loads(psuser.qid_list)
 	rq_list = []
 	for qid in qid_dict:

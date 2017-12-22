@@ -21,8 +21,13 @@
 				<td> {{ puser.id }} </td>
 			  </tr>
 			<tr class="success">
-				<td > 学号 </td>
-				<td> {{ puser.username }} </td>
+				<td> 昵称 </td>
+				<td>
+          <span id="nickname">{{ psuser.nickname }}</span>
+          {% ifequal user.id puser.id %}
+          <a style="float:right" onclick="change_nickname(this)"><span class="glyphicon glyphicon-pencil"></span></a>
+          {% endifequal %}
+        </td>
 			</tr>
 			<tr class="warning">
 				<td> 积分 </td>

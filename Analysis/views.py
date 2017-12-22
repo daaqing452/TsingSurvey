@@ -463,10 +463,10 @@ def prize_ticket(request, ptype, qid=-1):
 		if len(prizes) == 0: continue
 		susers = SUser.objects.filter(id=ticket.uid)
 		if len(susers) == 0:
-			username = '已删除'
+			nickname = '已删除'
 		else:
-			username = susers[0].username
-		ticket_list.append({'ticket': ticket, 'prize': prizes[0], 'username': username})
+			nickname = susers[0].nickname
+		ticket_list.append({'ticket': ticket, 'prize': prizes[0], 'nickname': nickname})
 	rdata['tickets'] = list(reversed(ticket_list))
 
 	if op == 'clear_money':
