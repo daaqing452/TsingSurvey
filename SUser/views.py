@@ -21,13 +21,14 @@ import xlsxwriter
 # sys.setdefaultencoding('utf-8')
 
 def index(request):
-	rdata, op, suser = Utils.get_request_basis(request)
-
 	# 检查身份
-	if not rdata['login']:
+	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
+	rdata = {}
+	rdata['user'] = user = request.user
+	op = request.POST.get('op')
 
-	user =request.user
+	suser = SUser.objects.get(uid=user.id)
 	qid_dict = json.loads(suser.qid_list)
  
 	if user.is_staff:
@@ -51,7 +52,7 @@ def index(request):
 
 def login(request):
 	# 如果已登录直接跳转
-	if request.user.is_authenticated():
+	if request.user.is_authenticated:
 		return HttpResponseRedirect('/index/')
 	rdata = {}
 	login = False
@@ -101,7 +102,7 @@ def logout(request):
 
 def user_list(request):
 	# 验证身份
-	if not request.user.is_authenticated():
+	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
 	if not request.user.is_staff:
 		return render(request, 'permission_denied.html', {})
@@ -360,7 +361,7 @@ def user_list(request):
 
 def admin_list(request):
 	# 验证身份
-	if not request.user.is_authenticated():
+	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
 	if not request.user.is_superuser:
 		return render(request, 'permission_denied.html', {})
@@ -404,7 +405,7 @@ def admin_list(request):
 
 def profile(request, uid):
 	# 验证身份
-	if not request.user.is_authenticated():
+	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
 	if (not request.user.is_staff) and (str(request.user.id) != uid):
 		return render(request, 'permission_denied.html', {})

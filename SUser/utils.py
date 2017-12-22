@@ -4,17 +4,6 @@ from SUser.models import *
 import time
 import collections
 
-def get_request_basis(request):
-	rdata = {}
-	op = request.POST.get('op', '')
-	# 检查登录状态
-	suser = None
-	if request.user.is_authenticated:
-		suser = SUser.objects.get(username=request.user.username)
-		rdata['suser'] = suser
-	rdata['login'] = suser is not None
-	return rdata, op, suser
-
 def redirect_login(request, login_url='/login/'):
 	request.session['last_url'] = request.get_full_path()
 	return HttpResponseRedirect(login_url)
