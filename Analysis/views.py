@@ -387,6 +387,11 @@ def prize(request):
 		Prize.objects.filter(id=pid).update(price=price)
 		return HttpResponse(json.dumps({}))
 
+	if op == 'change_description':
+		pid = int(request.POST.get('pid'))
+		Prize.objects.filter(id=pid).update(description=request.POST.get('description'))
+		return HttpResponse(json.dumps({}))
+
 	if op == 'exchange':
 		jdata = {'result': 'ok'}
 		pid = int(request.POST.get('pid'))
@@ -527,10 +532,11 @@ def prize_add_store(request):
 		elif len(SUser.objects.filter(username=username)) > 0:
 			jdata['result'] = '用户名已存在'
 		else:
+			nickname = request.POST.get('nickname')
 			password = request.POST.get('password')
 			pid_list = json.loads(request.POST.get('pid_list'))
 			user = User.objects.create_user(username=username, password=password, is_superuser=0, is_staff=0)
-			suser = SUser.objects.create(username=username, uid=user.id, is_sample=0, is_store=1)
+			suser = SUser.objects.create(username=username, nickname=nickname, uid=user.id, is_sample=0, is_store=1)
 			for pid in pid_list:
 				prize = Prize.objects.get(id=int(pid))
 				store = json.loads(prize.store)

@@ -25,7 +25,7 @@ function show_description(node){
 
 function change_credit(node) {
 	var pid = $(node).parents("tr").eq(0).attr("pid");
-	var p = $("p#credit");
+	var p = $(node).parents("tr").find("p#credit");
 	var new_credit = prompt('新的积分', '');
 	if (new_credit == null) new_credit = p.html();
 	if (new_credit == '') new_credit = p.html();
@@ -42,7 +42,7 @@ function change_credit(node) {
 
 function change_price(node) {
 	var pid = $(node).parents("tr").eq(0).attr("pid");
-	var p = $("p#price");
+	var p = $(node).parents("tr").find("p#price");
 	var new_price = prompt('新的金额', '');
 	if (new_price == null) new_price = p.html();
 	if (new_price == '') new_price = p.html();
@@ -53,6 +53,24 @@ function change_price(node) {
 		success: function(data) {
 			var data = JSON.parse(data);
 			p.html(new_price);
+		}
+	});
+}
+
+function change_description(node) {
+	var pid = $(node).parents("tr").eq(0).attr("pid");
+	var bt = $(node).parents("tr").find("button#description");
+	var description = bt.attr("content");
+	var new_description = prompt('新的描述', '');
+	if (new_description == null) new_description = description;
+	if (new_description == '') new_description = description;
+	$.ajax({
+		url: window.location.href,
+		type: 'POST',
+		data: {'op': 'change_description', 'description': new_description, 'pid': pid},
+		success: function(data) {
+			var data = JSON.parse(data);
+			bt.attr("content", new_description);
 		}
 	});
 }
