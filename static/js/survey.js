@@ -1,3 +1,4 @@
+
 $(document).ready(function(){
 	$.ajax({
 		url: window.location.href,
@@ -34,7 +35,8 @@ $(document).ready(function(){
 			}
 			if(situation == 2){
 				results = JSON.parse(qstring);
-				showReport();
+				user_is_staff = data['user_is_staff'];
+				showReport(user_is_staff);
 				//alert(questions[0].s_type);
 				//showPage();
 				//getindex();

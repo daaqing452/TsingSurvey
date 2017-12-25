@@ -284,6 +284,17 @@ function createModal(){
 			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
 		    myNicEditor.setPanel('myNicPanel');
 		    myNicEditor.addInstance('s_title');
+
+			break;
+		}
+		case 9:{
+			$("#myModal_body").empty();
+			$("#myModal_body").append(table_html);
+			var $mymodal_table = $("#myModal_body").children(".table");
+			$mymodal_table.eq(0).append(table_title_html);
+			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
+		    myNicEditor.setPanel('myNicPanel');
+		    myNicEditor.addInstance('s_title');
 			break;
 		}
 	}

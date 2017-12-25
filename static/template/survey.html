@@ -30,7 +30,8 @@
 	<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="createSurvey(6)"> 矩阵题 </button>
 	<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="createSurvey(8)"> 添加说明 </button>
 	</div>
-
+	<br/>
+	<br/>
 	{% endifequal %}
 
 	{% ifequal status 1 %}
@@ -42,7 +43,15 @@
 	{% ifequal status 2 %}
 	<br/>
 	<p class = "h2" id='title'> </p>
-	<br/>
+	<ul id="nav_1" class="nav nav-tabs">
+        <li role="presentation"><a id="chapter_0" href="javascript:void(0)" onclick="module_select(0)">汇总报告</a></li>
+        <li role="presentation" ><a  id="chapter_1" href="javascript:void(0)" onclick="module_select(1)">个人报告</a></li>
+    </ul>
+    <br/>
+	<div id="self_report_btn" class="btn-group" style="display: none;">
+		<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"  onclick="createSelfReport(0)"> 添加描述 </button>
+		<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"  onclick="createSelfReport(1)"> 添加报告内容 </button>
+	</div>
 	{% endifequal %}
 
 
@@ -54,7 +63,6 @@
 	    <div class="modal-content">
 	      <div class="modal-header">
 	        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-	        <h4 class="modal-title" id="myModalLabel"> 添加题目 </h4>
 	      </div>
 	      <div class="modal-body" id="myModal_body"> 
 	       
@@ -68,7 +76,26 @@
 	</div>
 	{% endifequal %}
 
-
+	{% ifequal status 2 %}
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" style="width:1100px">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title" id="myModalLabel"> 添加题目 </h4>
+	      </div>
+	      <div class="modal-body" id="myModal_body"> 
+	       
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default " data-dismiss="modal" onclick="closeModal()"> 关闭 </button>
+	        <button type="button" class="btn btn-primary" onclick="commitRS()">保存 </button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	{% endifequal %}
 
 	<div style="text-align:left;">
 		<table id="questions"  style="table-layout:fixed;word-break:break-all;border: 0px;" >
@@ -103,6 +130,7 @@
 
 	{% ifequal status 2 %}
 	{% if user.is_staff %}
+
 	<button id="export_btn" class="btn btn-success btn-sm" onclick="exportt()" style="float:right"> 导出 </button>
 	<a id='download'> </a>
 	{% endif %}
@@ -126,12 +154,14 @@
 {{ info }}
 
 <link href='{% static 'css/survey.css' %}' rel="stylesheet">
+<link href="{% static "kindeditor/themes/default/default.css" %}" rel="stylesheet">
 <script src='{% static 'js/nicEdit-latest.js' %}'> </script>
 <script src='{% static 'js/echarts.min.js' %}'></script>
 <script src='{% static 'js/echart_basic.js' %}'></script>
 <script src='{% static 'js/survey.js' %}'> </script>
 <script src='{% static 'js/survey_create.js' %}'> </script>
 <script src='{% static 'js/survey_show.js' %}'> </script>
-
+<script src="{% static "kindeditor/kindeditor-all.js" %}"></script>
+<script src="{% static "kindeditor/lang/zh-CN.js" %}"></script>
     {% endblock context %}
 

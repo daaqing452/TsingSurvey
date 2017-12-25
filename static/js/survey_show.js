@@ -6,6 +6,9 @@ var submit_time_format = 0;
 var temp = 0;
 var answers = new Array();
 var answers_from_database = new Array();
+var report_status = {s_type: 0, index: 0};
+var report_title_html = "<tr><td><h3>题目标题</h3></td></tr><tr><td><textarea style=\"width: 100%; height: 50px; overflow: auto; resize: none;\" name=\"res_title\"></textarea></td></tr>"
+var report_content;
 
 function IsPC() {
     var userAgentInfo = navigator.userAgent;
@@ -1010,13 +1013,119 @@ function Sbar(b){
 	drawSBar(canvas_id,rowlabels,collabels,data);
 }
 
-function showReport(){
-	//alert(JSON.stringify(results));
-	for(var i = 0; i < results.length; i ++){
-		var new_row = q_table.insertRow(-1);
-		var result = results[i];
-		var new_html = createReportHtml(result);
-		new_row.innerHTML = new_html;
+function showReport(user_is_staff){
+	//console.log(JSON.stringify(results));
+	//console.log(user_is_staff);
+	if(user_is_staff){
+		module_select(0);
+	}
+	else{
+		
+	}
+}
+
+var options = {  
+resizeType : 1,
+filterMode : true,  
+allowImageUpload : false,  
+allowFlashUpload : false,  
+allowMediaUpload : false,  
+allowFileManager : false,  
+afterBlur: function(){this.sync();},
+items : ['fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',  
+'removeformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',  
+'insertunorderedlist'],  
+}; 
+
+var editor_title;
+
+function createSelfReport(id){
+	report_status.s_type = id
+	switch(id){
+		case 0:{
+			$("#myModal_body").empty();
+			$("#myModal_body").append(table_html);
+			var $mymodal_table = $("#myModal_body").children(".table");
+			$mymodal_table.eq(0).append(report_title_html);
+			editor_title = KindEditor.create('textarea[name="res_title"]',options); 
+			break;
+		}
+		case 1:{
+			$("#myModal_body").empty();
+			$("#myModal_body").append(table_html);
+			var $mymodal_table = $("#myModal_body").children(".table");
+			$mymodal_table.eq(0).append(report_title_html);
+			editor_title = KindEditor.create('textarea[name="res_title"]',options);
+			$("#myModal_body").append("<h3>选择题目</h3>");
+			break;
+		}
+	}
+
+}
+
+function createRHTML(content){
+	var HTMLContent = "<td>";
+	switch(report_status.s_type){
+		case 0:{
+			HTMLContent += "<div>" + content +"</div>";
+			break;
+		}
+		case 1:{
+
+			break;
+		}
+	}
+	HTMLContent += "</td>";
+	return HTMLContent;
+}
+
+function updateReport(){
+	report_content = $("#questions").html();
+}
+
+function commitRS(){
+	$("#myModal").modal('hide');
+	switch(report_status.s_type){
+		case 0:{
+			var textarea_content = editor_title.html();
+			var new_row = q_table.insertRow(-1);
+			new_row.innerHTML  = createRHTML(textarea_content);
+			console.log(textarea_content);
+			report_status.index ++;
+			updateReport();
+			break;
+		}
+		case 1:{
+			break;
+		}
+	}
+	$('textarea[name="res_title"]').val("");
+	editor_title.remove();
+}
+
+function module_select(id){
+	$("#questions").empty();
+	$("#self_report_btn").hide();
+	var length = $("#nav_1").children("li").length;
+	for(var i = 0; i < length; i++){
+		$("#chapter_"+i).parent().eq(0).attr("class","");
+	}
+	$("#chapter_"+id).parent().eq(0).attr("class","active");
+	switch(id){
+		case 0:{
+			for(var i = 0; i < results.length; i ++){
+				var new_row = q_table.insertRow(-1);
+				var result = results[i];
+				var new_html = createReportHtml(result);
+				new_row.innerHTML = new_html;
+			}
+			break;
+		}
+		case 1:{
+			$("#questions").html(report_content);
+			$("#self_report_btn").show()
+			break;
+		}
 	}
 }
 
