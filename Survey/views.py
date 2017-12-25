@@ -21,7 +21,7 @@ import math
 
 def survey(request, qid):
 	# 验证身份
-	if not request.user.is_authenticated():
+	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
 	rdata = {}
 	rdata['user'] = user = request.user
@@ -63,8 +63,13 @@ def survey(request, qid):
 					astring = '{}'
 				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions, 'astring': astring}))
 			elif status == 2:
+				answeraire = Answeraire.objects.filter(qid=qid, uid=user.id)
+				if len(answeraire):
+					astring = answeraire[0].answers
+				else:
+					astring = '{}'
 				report = Analysis.get_report(qid)
-				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': report}))
+				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': report, 'gender': suser.gender, 'astring': astring, 'is_staff': user.is_staff}))
 			else:
 				assert(False)
 
@@ -201,9 +206,10 @@ def survey(request, qid):
 
 		# 问卷结束状态
 		elif status == 2:
-			if not user.is_staff:
+			qid_dict = json.loads(suser.qid_list)
+			if (not questionaire.public) and (not user.is_staff) and (not qid in qid_dict):
 				rdata['viewable'] = 0
-				rdata['info'] = '问卷已关闭'
+				rdata['info'] = '问卷已关闭，没有权限访问'
 
 		# 问卷出错状态
 		else:
@@ -215,7 +221,7 @@ def survey(request, qid):
 
 def bonus(request):
 	# 验证身份
-	if not request.user.is_authenticated():
+	if not request.user.is_authenticated:
 		return Utils.redirect_login(request, '../login/')
 	rdata = {}
 	rdata['user'] = request.user
@@ -226,7 +232,7 @@ def bonus(request):
 
 def upload_file(request):
 	# 验证身份
-	if not request.user.is_authenticated():
+	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
 
 	f = request.FILES.get('file', None)
