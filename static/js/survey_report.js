@@ -48,7 +48,8 @@ function putIn(b){
 }
 
 function clearOut(b){
-
+	$b = $(b);
+	$b.parents("table").eq(0).find(".guizeneirong").eq(0).empty();
 }
 
 function add_guize(b){
