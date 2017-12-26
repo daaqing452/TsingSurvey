@@ -69,7 +69,7 @@ def survey(request, qid):
 				else:
 					astring = '{}'
 				report = Analysis.get_report(qid)
-				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': report, 'gender': suser.gender, 'astring': astring, 'is_staff': user.is_staff}))
+				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': qstring, 'report': report, 'gender': suser.gender, 'astring': astring, 'is_staff': user.is_staff}))
 			else:
 				assert(False)
 
