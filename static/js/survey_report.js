@@ -360,6 +360,14 @@ function exportr(){
 	var self_report_qstring = JSON.stringify(self_report_questions);
 	//存到数据库
 	console.log(self_report_qstring);
+	$.ajax({
+		url: window.location.href,
+		type: 'POST',
+		data: {'op': 'save_report_template', 'report_template': self_report_qstring},
+		success: function(data) {
+			var data = JSON.parse(data);
+		}
+	});
 }
 
 

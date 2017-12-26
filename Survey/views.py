@@ -73,7 +73,7 @@ def survey(request, qid):
 				else:
 					astring = '{}'
 				report = Analysis.get_report(qid)
-				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions, 'report': report, 'gender': suser.gender, 'astring': astring, 'is_staff': user.is_staff}))
+				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions, 'report': report, 'gender_code': suser.gender_code, 'student_type_code': suser.student_type_code, 'astring': astring, 'is_staff': user.is_staff, 'report_template': questionaire.report_template}))
 			else:
 				assert(False)
 
@@ -98,6 +98,13 @@ def survey(request, qid):
 					return HttpResponse(json.dumps({'result': 'yes', 'export_path': excel_name}))
 			else:
 				return HttpResponse(json.dumps({'result': 'no', 'info': '问卷尚未发布！'}))
+
+		# 存储问卷模板
+		if op == 'save_report_template':
+			report_template = request.POST.get('report_template')
+			questionaire.report_template = report_template
+			questionaire.save()
+			return HttpResponse(json.dumps({}))
 
 		# 问卷修改状态
 		if status == 0:
