@@ -34,9 +34,11 @@ $(document).ready(function(){
 				fillAnswer();
 			}
 			if(situation == 2){
-				results = JSON.parse(qstring);
+				results = JSON.parse(data["report"]);
+				questions = JSON.parse(qstring);
 				user_is_staff = data['is_staff'];
-				showReport(user_is_staff);
+				user_gender = data['gender'];
+				showReport(user_is_staff,user_gender);
 				//alert(questions[0].s_type);
 				//showPage();
 				//getindex();

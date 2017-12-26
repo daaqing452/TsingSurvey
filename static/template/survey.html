@@ -58,7 +58,7 @@
 
 	{% ifequal status 0 %}
 	<!-- Modal -->
-	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
 	  <div class="modal-dialog" style="width:1100px">
 	    <div class="modal-content">
 	      <div class="modal-header">
@@ -78,7 +78,7 @@
 
 	{% ifequal status 2 %}
 	<!-- Modal -->
-	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
 	  <div class="modal-dialog" style="width:1100px">
 	    <div class="modal-content">
 	      <div class="modal-header">
@@ -132,6 +132,7 @@
 	{% if user.is_staff %}
 
 	<button id="export_btn" class="btn btn-success btn-sm" onclick="exportt()" style="float:right"> 导出 </button>
+	<button id="export_btn" class="btn btn-success btn-sm" onclick="exportr()" style="float:right"> 保存个人报告 </button>
 	<a id='download'> </a>
 	{% endif %}
 	{% endifequal %}
@@ -150,28 +151,29 @@
     			<th colspan="5" align="center">规则内容 &nbsp <button class="btn btn-sm btn-danger" onclick="del_guize(this)">删除规则</button> </th>
     		</thead>
             <tr>
-                <td align="center">元素&nbsp<button class="btn btn-sm btn-info" onclick="putIn(this)">加入规则</button><button class="btn btn-sm btn-warning" onclick="clearOut(this)">清空元素</button></td>
+                <td align="center">元素</td>
                 <td align="center">操作</td>
                 <td align="center">结果操作</td>
                 <td align="center">结果对比值</td>
                 <td align="center">操作</td>
             </tr>
-            <tr>
-                <td><div class="guizeneirong" style="background-color: #D0D0D0; width: 100%; height: 100%; text-align:left"></div></td>
+            <tr class="xize_tr">
+                <td><div class="guizeneirong" style=" width: 100%; height: 60px; text-align:left; border:0.5px solid #000; overflow:scroll;"></div><button class="btn btn-sm btn-info" onclick="putIn(this)">加入规则</button><button class="btn btn-sm btn-warning" onclick="clearOut(this)">清空元素</button></td>
                 <td>
-                	<input type="radio" name="caozuo">选中
-                	<input type="radio" name="caozuo">求和
-                	<input type="radio" name="caozuo">求平均
+                	<input type="radio" class="caozuo" name="caozuo" content="选中">选中
+                	<input type="radio" class="caozuo" name="caozuo" content="求和">求和
+                	<input type="radio" class="caozuo" name="caozuo" content="求平均">求平均
+                	<input type="radio" class="caozuo" name="caozuo" content="乘积">乘积
 
                 </td>
                 <td>
-                	<input type="radio" name="fuhao">&gt
-                	<input type="radio" name="fuhao"> =
-                	<input type="radio" name="fuhao">&lt
-                	<input type="radio" name="fuhao">&lt=
-                	<input type="radio" name="fuhao">&gt=
+                	<input type="radio" class="fuhao" name="fuhao" content=">">&gt
+                	<input type="radio" class="fuhao" name="fuhao" content="="> =
+                	<input type="radio" class="fuhao" name="fuhao" content="<">&lt
+                	<input type="radio" class="fuhao" name="fuhao" content="<=">&lt=
+                	<input type="radio" class="fuhao" name="fuhao" content=">=">&gt=
                 </td>
-                <td><textarea style="width: 100%; height: 31px; overflow: auto; resize: none;"></textarea></td>
+                <td><textarea style="width: 100%; height: 60px; overflow: auto; resize: none;"></textarea></td>
                 
                 <td align="center" style="vertical-align: middle;">
                     <span class="glyphicon glyphicon-plus" onclick="addOption_2(this)"></span><span class="glyphicon glyphicon-minus" onclick="delOption_2(this)"></span>

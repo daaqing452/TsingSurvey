@@ -26,6 +26,19 @@ items : ['fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'itali
 'insertunorderedlist'],  
 }; 
 
+var options_2 = {  
+resizeType : 1,
+filterMode : true,  
+allowPreviewEmoticons : false,
+allowImageRemote : false,
+useContextmenu : false, 
+uploadJson : '/uploadFile/', 
+afterBlur: function(){this.sync();},
+items : ['fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',  
+'removeformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',  
+'insertunorderedlist', '|', 'emoticons', 'image'],  
+}; 
+
 var editor_title;
 var editor = new Array();  
 

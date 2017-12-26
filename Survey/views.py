@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
+from django.views.decorators.csrf import csrf_exempt
 # from django.utils import timezone
 from Survey.models import Questionaire, Answeraire
 from SUser.models import SUser, SampleList
@@ -12,6 +13,9 @@ import SUser.utils as Utils
 import Analysis.views as Analysis
 import datetime
 import json
+import os
+import re
+import time
 import math
 
 # 问卷状态
@@ -241,3 +245,29 @@ def upload_file(request):
 		return HttpResponse(json.dumps({'status': 'yes', 'url': f_path}))
 	else:
 		return HttpResponse(json.dumps({'status': 'no'}));
+
+
+@csrf_exempt  
+def uploadFile(request):
+	if request.method == 'POST':
+		buf = request.FILES.get('imgFile', None)
+		file_name = buf.name
+		file_buff = buf.read()
+		time_stamp = time.strftime('%Y%m%d%H%M%S')
+		real_file_name = str(time_stamp)+"-"+file_name
+		save_file("media", real_file_name, file_buff)
+		dict_tmp = {}
+		dict_tmp["error"] = 0
+		dict_tmp["url"] = "/media/"+file_name
+		dict_tmp["real_url"] = "/media/"+ real_file_name
+		return HttpResponse(json.dumps(dict_tmp))
+
+def save_file(path, file_name, data):
+    if data == None:
+        return
+    if(not path.endswith("/")):
+        path=path+"/"
+    file=open(path+file_name, "wb")
+    file.write(data)
+    file.flush()
+    file.close()
