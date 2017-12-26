@@ -597,12 +597,22 @@ function getQFromModal(){
 	return q;
 }
 
-function createHtml(q){
+function createHtml(q,flag = 0){
 	var HTMLContent = "<td>";
+	var index = q.index;
+	if(q.s_type == 8){
+		HTMLContent += "<div><font size=\"3\">"+ q.title_html+"</font></div>";
+	}
+	else{
+		if(flag == 1){
+			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title+"</font>";
+		}
+		else{
+			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title_html+"</font>";
+		}
+	}
 	switch(q.s_type){
 		case 1:{
-			var index = q.index;
-			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title_html+"</font>";
 			if(q.must_answer == true){
 				HTMLContent += "*</div>";
 			}
@@ -631,8 +641,6 @@ function createHtml(q){
 			break;
 		}
 		case 2:{
-			var index = q.index;
-			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title_html+"</font>";
 			if(q.s_type == 2){
 				var flag = 0;
 				var HTMLtemp = "";
@@ -679,8 +687,6 @@ function createHtml(q){
 			break;
 		}
 		case 3:{
-			var index = q.index;
-			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title_html+"</font>";
 			if(q.must_answer == true){
 				HTMLContent += "*</div>";
 			}
@@ -693,8 +699,6 @@ function createHtml(q){
 			break;
 		}
 		case 4:{
-			var index = q.index;
-			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title_html+"</font>";
 			if(q.must_answer == true){
 				HTMLContent += "*</div>";
 			}
@@ -711,8 +715,6 @@ function createHtml(q){
 			break;
 		}
 		case 5:{
-			var index = q.index;
-			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title_html+"</font>";
 			if(q.must_answer == true){
 				HTMLContent += "*</div>";
 			}
@@ -736,8 +738,6 @@ function createHtml(q){
 			break;
 		}
 		case 6:{
-			var index = q.index;
-			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title_html+"</font>";
 			if(q.must_answer == true){
 				HTMLContent += "*</div>";
 			}
@@ -762,8 +762,6 @@ function createHtml(q){
 			break;
 		}
 		case 7:{
-			var index = q.index;
-			HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title_html+"</font>";
 			if(q.must_answer == true && q.title.replace(" ", "").length != 0){
 				HTMLContent += "*</div>";
 			}
@@ -781,8 +779,6 @@ function createHtml(q){
 			break;
 		}
 		case 8:{
-			var index = q.index;
-			HTMLContent += "<div><font size=\"3\">"+ q.title_html+"</font></div>";
 			break;
 		}
 	}
@@ -791,6 +787,8 @@ function createHtml(q){
 	HTMLContent += "</td>";
 	return HTMLContent;
 }
+
+
 
 function moveQup(b){
 	var $b = $(b);
@@ -1344,3 +1342,5 @@ function clearInput(input)
 {
 	input.outerHTML = input.outerHTML;
 }
+
+

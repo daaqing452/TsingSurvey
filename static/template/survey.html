@@ -142,6 +142,48 @@
 
 {% endifequal %}
 
+<div style="display: none;"  class="guize">
+    <h4>报告展现规则&nbsp <button class="btn btn-sm btn-success" onclick="add_guize(this)">新增规则</button></h4>
+
+    <table class="table table-condensed" style="table-layout:fixed;word-break:break-all;">
+    		<thead>
+    			<th colspan="5" align="center">规则内容 &nbsp <button class="btn btn-sm btn-danger" onclick="del_guize(this)">删除规则</button> </th>
+    		</thead>
+            <tr>
+                <td align="center">元素&nbsp<button class="btn btn-sm btn-info" onclick="putIn(this)">加入规则</button><button class="btn btn-sm btn-warning" onclick="clearOut(this)">清空元素</button></td>
+                <td align="center">操作</td>
+                <td align="center">结果操作</td>
+                <td align="center">结果对比值</td>
+                <td align="center">操作</td>
+            </tr>
+            <tr>
+                <td><div class="guizeneirong" style="background-color: #D0D0D0; width: 100%; height: 100%; text-align:left"></div></td>
+                <td>
+                	<input type="radio" name="caozuo">选中
+                	<input type="radio" name="caozuo">求和
+                	<input type="radio" name="caozuo">求平均
+
+                </td>
+                <td>
+                	<input type="radio" name="fuhao">&gt
+                	<input type="radio" name="fuhao"> =
+                	<input type="radio" name="fuhao">&lt
+                	<input type="radio" name="fuhao">&lt=
+                	<input type="radio" name="fuhao">&gt=
+                </td>
+                <td><textarea style="width: 100%; height: 31px; overflow: auto; resize: none;"></textarea></td>
+                
+                <td align="center" style="vertical-align: middle;">
+                    <span class="glyphicon glyphicon-plus" onclick="addOption_2(this)"></span><span class="glyphicon glyphicon-minus" onclick="delOption_2(this)"></span>
+                </td>
+            </tr>
+            <tr>
+                <td align="center" style="vertical-align: middle;">报告展示内容</td> 
+                <td colspan="4"><textarea style="width: 100%; height: 100px; overflow: auto; resize: none;"></textarea></td>
+            </tr>
+    </table>
+
+</div>
 
 <!--<form id='goto_bonus' action='/bonus/' method='post' style='display:none'>
 	{% csrf_token %}
@@ -158,10 +200,11 @@
 <script src='{% static 'js/nicEdit-latest.js' %}'> </script>
 <script src='{% static 'js/echarts.min.js' %}'></script>
 <script src='{% static 'js/echart_basic.js' %}'></script>
+<script src="{% static "kindeditor/kindeditor-all.js" %}"></script>
+<script src="{% static "kindeditor/lang/zh-CN.js" %}"></script>
+<script src='{% static 'js/survey_report.js' %}'> </script>
 <script src='{% static 'js/survey.js' %}'> </script>
 <script src='{% static 'js/survey_create.js' %}'> </script>
 <script src='{% static 'js/survey_show.js' %}'> </script>
-<script src="{% static "kindeditor/kindeditor-all.js" %}"></script>
-<script src="{% static "kindeditor/lang/zh-CN.js" %}"></script>
     {% endblock context %}
 

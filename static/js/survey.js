@@ -35,7 +35,7 @@ $(document).ready(function(){
 			}
 			if(situation == 2){
 				results = JSON.parse(qstring);
-				user_is_staff = data['user_is_staff'];
+				user_is_staff = data['is_staff'];
 				showReport(user_is_staff);
 				//alert(questions[0].s_type);
 				//showPage();
@@ -43,6 +43,7 @@ $(document).ready(function(){
 			}
 		}
 	});
+
 });
 
 function prefixzero(num){
