@@ -38,7 +38,9 @@ $(document).ready(function(){
 				questions = JSON.parse(qstring);
 				answers_from_database = JSON.parse(data['astring']);
 				user_is_staff = data['is_staff'];
-				user_gender = data['gender'];
+				user_gender = data['gender_code'];
+				user_student_type = data['student_type_code'];
+				report_template = data['report_template'];
 				showReport(user_is_staff,user_gender);
 				//alert(questions[0].s_type);
 				//showPage();

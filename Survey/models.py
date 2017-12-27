@@ -12,9 +12,11 @@ class Questionaire(models.Model):
 	title = models.CharField(max_length=128, default='')
 	questions = models.TextField(default='')
 	comment = models.TextField(default='')
-	report_id = models.IntegerField(default=-1)
 	public = models.BooleanField(default=False)
 	credit = models.IntegerField(default=-1)
+	report_template = models.TextField(default='')
+	# abandon?
+	report_id = models.IntegerField(default=-1)
 
 class Answeraire(models.Model):
 	qid = models.IntegerField()
