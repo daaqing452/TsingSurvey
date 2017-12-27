@@ -1338,6 +1338,7 @@ function uploadImage(x)
 	
 }
 
+
 function clearInput(input)
 {
 	input.outerHTML = input.outerHTML;

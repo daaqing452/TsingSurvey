@@ -108,6 +108,9 @@
 		</table>
 	</div>
 
+	<div style="width: 100%" id="report">
+	</div>
+
 	<canvas type='clone_canvas' style='display:none'> </canvas>
 
 	{% ifequal status 0 %}
@@ -137,8 +140,8 @@
 	{% ifequal status 2 %}
 	{% if user.is_staff %}
 
-	<button id="export_btn" class="btn btn-success btn-sm" onclick="exportt()" style="float:right"> 导出 </button>
-	<button id="export_btn" class="btn btn-success btn-sm" onclick="exportr()" style="float:right"> 保存个人报告 </button>
+	<button id="export_btn" class="btn btn-success btn-sm"  onclick="exportt()" style="float:right; display: none;"> 导出 </button>
+	<button id="exportr_btn" class="btn btn-success btn-sm" onclick="exportr()" style="float:right; display: none;"> 保存报告模板 </button>
 	<a id='download'> </a>
 	{% endif %}
 	{% endifequal %}

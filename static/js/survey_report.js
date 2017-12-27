@@ -1,8 +1,8 @@
 var self_report_questions = new Array();
-var self_q = '[{"s_type":7,"index":1,"title_html":"","guize_num":1,"guizes":[{"xize_num":1,"xizes":[{"yuansu":["0","1","5","7"],"caozuo":1,"fuhao":0,"duibizhi":"123"}],"content":"123123123"}]},{"s_type":8,"title_html":"我爱我家","guize_num":0},{"s_type":1,"index":0,"title_html":"","guize_num":1,"guizes":[{"xize_num":1,"xizes":[{"yuansu":["0","4","6"],"caozuo":0,"fuhao":0,"duibizhi":"123"}],"content":"123"}]}]'
-var gender = 0;
-var xueli = 0;
+var user_gender = 1;
+var user_student_type = 1;
 
+//在modal中的题目样例
 function createModalHtml(q){
 	var HTMLContent = "<td>";
 	var index = q.index;
@@ -18,6 +18,27 @@ function createModalHtml(q){
 				HTMLContent += option.text+"</p>";
 				
 			}
+			HTMLContent += "</form></div>";
+			break;
+		}
+		case 2:{
+			HTMLContent += "</div>";
+			HTMLContent += "<div><form>";
+			for(var i = 0; i < q.n_option; i ++)
+			{
+				var option = q.options[i];
+				HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\""+option.text+"\" name=\"checkbox_name\"> "+option.index+". ";
+				HTMLContent += option.text+"</p>";
+				
+			}
+			HTMLContent += "</form></div>";
+			break;
+		}
+		case 3:{
+			HTMLContent += "</div>";
+			HTMLContent += "<div><form>";
+			HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\"文本框\" name=\"checkbox_name\"> ";
+			HTMLContent += "文本框</p>";
 			HTMLContent += "</form></div>";
 			break;
 		}
@@ -52,12 +73,13 @@ function createModalHtml(q){
 	HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\"男\" name=\"checkbox_name\">男</p>";	
 	HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\"女\" name=\"checkbox_name\">女</p>";
 	HTMLContent += "<br/>学历<br/>"
-	HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\"博士\" name=\"checkbox_name\">博士</p>";	
 	HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\"硕士\" name=\"checkbox_name\">硕士</p>";	
+	HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\"博士\" name=\"checkbox_name\">博士</p>";	
 	HTMLContent += "</td>";
 	return HTMLContent;
 }
 
+//在管理员编辑个人报告的页面显示，有删除，上下移动的操作。
 function createRHtml(rq){
 	var HTMLContent = "<td>";
 	if(rq.s_type == 8){
@@ -76,15 +98,25 @@ function createRHtml(rq){
 	return HTMLContent;
 }
 
+function swap_self_report_questions(i,j){
+	
+	var temp = self_report_questions[i];
+	self_report_questions[i] = self_report_questions[j];
+	self_report_questions[j] = temp;
+}
+
 function deleteRQ(b){
 	var $b = $(b);
-	$b.parents("tr").remove();
+	var $tr = $b.parents("tr").eq(0);
+	self_report_questions.splice($tr.index(),1);
+	$tr.remove();
 }
 
 function moveRQup(b){
 	var $b = $(b);
 	var $tr = $b.parents("tr").eq(0);
 	if ($tr.index() != 0) {
+		swap_self_report_questions($tr.index(),$tr.index()-1);
 		$tr.prev().before($tr);
 	}
 }
@@ -94,6 +126,7 @@ function moveRQdown(b){
 	var $b = $(b);
 	var $tr = $b.parents("tr").eq(0);
 	if ($tr.index() != $("#questions").find("tr").length-1) {
+		swap_self_report_questions($tr.index(),$tr.index()+1);
 		$tr.next().after($tr);
 	}
 }
@@ -158,7 +191,7 @@ function showReport(user_is_staff,user_gender){
 }
 
 
-
+//在管理员编辑个人报告模板时的弹出框
 function createSelfReport(id){
 	report_status.s_type = id;
 	switch(id){
@@ -316,6 +349,8 @@ function commitRS(){
 function module_select(id){
 	$("#questions").empty();
 	$("#self_report_btn").hide();
+	$("#export_btn").hide();
+	$("#exportr_btn").hide();
 	var length = $("#nav_1").children("li").length;
 	for(var i = 0; i < length; i++){
 		$("#chapter_"+i).parent().eq(0).attr("class","");
@@ -328,12 +363,21 @@ function module_select(id){
 				var result = results[i];
 				var new_html = createReportHtml(result);
 				new_row.innerHTML = new_html;
+				$("#export_btn").show();
 			}
 			break;
 		}
 		case 1:{
-			$("#questions").html(report_content);
 			$("#self_report_btn").show()
+			$("#exportr_btn").show();
+			if(report_template == "") break;
+			self_report_questions = JSON.parse(report_template);
+			for(var i = 0; i < self_report_questions.length; i ++){
+				var rq = self_report_questions[i];
+				var new_row = q_table.insertRow(-1);
+				new_row.innerHTML  = createRHtml(rq);
+				report_status.index ++;
+			}
 			break;
 		}
 	}
@@ -368,13 +412,306 @@ function exportr(){
 		data: {'op': 'save_report_template', 'report_template': self_report_qstring},
 		success: function(data) {
 			var data = JSON.parse(data);
+			alert("保存成功");
 		}
 	});
 }
 
+function createSRHtml(self_rq){
+	//self_rq 模板; answer 用户答案; question 原问题；
+	var HTMLContent = "<div style=\"100%\">";
+	if(self_rq.s_type != 8){
+		var q_index = self_rq.index;
+		var answer = answers_from_database[q_index];
+		var question = questions[q_index];
+	}
+	switch(self_rq.s_type){
+		case 1:{ //单选
+			console.log(JSON.stringify(answer));
+			console.log(JSON.stringify(question));
+			console.log(JSON.stringify(self_rq));
+			var select_answer = answer.select[0][0];
+			var a_length = question.n_option;
+			var right_guize = -1;
+			for(var i = 0; i < self_rq.guize_num; i++){
+				var guize = self_rq.guizes[i];
+				var flag = true;
+				for(var j = 0; j < guize.xize_num; j++){
+					var xize = guize.xizes[j];
+					for(var k = 0; k < xize.yuansu.length; k++){
+						var yuan = parseInt(xize.yuansu[k]);
+						if(yuan > a_length - 1){
+							if(((user_gender+a_length-1) != yuan) && ((user_student_type +a_length+1)!=yuan)){
+								flag = false;
+							}
+						}
+						else{
+							if(select_answer != yuan){
+								flag = false;
+							}
+						}
+					}
+				}
+				if(flag){
+					right_guize = i;
+					HTMLContent += guize.content;
+					break;
+				}
+			}
+			break;
+		}
+		case 2:{ //多选
+			var select_answer = [];
+			for(var i = 0; i < answer.select.length; i++){
+				select_answer.push(answer.select[i][0]);
+			}
+			var a_length = question.n_option;
+			var right_guize = -1;
+			for(var i = 0; i < self_rq.guize_num; i++){
+				var guize = self_rq.guizes[i];
+				var flag = true;
+				for(var j = 0; j < guize.xize_num; j++){
+					var xize = guize.xizes[j];
+					for(var k = 0; k < xize.yuansu.length; k++){
+						var yuan = parseInt(xize.yuansu[k]);
+						if(yuan > a_length - 1){
+							if(((user_gender+a_length-1) != yuan) && ((user_student_type +a_length+1)!=yuan)){
+								flag = false;
+							}
+						}
+						else{
+							if(select_answer.indexOf(yuan) == -1){
+								flag = false;
+							}
+						}
+					}
+				}
+				if(flag){
+					right_guize = i;
+					HTMLContent += guize.content;
+					break;
+				}
+			}
+			break;
+		}
+		case 6:{
+			var select_answer = [];
+			for(var i = 0; i < answer.select.length; i++){
+				select_answer.push(answer.select[i][0]);
+			}
+			var a_length = question.n_option;
+			var right_guize = -1;
+			for(var i = 0; i < self_rq.guize_num; i++){
+				var guize = self_rq.guizes[i];
+				var flag = true;
+				for(var j = 0; j < guize.xize_num; j++){
+					var xize = guize.xizes[j];
+					for(var k = 0; k < xize.yuansu.length; k++){
+						var yuan = parseInt(xize.yuansu[k]);
+						if(yuan > a_length - 1){
+							if(((user_gender+a_length-1) != yuan) && ((user_student_type +a_length+1)!=yuan)){
+								flag = false;
+							}
+						}
+						else{
+							if(select_answer.indexOf(yuan) == -1){
+								flag = false;
+							}
+						}
+					}
+				}
+				if(flag){
+					right_guize = i;
+					HTMLContent += guize.content;
+					break;
+				}
+			}
+			break;
+		}
+		case 3:{
+			//console.log(JSON.stringify(answer));
+			//console.log(JSON.stringify(question));
+			//console.log(JSON.stringify(self_rq));
+
+			var a_length = 1;
+			var right_guize = -1;
+			for(var i = 0; i < self_rq.guize_num; i++){
+				var guize = self_rq.guizes[i];
+				var flag = true;
+				for(var j = 0; j < guize.xize_num; j++){
+					var xize = guize.xizes[j];
+					var caozuo = xize.caozuo;
+					var fuhao = xize.fuhao;
+					var duibizhi = parseInt(xize.duibizhi);
+					if(xize.caozuo == 0){ //选中性别 学历
+						for(var k = 0; k < xize.yuansu.length; k++){
+							var yuan = parseInt(xize.yuansu[k]);
+							if(yuan > a_length - 1){
+								if(((user_gender+a_length-1) != yuan) && ((user_student_type +a_length+1)!=yuan)){
+									flag = false;
+								}
+							}
+							else{
+								var result = parseInt(answer.select[yuan][2]);
+								var valid = judgeResult(result,fuhao,duibizhi);
+								if(!valid) flag = false;
+							}
+						}
+					}
+					
+				}
+				if(flag){
+					right_guize = i;
+					HTMLContent += guize.content;
+					break;
+				}
+			}
+			break;
+		}
+		case 7:{
+			var a_length = question.n_option;
+			var right_guize = -1;
+			for(var i = 0; i < self_rq.guize_num; i++){
+				var guize = self_rq.guizes[i];
+				var flag = true;
+				for(var j = 0; j < guize.xize_num; j++){
+					var xize = guize.xizes[j];
+					var caozuo = xize.caozuo;
+					var fuhao = xize.fuhao;
+					var duibizhi = parseInt(xize.duibizhi);
+					if(xize.caozuo == 0){ //选中性别 学历
+						for(var k = 0; k < xize.yuansu.length; k++){
+							var yuan = parseInt(xize.yuansu[k]);
+							if(yuan > a_length - 1){
+								if(((user_gender+a_length-1) != yuan) && ((user_student_type +a_length+1)!=yuan)){
+									flag = false;
+								}
+							}
+						}
+					}
+					else{ //进行求和等操作
+						var count_arr = [];
+						for(var k = 0; k < xize.yuansu.length; k++){
+							var yuan = parseInt(xize.yuansu[k]);
+							count_arr.push(parseInt(answer.select[yuan][2]));
+						}
+						var result = calArr(caozuo,count_arr);
+						var valid = judgeResult(result,fuhao,duibizhi);
+						if(!valid) flag = false;
+					}
+					
+				}
+				if(flag){
+					right_guize = i;
+					HTMLContent += guize.content;
+					break;
+				}
+			}
+			break;
+		}
+		case 8:{
+			HTMLContent += self_rq.title_html;
+			break;
+		}
+	}
+	HTMLContent += "</div>";
+	return HTMLContent;
+}
+
+//在不同符号下，判断求得的值是否相对于对比值合法
+function judgeResult(result,fuhao,duibizhi){
+	switch(fuhao){
+		case 0:{
+			if(result > duibizhi){
+				return true;
+			}
+			break;
+		}
+		case 1:{
+			if(result = duibizhi){
+				return true;
+			}
+			break;
+		}
+		case 2:{
+			if(result < duibizhi){
+				return true;
+			}
+			break;
+		}
+		case 3:{
+			if(result <= duibizhi){
+				return true;
+			}
+			break;
+		}
+		case 4:{
+			if(result >= duibizhi){
+				return true;
+			}
+			break;
+		}
+	}
+	return false;
+}
+
+//计算求和，平均，成绩的结果
+function calArr(caozuo,count_arr){
+	var result = 0;
+	switch(caozuo){
+		case 1:{
+			for(var i = 0; i < count_arr.length; i++){
+				result += count_arr[i];
+			}
+			break;
+		}
+		case 2:{
+			for(var i = 0; i < count_arr.length; i++){
+				result += count_arr[i];
+			}
+			result = result *1.0/ count_arr.length;
+			break;
+		}
+		case 3:{
+			result = 1;
+			for(var i = 0; i < count_arr.length; i++){
+				result *= count_arr[i];
+			}
+			break;
+		}
+	}
+	return result;
+
+}
+
+
+function clean_QandA(){
+	var new_questions = new Array();
+	var new_answers = new Array();
+	for(var i = 0; i < questions.length; i++){
+		var q = questions[i];
+		if(q.s_type != 8){
+			new_questions.push(q);
+		}
+	}
+	questions = new_questions;
+	for(var i = 0; i < answers_from_database.length; i++){
+		var a = answers_from_database[i];
+		if(a.s_type != 8){
+			new_answers.push(a);
+		}
+	}
+	answers_from_database = new_answers;
+}
+
 function showSelfReport(){
-	var self_report_qstring = JSON.parse(self_q);
-	console.log(self_report_qstring);
+	if(report_template == "") return;
+	self_report_qstring = JSON.parse(report_template);
+	for(var i = 0; i < self_report_qstring.length; i++){
+		self_rq = self_report_qstring[i];
+		var HTMLContent = createSRHtml(self_rq);
+		$("#report").append(HTMLContent);
+	}
 }
 
 
