@@ -38,8 +38,8 @@ $(document).ready(function(){
 				questions = JSON.parse(qstring);
 				answers_from_database = JSON.parse(data['astring']);
 				user_is_staff = data['is_staff'];
-				//user_gender = parseInt(data['gender_code']); //1 男 2 女
-				//user_student_type = parseInt(data['student_type_code']); //1 硕士 2 博士
+				user_gender = parseInt(data['gender_code']); //1 男 2 女
+				user_student_type = parseInt(data['student_type_code']); //1 硕士 2 博士
 				report_template = data['report_template'];
 				clean_QandA(); //去掉标注文本
 				showReport(user_is_staff,user_gender);

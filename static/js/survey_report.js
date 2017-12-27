@@ -1,6 +1,6 @@
 var self_report_questions = new Array();
-var user_gender = 1;
-var user_student_type = 1;
+//var user_gender = 1;
+//var user_student_type = 1;
 
 //在modal中的题目样例
 function createModalHtml(q){
@@ -39,6 +39,19 @@ function createModalHtml(q){
 			HTMLContent += "<div><form>";
 			HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\"文本框\" name=\"checkbox_name\"> ";
 			HTMLContent += "文本框</p>";
+			HTMLContent += "</form></div>";
+			break;
+		}
+		case 4:{
+			HTMLContent += "</div>";
+			HTMLContent += "<div><form>";
+			for(var i = 0; i < q.n_option; i ++)
+			{
+				var option = q.options[i];
+				HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\""+option.text+"\" name=\"checkbox_name\"> "+option.index+". ";
+				HTMLContent += option.text+"</p>";
+				
+			}
 			HTMLContent += "</form></div>";
 			break;
 		}
@@ -205,6 +218,7 @@ function createSelfReport(id){
 		}
 		case 1:{
 			$("#myModal_body").empty();
+			$("#myModal_body").append("<h4>说明：先选择题目，勾选题目下所需选项，点击加入规则后进行操作。其中填空题可以选择计算操作，其他题型为选中操作。</h4>");
 			$("#myModal_body").append("<h3>选择题目</h3>");
 			var rep_select_html = "<div><select id=\"q_select\" onchange=\"select_onchange(this)\"><option value = \"\">--请选择--</option>";
 			for(var i = 0; i < questions.length; i ++){
@@ -481,6 +495,40 @@ function createSRHtml(self_rq){
 						}
 						else{
 							if(select_answer.indexOf(yuan) == -1){
+								flag = false;
+							}
+						}
+					}
+				}
+				if(flag){
+					right_guize = i;
+					HTMLContent += guize.content;
+					break;
+				}
+			}
+			break;
+		}
+		case 4:{ //下拉单选
+			console.log(JSON.stringify(answer));
+			console.log(JSON.stringify(question));
+			console.log(JSON.stringify(self_rq));
+			var select_answer = answer.select[0][0];
+			var a_length = question.n_option;
+			var right_guize = -1;
+			for(var i = 0; i < self_rq.guize_num; i++){
+				var guize = self_rq.guizes[i];
+				var flag = true;
+				for(var j = 0; j < guize.xize_num; j++){
+					var xize = guize.xizes[j];
+					for(var k = 0; k < xize.yuansu.length; k++){
+						var yuan = parseInt(xize.yuansu[k]);
+						if(yuan > a_length - 1){
+							if(((user_gender+a_length-1) != yuan) && ((user_student_type +a_length+1)!=yuan)){
+								flag = false;
+							}
+						}
+						else{
+							if(select_answer != yuan){
 								flag = false;
 							}
 						}
