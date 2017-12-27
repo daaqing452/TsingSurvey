@@ -419,7 +419,7 @@ function delOption_2(b){
 function exportr(){
 	var self_report_qstring = JSON.stringify(self_report_questions);
 	//存到数据库
-	console.log(self_report_qstring);
+	//console.log(self_report_qstring);
 	$.ajax({
 		url: window.location.href,
 		type: 'POST',
@@ -441,9 +441,9 @@ function createSRHtml(self_rq){
 	}
 	switch(self_rq.s_type){
 		case 1:{ //单选
-			console.log(JSON.stringify(answer));
-			console.log(JSON.stringify(question));
-			console.log(JSON.stringify(self_rq));
+			//console.log(JSON.stringify(answer));
+			//console.log(JSON.stringify(question));
+			//console.log(JSON.stringify(self_rq));
 			var select_answer = answer.select[0][0];
 			var a_length = question.n_option;
 			var right_guize = -1;
@@ -509,9 +509,9 @@ function createSRHtml(self_rq){
 			break;
 		}
 		case 4:{ //下拉单选
-			console.log(JSON.stringify(answer));
-			console.log(JSON.stringify(question));
-			console.log(JSON.stringify(self_rq));
+			//console.log(JSON.stringify(answer));
+			//console.log(JSON.stringify(question));
+			//console.log(JSON.stringify(self_rq));
 			var select_answer = answer.select[0][0];
 			var a_length = question.n_option;
 			var right_guize = -1;
