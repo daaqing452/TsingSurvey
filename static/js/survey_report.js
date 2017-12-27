@@ -1,5 +1,7 @@
 var self_report_questions = new Array();
-var self_q = '[{"s_type":7,"index":1,"title_html":"","guize_num":1,"guizes":[{"xize_num":1,"xizes":[{"yuansu":["0","1","5","7"],"caozuo":0,"fuhao":0,"duibizhi":"123"}],"content":"123123123"}]},{"s_type":8,"title_html":"我爱我家","guize_num":0},{"s_type":1,"index":0,"title_html":"","guize_num":1,"guizes":[{"xize_num":1,"xizes":[{"yuansu":["0","4","6"],"caozuo":0,"fuhao":0,"duibizhi":"123"}],"content":"<img src=\"/media/20171226123435-IMG_4329.JPG\" width=\"30%\" alt=\"\" />"}]}]'
+var self_q = '[{"s_type":7,"index":1,"title_html":"","guize_num":1,"guizes":[{"xize_num":1,"xizes":[{"yuansu":["0","1","5","7"],"caozuo":1,"fuhao":0,"duibizhi":"123"}],"content":"123123123"}]},{"s_type":8,"title_html":"我爱我家","guize_num":0},{"s_type":1,"index":0,"title_html":"","guize_num":1,"guizes":[{"xize_num":1,"xizes":[{"yuansu":["0","4","6"],"caozuo":0,"fuhao":0,"duibizhi":"123"}],"content":"123"}]}]'
+var gender = 0;
+var xueli = 0;
 
 function createModalHtml(q){
 	var HTMLContent = "<td>";
@@ -151,7 +153,7 @@ function showReport(user_is_staff,user_gender){
 		module_select(0);
 	}
 	else{
-		
+		showSelfReport();
 	}
 }
 
@@ -362,5 +364,9 @@ function exportr(){
 	console.log(self_report_qstring);
 }
 
+function showSelfReport(){
+	var self_report_qstring = JSON.parse(self_q);
+	console.log(self_report_qstring);
+}
 
 

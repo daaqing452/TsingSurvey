@@ -36,6 +36,7 @@ $(document).ready(function(){
 			if(situation == 2){
 				results = JSON.parse(data["report"]);
 				questions = JSON.parse(qstring);
+				answers_from_database = JSON.parse(data['astring']);
 				user_is_staff = data['is_staff'];
 				user_gender = data['gender'];
 				showReport(user_is_staff,user_gender);

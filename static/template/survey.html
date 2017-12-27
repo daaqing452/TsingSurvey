@@ -41,6 +41,7 @@
 	{% endifequal %}
 
 	{% ifequal status 2 %}
+	{% if user.is_staff %}
 	<br/>
 	<p class = "h2" id='title'> </p>
 	<ul id="nav_1" class="nav nav-tabs">
@@ -52,6 +53,11 @@
 		<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"  onclick="createSelfReport(0)"> 添加描述 </button>
 		<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"  onclick="createSelfReport(1)"> 添加报告内容 </button>
 	</div>
+	{% endif %}
+	{% if not user.is_staff %}
+	<br/>
+	<p class = "h2" id='title'> </p>
+	{% endif %}
 	{% endifequal %}
 
 
