@@ -74,6 +74,14 @@ def survey(request, qid):
 					astring = '{}'
 				report = Analysis.get_report(qid)
 				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions, 'report': report, 'gender_code': suser.gender_code, 'student_type_code': suser.student_type_code, 'astring': astring, 'is_staff': user.is_staff, 'report_template': questionaire.report_template}))
+			elif status == 3:
+				answeraire = Answeraire.objects.filter(qid=qid, uid=user.id)
+				if len(answeraire):
+					astring = answeraire[0].answers
+				else:
+					astring = '{}'
+				report = Analysis.get_report(qid)
+				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions, 'report': report, 'gender_code': suser.gender_code, 'student_type_code': suser.student_type_code, 'astring': astring, 'is_staff': user.is_staff, 'report_template': questionaire.report_template}))
 			else:
 				assert(False)
 
@@ -103,6 +111,12 @@ def survey(request, qid):
 		if op == 'save_report_template':
 			report_template = request.POST.get('report_template')
 			questionaire.report_template = report_template
+			questionaire.save()
+			return HttpResponse(json.dumps({}))
+
+		# 开放报告
+		if op == 'release_report':
+			questionaire.status = 3
 			questionaire.save()
 			return HttpResponse(json.dumps({}))
 
@@ -215,17 +229,23 @@ def survey(request, qid):
 				questionaire.save()
 				return HttpResponse(json.dumps({}))
 
-		# 问卷结束状态
+		# 问卷结束/报告编辑状态
 		elif status == 2:
+			if not user.is_staff:
+				rdata['viewable'] = 0
+				rdata['info'] = '问卷已关闭，没有权限访问'
+
+		# 报告公开状态
+		elif status == 3:
 			qid_dict = json.loads(suser.qid_list)
 			if (not questionaire.public) and (not user.is_staff) and (not qid in qid_dict):
 				rdata['viewable'] = 0
-				rdata['info'] = '问卷已关闭，没有权限访问'
+				rdata['info'] = '没有权限访问'
 
 		# 问卷出错状态
 		else:
 			rdata['viewable'] = 0
-			rdata['info'] = '错误？'
+			rdata['info'] = '错误？没有该状态码'
 
 	rdata['status'] = status
 	return render(request, 'survey.html', rdata)
