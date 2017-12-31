@@ -493,6 +493,7 @@ function verify(a,submit_type){
 }
 
 function addToSort(b){
+	showBase(b);
 	var $b = $(b);
 	var id_str = $b.prop("id");
 	var option_index = $b.prop("value");
