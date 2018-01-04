@@ -11,8 +11,18 @@ function refreshAdminList(admin_list) {
 		tr.find('[type="username"]').attr('href', '/profile/' + uid + '/');
 		tr.find('[type="name"]').text(name);
 		var s = '';
-		if (admin_list[i]['admin_chief']) s += '高级 ';
-		if (admin_list[i]['admin_survey']) s += '问卷发布 ';
+		if (admin_list[i]['admin_chief']) {
+			s += '高级 ';
+			tr.find('button#up_chief').hide();
+		} else {
+			tr.find('button#dw_chief').hide();
+		}
+		if (admin_list[i]['admin_survey']) {
+			s += '问卷发布 ';
+			tr.find('button#up_survey').hide();
+		} else {
+			tr.find('button#dw_survey').hide();
+		}
 		tr.find('[type="level"]').text(s);
 		tr.find('[type="operation"]').attr('username', username);
 		tr.show();
