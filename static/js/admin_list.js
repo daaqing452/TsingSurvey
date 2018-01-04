@@ -32,7 +32,7 @@ function add_admin(username, level, value) {
 				$('input#add').val('');
 				alert('操作成功！');
 			} else {
-				alert('没有此用户！');
+				alert('用户不存在！');
 			}
 		}
 	});
