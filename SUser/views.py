@@ -370,7 +370,16 @@ def admin_list(request):
 	op = request.POST.get('op')
 
 	def get_admin_list():
-		return [{'uid': admin_raw.id, 'username': admin_raw.username, 'name': SUser.objects.get(uid=admin_raw.id).name} for admin_raw in User.objects.filter(is_staff=1).filter(~Q(username='root'))]
+		uid_list = []
+		admin_list = []
+		for admin in User.objects.filter(is_staff=1).filter(~Q(username='root')):
+			sadmin = SUser.objects.get(uid=admin.id)
+			admin_list.append({'uid': sadmin.uid, 'username': sadmin.username, 'name': sadmin.name, 'admin_chief': True, 'admin_survey': sadmin.admin_survey})
+			uid_list.append(sadmin.uid)
+		for sadmin in SUser.objects.filter(admin_survey=1):
+			if sadmin.uid in uid_list: continue
+			admin_list.append({'uid': sadmin.uid, 'username': sadmin.username, 'name': sadmin.name, 'admin_chief': False, 'admin_survey': True})
+		return admin_list
 
 	# 加载
 	if op == 'load':
@@ -390,15 +399,17 @@ def admin_list(request):
 	# 添加管理员
 	if op == 'add':
 		username = request.POST.get('username')
-		users = User.objects.filter(username=username)
-		if len(users) > 0:
-			user = users[0]
-			user.is_staff = 1
-			user.save()
-			result = 'yes'
-		else:
-			result = 'no'
-		return HttpResponse(json.dumps({'result': result, 'admin_list': get_admin_list()}))
+		level = request.POST.get('level')
+		value = int(request.POST.get('value'))
+		if level == 'chief':
+			users = User.objects.filter(username=username)
+			users.update(is_staff=value)
+			ulen = len(users)
+		elif level == 'survey':
+			susers = SUser.objects.filter(username=username)
+			susers.update(admin_survey=value)
+			ulen = len(susers)
+		return HttpResponse(json.dumps({'ulen': ulen, 'admin_list': get_admin_list()}))
 	
 	rdata['admin_list'] = get_admin_list()
 	return render(request, 'admin_list.html', rdata)

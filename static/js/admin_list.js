@@ -7,13 +7,51 @@ function refreshAdminList(admin_list) {
 		var name = admin_list[i]['name'];
 		var tr = $('[type="clone"]').clone();
 		tr.attr('type', 'item');
-		tr.find('[type="checkbox"]').attr('username', username);
 		tr.find('[type="username"]').text(username);
 		tr.find('[type="username"]').attr('href', '/profile/' + uid + '/');
 		tr.find('[type="name"]').text(name);
+		var s = '';
+		if (admin_list[i]['admin_chief']) s += '高级 ';
+		if (admin_list[i]['admin_survey']) s += '问卷发布 ';
+		tr.find('[type="level"]').text(s);
+		tr.find('[type="operation"]').attr('username', username);
 		tr.show();
 		tbody.append(tr);
 	}
+}
+
+function add_admin(username, level, value) {
+	$.ajax({
+		url: window.location.pathname,
+		type: 'POST',
+		data: {'op': 'add', 'username': username, 'level': level, 'value': value},
+		success: function(data) {
+			var data = JSON.parse(data);
+			if (data['ulen'] > 0) {
+				refreshAdminList(data['admin_list']);
+				$('input#add').val('');
+				alert('操作成功！');
+			} else {
+				alert('没有此用户！');
+			}
+		}
+	});
+}
+
+function up_chief(node) {
+	add_admin($(node).parent().attr('username'), 'chief', 1);
+}
+
+function dw_chief(node) {
+	add_admin($(node).parent().attr('username'), 'chief', 0);
+}
+
+function up_survey(node) {
+	add_admin($(node).parent().attr('username'), 'survey', 1);
+}
+
+function dw_survey(node) {
+	add_admin($(node).parent().attr('username'), 'survey', 0);
 }
 
 $(document).ready(function(){
@@ -23,47 +61,16 @@ $(document).ready(function(){
 		type: 'POST',
 		data: {'op': 'load'},
 		success: function(data) {
-			data = JSON.parse(data);
+			var data = JSON.parse(data);
 			refreshAdminList(data['admin_list']);
 		}
 	});
 
-	//	删除管理员
-	$('button#delete').click(function(){
-		if (confirm('确认删除管理员？')) {
-			username_list = new Array();
-			$('input[username]:checked').each(function(){
-				username_list.push($(this).attr('username'));
-			});
-			$.ajax({
-				url: window.location.pathname,
-				type: 'POST',
-				data: {'op': 'delete', 'username_list': JSON.stringify(username_list)},
-				success: function(data) {
-					data = JSON.parse(data);
-					refreshAdminList(data['admin_list']);
-				}
-			});
-		}
+	$('button#add_chief').click(function(){
+		add_admin($('input#add').val(), 'chief', 1);
 	});
 
-	//	添加管理员
-	$('button#add').click(function(){
-		var username = $('input#add').val();
-		$.ajax({
-			url: window.location.pathname,
-			type: 'POST',
-			data: {'op': 'add', 'username': username},
-			success: function(data) {
-				data = JSON.parse(data);
-				if (data['result'] == 'yes') {
-					refreshAdminList(data['admin_list']);
-					$('input#add').val('');
-					alert('添加成功！');
-				} else {
-					alert('没有此用户！');
-				}
-			}
-		});
+	$('button#add_survey').click(function(){
+		add_admin($('input#add').val(), 'survey', 1);
 	});
 });

@@ -5,27 +5,36 @@
 <div class="col-md-offset-1 col-md-10 ">
 <h3 class="text-center"> 管理员列表 </h3>
 
-<input type='text' id='add' name='username' placeholder="输入学号"  />
-<button class="btn btn-success btn-sm " id='add'> 添加 </button>
-<button  class="btn btn-danger btn-sm " id='delete'> 删除 </button>
+<input type='text' id='add' name='username' placeholder="输入用户名"  />
+<button class="btn btn-primary btn-sm " id='add_chief'> 添加高级管理员 </button>
+<button class="btn btn-success btn-sm " id='add_survey'> 添加问卷管理员 </button>
 
 <br>
 <br>
 <table class="table table-hover" id='admin_list'>
 	<tr>
-		<td></td>
 		<td align=center> 学号 </td>
 		<td align=center> 姓名 </td>
+		<td align=center> 权限 </td>
+		<td align=center> 操作 </td>
 	</tr>
 	<tr type='clone' style='display:none'>
-		<td align=center> <input type='checkbox' username='' /> </td>
-		<td align=center> <a type='username'> clone </a> </td>
-		<td align=center type='name'> clone </td>
+		<td align=center> <a type='username'> clone_a </a> </td>
+		<td align=center type='name'> clone_b </td>
+		<td align=center type='level'> clone_c </td>
+		<td align=center type='operation'>
+			<button class="btn-primary btn-sm" onclick="up_chief(this)">高级√</button>
+			<button class="btn-danger btn-sm" onclick="dw_chief(this)">高级×</button>
+			<span style="width:10px">&nbsp;&nbsp;&nbsp;</span>
+			<button class="btn-success btn-sm" onclick="up_survey(this)">问卷√</button>
+			<button class="btn-danger btn-sm" onclick="dw_survey(this)">问卷×</button>
+		</td>
 	</tr>
 	<tr type='item'>
-		<td align=center> <input type='checkbox' username='' /> </td>
 		<td align=center> remove_a </td>
 		<td align=center> remove_b </td>
+		<td align=center> remove_c </td>
+		<td align=center> remove_d </td>
 	</tr>
 </table>
 
