@@ -92,7 +92,7 @@ def survey(request, qid):
 
 		# 复制问卷
 		if op == 'copy':
-			new_questionaire = Questionaire.objects.create(status=0, create_time=now, update_time=now, founder=request.user.id, title=questionaire.title, questions=questionaire.questions)
+			new_questionaire = Questionaire.objects.create(status=0, create_time=now, update_time=now, founder=user.id, title=questionaire.title, questions=questionaire.questions)
 			new_questionaire.save()
 			return HttpResponse(json.dumps({}));
 
@@ -120,13 +120,15 @@ def survey(request, qid):
 			questionaire.save()
 			return HttpResponse(json.dumps({}))
 
+		rdata['editable'] = editable = (user.is_staff or questionaire.founder == user.id)
+
 		# 问卷修改状态
 		if status == 0:
 			# 添加可选样本列表
 			rdata['sample_lists'] = SampleList.objects.all()
 
 			# 修改中管理员可见
-			if not user.is_staff:
+			if not editable:
 				rdata['viewable'] = 0
 				rdata['info'] = '非管理员不能修改'
 			else:
@@ -168,7 +170,7 @@ def survey(request, qid):
 			# 检验是否可见和是否已经填写
 			permission_submit = 0
 			qid_dict = json.loads(suser.qid_list)
-			if (not questionaire.public) and (not user.is_staff) and (not qid in qid_dict):
+			if (not questionaire.public) and (not qid in qid_dict) and (not editable):
 				rdata['viewable'] = 0
 				rdata['info'] = '没有权限访问'
 			if qid in qid_dict:
@@ -231,14 +233,14 @@ def survey(request, qid):
 
 		# 问卷结束/报告编辑状态
 		elif status == 2:
-			if not user.is_staff:
+			if not editable:
 				rdata['viewable'] = 0
 				rdata['info'] = '问卷已关闭，没有权限访问'
 
 		# 报告公开状态
 		elif status == 3:
 			qid_dict = json.loads(suser.qid_list)
-			if (not questionaire.public) and (not user.is_staff) and (not qid in qid_dict):
+			if (not questionaire.public) and (not qid in qid_dict) and (not editable):
 				rdata['viewable'] = 0
 				rdata['info'] = '没有权限访问'
 

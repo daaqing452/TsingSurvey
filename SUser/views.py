@@ -30,61 +30,39 @@ def index(request):
 
 	suser = SUser.objects.get(uid=user.id)
 	qid_dict = json.loads(suser.qid_list)
- 
-	def remakeq(questionaire, qid_dict):
-		d = {}
-		d['id'] = questionaire.id
-		d['create_time'] = questionaire.create_time
-
-		if questionaire.title == '':
-			d['title'] = '（无标题）'
-		else:
-			d['title'] = questionaire.title
-
-		if not str(questionaire.id) in qid_dict:
-			d['fill'] = ''
-		elif qid_dict[str(questionaire.id)] == 0:
-			d['fill'] = '尚未填写'
-		else:
-			d['fill'] = '已填写'
-		
-		if questionaire.status == 0:
-			d['status'] = '尚未发布'
-		elif questionaire.status == 1:
-			d['status'] = '已发布'
-		elif questionaire.status == 2:
-			d['status'] = '已关闭'
-		elif questionaire.status == 3:
-			d['status'] = '已生成报告'
-		else:
-			d['status'] = '错误'
-		
-		return d
 
  	# 高级管理员
 	if user.is_staff:
 		questionaire_list = Questionaire.objects.all()
-		rq_list = [remakeq(questionaire, qid_dict) for questionaire in questionaire_list]
+		rq_list = [Utils.remakeq(questionaire, qid_dict, True) for questionaire in questionaire_list]
 		for rq in rq_list:
 			answeraires = Answeraire.objects.filter(qid=rq['id'])
 			rq['filled_number'] = len(answeraires)
-	# 普通用户
 	else:
 		# 这里可以添加自动清理机制
 		rq_list = []
+		qid_list = []
+		# 问卷管理员
+		if suser.admin_survey:
+			for questionaire in Questionaire.objects.filter(founder=user.id):
+				rq_list.append(Utils.remakeq(questionaire, [], True))
+				qid_list.append(questionaire.id)
+		# 普通用户
 		for qid in qid_dict:
+			if int(qid) in qid_list: continue
 			questionaires = Questionaire.objects.filter(id=int(qid))
 			if len(questionaires) > 0:
-				rq_list.append(remakeq(questionaires[0], qid_dict))
+				questionaire = questionaires[0]
+				rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
+				qid_list.append(questionaire.id)
+		# 公共问卷
 		for questionaire in Questionaire.objects.filter(public=True):
-			if str(questionaire.id) in qid_dict: continue
-			rq_list.append(remakeq(questionaire, qid_dict))
-		# 问卷管理员
-		if user.admin_survey:
-			for questionaire in Questionaire.objects.filter(founder=user.id):
-				rq_list.append(remakeq(questionaire, []))
+			if int(questionaire.id) in qid_list: continue
+			rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
+			qid_list.append(questionaire.id)
 
 	rdata['rq_list'] = rq_list
+	rdata['editable'] = user.is_staff or suser.admin_survey
 	return render(request, 'index.html', rdata)
 
 def login(request):
@@ -463,10 +441,10 @@ def profile(request, uid):
 		questionaires = Questionaire.objects.filter(id=qid)
 		if len(questionaires) > 0:
 			questionaire = questionaires[0]
-			rq_list.append(Utils.remake_questionaire(questionaire, qid_dict))
+			rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
 	for questionaire in Questionaire.objects.filter(public=True):
 		if str(questionaire.id) in qid_dict: continue
-		rq_list.append(Utils.remake_questionaire(questionaire, qid_dict))
+		rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
 	rdata['rq_list'] = rq_list
 
 	return render(request, 'profile.html', rdata)

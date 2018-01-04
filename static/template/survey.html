@@ -41,7 +41,7 @@
 	{% endifequal %}
 
 	{% ifequal status 2 %}
-	{% if user.is_staff %}
+	{% if editable %}
 	<br/>
 	<p class = "h2" id='title'> </p>
 	<ul id="nav_1" class="nav nav-tabs">
@@ -54,9 +54,9 @@
 		<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"  onclick="createSelfReport(1)"> 添加报告内容 </button>
 	</div>
 	{% endif %}
-	{% if not user.is_staff %}
+	{% if not editable %}
 	<br/>
-	<p class = "h2" id='title'> </p>
+	<p class="h2" id='title'> </p>
 	{% endif %}
 	{% endifequal %}
 
@@ -132,13 +132,13 @@
 		<button id ="submit_btn" class="btn btn-success btn-sm" onclick="submit(0)" style="float:right"> 提交 </button>
 	</div>
 	{% endifequal %}
-	{% if user.is_staff %}
+	{% if editable %}
 	<button id="close_btn" class="btn btn-success btn-sm" onclick="closeup()" style="float:right"> 关闭问卷 </button>
 	{% endif %}
 	{% endifequal %}
 
 	{% ifequal status 2 %}
-	{% if user.is_staff %}
+	{% if editable %}
 
 	<button id="export_btn" class="btn btn-success btn-sm"  onclick="exportt()" style="float:right; display: none;"> 导出 </button>
 	<button id="exportr_btn" class="btn btn-success btn-sm" onclick="exportr()" style="float:right; display: none;"> 保存报告模板 </button>
