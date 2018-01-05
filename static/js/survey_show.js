@@ -475,7 +475,7 @@ function verify(a,submit_type){
 		wrong_info += "第"+(a.index+1)+"题为必答题!\n";
 		flag = false;
 	}
-	if(a.s_type == 2 || a.s_type == 5){
+	if((a.s_type == 2 || a.s_type == 5) & a.show){
 		if((a.min_select != "" & a.select.length < a.min_select) || (a.max_select != "" & a.select.length > a.max_select)){
 			wrong_info += "第"+(a.index+1)+"题选择选项数量有误!\n";
 			flag = false;
