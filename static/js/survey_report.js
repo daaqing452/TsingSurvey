@@ -152,7 +152,13 @@ function drawRadars(rq){
 						group.push(q_options[parseInt(yuansu[k])].text);
 						var hanghao = Math.floor(parseInt(yuansu[k])/q.n_set);
 						valid_num += 1;
-						your_score += get_score(q_options,a_select[hanghao][3]);
+						if(user_is_staff){
+							your_score += r_options[parseInt(yuansu[k])].ratio * get_score(q_options,r_options[parseInt(yuansu[k])].image);
+						}
+						else{
+							your_score += get_score(q_options,a_select[hanghao][3]);
+						}
+
 						all_score += r_options[parseInt(yuansu[k])].ratio * get_score(q_options,r_options[parseInt(yuansu[k])].image);
 					}
 				}
