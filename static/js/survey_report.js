@@ -92,8 +92,10 @@ function createModalHtml(q){
 	return HTMLContent;
 }
 
+var radar_flag = false;
 //在管理员编辑个人报告的页面显示，有删除，上下移动的操作。
 function createRHtml(rq){
+	radar_flag = false;
 	var HTMLContent = "<td>";
 	if(rq.s_type == 8){
 		HTMLContent += "<div style=\"width:100%;\">" +rq.title_html + "</div>";
@@ -101,14 +103,85 @@ function createRHtml(rq){
 	if(rq.s_type != 8){
 		for(var i = 0; i < rq.guize_num; i++){
 			HTMLContent += "<div style=\"width:100%;\">[规则&nbsp;"+(i+1)+ "]<br/>";
+			//console.log(rq.guizes[i].content.indexOf("radar"));
 			HTMLContent += rq.guizes[i].content;
+			if(rq.guizes[i].content.indexOf("radar") != -1){
+				radar_list.push("radar");
+				radar_flag = true;
+				//console.log($(rq.guizes[i].content).attr("id"));
+				//drawRadar($(rq.guizes[i].content).attr("id"),[],[]);
+			}
 			HTMLContent += "</div>"
 		}
 	}
-	HTMLContent += "<br><div><button class=\"btn btn-danger btn-sm\" onclick=\"deleteRQ(this)\">删除";
-	HTMLContent += "<button class=\"btn btn-success btn-sm\" onclick=\"moveRQup(this)\">上移</button><button class=\"btn btn-success btn-sm\" onclick=\"moveRQdown(this)\">下移</button></div><hr>";
+	if(situation == 2){
+		HTMLContent += "<br><div><button class=\"btn btn-danger btn-sm\" onclick=\"deleteRQ(this)\">删除";
+		HTMLContent += "<button class=\"btn btn-success btn-sm\" onclick=\"moveRQup(this)\">上移</button><button class=\"btn btn-success btn-sm\" onclick=\"moveRQdown(this)\">下移</button></div><hr>";
+	}
 	HTMLContent += "</td>";
 	return HTMLContent;
+}
+
+function drawRadars(rq){
+	//console.log("in!");
+	//console.log(JSON.stringify(rq));
+	//console.log(JSON.stringify(questions[rq.index]));
+	//console.log(JSON.stringify(answers_from_database[rq.index]));
+	//console.log(JSON.stringify(results[rq.index]));
+	var q = questions[rq.index];
+	var q_options = q.options;
+	var a_select = answers_from_database[rq.index].select;
+	var r_options = results[rq.index].options;
+	for(var i = 0; i < rq.guize_num; i++){
+		if(rq.guizes[i].content.indexOf("radar") != -1){
+			//console.log($(rq.guizes[i].content).attr("id"));
+			//var groups = new Array();
+			var zuobiao = [];
+			var your_ave = [];
+			var all_ave = [];
+			var xize_num = rq.guizes[i].xize_num;
+			for(var j = 0; j < xize_num; j++){
+				var your_score = 0.0;
+				var all_score = 0.0;
+				var valid_num = 0;
+				var xize = rq.guizes[i].xizes[j];
+				var yuansu = xize.yuansu;
+				var group = [];
+				for(var k = 0; k < yuansu.length; k ++){
+					if(group.indexOf(q_options[parseInt(yuansu[k])].text) == -1){
+						group.push(q_options[parseInt(yuansu[k])].text);
+						var hanghao = Math.floor(parseInt(yuansu[k])/q.n_set);
+						valid_num += 1;
+						your_score += get_score(q_options,a_select[hanghao][3]);
+						all_score += r_options[parseInt(yuansu[k])].ratio * get_score(q_options,r_options[parseInt(yuansu[k])].image);
+					}
+				}
+				your_score = your_score / valid_num;
+
+				your_ave.push(your_score+1);
+				all_ave.push(all_score+1);
+				//groups.push(group);
+				zuobiao.push(xize.leidazuobiao);
+				
+			}
+
+			//console.log(zuobiao);
+			//console.log(your_ave);
+			//console.log(all_ave);
+			drawRadar($(rq.guizes[i].content).attr("id"),zuobiao,all_ave,your_ave);
+		}
+	}
+}
+
+function get_score(q_options,col_name){
+	var score = -1;
+	for(var i = 0; i < q_options.length; i++){
+		if(q_options[i].image == col_name){
+			score = i;
+			break;
+		}
+	}
+	return score;
 }
 
 function swap_self_report_questions(i,j){
@@ -195,6 +268,7 @@ function del_guize(b){
 function showReport(user_is_staff,user_gender){
 	//console.log(JSON.stringify(results));
 	//console.log(user_is_staff);
+	//drawRadar("radar_test",[],[]);
 	if(user_is_staff){
 		module_select(0);
 	}
@@ -278,9 +352,15 @@ function updateRadioName(){
 				xize.find("input.fuhao").eq(k).attr("name","fuhao_"+i+"_"+j);
 			}
 		}
+		var zhanshifangshi = table.find("tr").last();
+		for(var k = 0; k < zhanshifangshi.find("input.zhanshi").length; k++){
+			zhanshifangshi.find("input.zhanshi").eq(k).attr("name","zhanshi_"+i);
+		}
 
 	}
 }
+
+var radar_list = [];
 
 function getRQFromModal(){
 	if(report_status.s_type == 0){
@@ -326,17 +406,29 @@ function getRQFromModal(){
 					}
 
 				}
-				xize.duibizhi = table.find("div.guizeneirong").eq(k).parents("tr").eq(0).find("textarea").last().val();
+				xize.duibizhi = table.find("div.guizeneirong").eq(k).parents("tr").eq(0).find("textarea").eq(0).val();
+				xize.leidazuobiao = table.find("div.guizeneirong").eq(k).parents("tr").eq(0).find("textarea").last().val();
+				
 				guize.xizes.push(xize);
 			}
+
 			var editor_index = bianji_list.indexOf(table.find("textarea").last().attr("name"));
-			guize.content = editor[editor_index].html();
+			var zhanshifangshi = table.find("tr").last();
+
+			
+			if(zhanshifangshi.find("input[name=\"zhanshi_"+i+"\"]").eq(0).prop("checked") == true){
+				guize.content = editor[editor_index].html();
+			}
+			else{
+				var unique_num = radar_list.length;
+				guize.content = "<div id=\"radar_"+unique_num+"\" style=\"width: 600px;height:400px;margin:0 100px 0 100px\"></div>";
+				radar_list.push("radar_"+unique_num);
+			}
 			rq.guizes.push(guize);
 		}
 		return rq;
 	}
 	
-
 }
 
 function commitRS(){
@@ -355,6 +447,7 @@ function commitRS(){
 	}
 	var new_row = q_table.insertRow(-1);
 	new_row.innerHTML  = createRHtml(rq);
+	if(radar_flag) drawRadars(rq);
 	report_status.index ++;
 	updateReport();
 	self_report_questions.push(rq);
@@ -364,7 +457,8 @@ function module_select(id){
 	$("#questions").empty();
 	$("#self_report_btn").hide();
 	$("#export_btn").hide();
-	$("#exportr_btn").hide();
+	$("#saveSr_btn").hide();
+	$("#exportSr_btn").hide();
 	var length = $("#nav_1").children("li").length;
 	for(var i = 0; i < length; i++){
 		$("#chapter_"+i).parent().eq(0).attr("class","");
@@ -382,14 +476,16 @@ function module_select(id){
 			break;
 		}
 		case 1:{
-			$("#self_report_btn").show()
-			$("#exportr_btn").show();
+			$("#self_report_btn").show();
+			$("#saveSr_btn").show();
+			$("#exportSr_btn").show();
 			if(report_template == "") break;
 			self_report_questions = JSON.parse(report_template);
 			for(var i = 0; i < self_report_questions.length; i ++){
 				var rq = self_report_questions[i];
 				var new_row = q_table.insertRow(-1);
 				new_row.innerHTML  = createRHtml(rq);
+				if(radar_flag) drawRadars(rq);
 				report_status.index ++;
 			}
 			break;
@@ -416,7 +512,7 @@ function delOption_2(b){
 	updateRadioName();
 }
 
-function exportr(){
+function saveSr(){
 	var self_report_qstring = JSON.stringify(self_report_questions);
 	//存到数据库
 	//console.log(self_report_qstring);
@@ -431,6 +527,35 @@ function exportr(){
 	});
 }
 
+function exportSr() {
+	var self_report_qstring = JSON.stringify(self_report_questions);
+	
+	$.ajax({
+		url: window.location.href,
+		type: 'POST',
+		data: {'op': 'release_report', 'report_template': self_report_qstring},
+		success: function(data) {
+			var data = JSON.parse(data);
+			alert("发布成功");
+			window.location.reload();
+		}
+	});
+}
+
+//选择该规则下展示内容：自定义、雷达图
+function wayToShow(b){
+	$b = $(b);
+	var editor_index = bianji_list.indexOf($b.parents("tr").eq(0).find("textarea").last().attr("name"));
+	var this_editor = editor[editor_index]; 
+	if($b.attr("content") == "zidingyi"){
+		this_editor.readonly(false);
+	}
+	if($b.attr("content") == "leidatu"){
+		this_editor.readonly(true);
+	}
+}
+
+
 function createSRHtml(self_rq){
 	//self_rq 模板; answer 用户答案; question 原问题；
 	var HTMLContent = "<div style=\"100%\">";
@@ -439,6 +564,7 @@ function createSRHtml(self_rq){
 		var answer = answers_from_database[q_index];
 		var question = questions[q_index];
 	}
+	radar_flag = false;
 	switch(self_rq.s_type){
 		case 1:{ //单选
 			//console.log(JSON.stringify(answer));
@@ -543,6 +669,7 @@ function createSRHtml(self_rq){
 			break;
 		}
 		case 6:{
+			//矩阵题
 			var select_answer = [];
 			for(var i = 0; i < answer.select.length; i++){
 				select_answer.push(answer.select[i][0]);
@@ -552,35 +679,42 @@ function createSRHtml(self_rq){
 			for(var i = 0; i < self_rq.guize_num; i++){
 				var guize = self_rq.guizes[i];
 				var flag = true;
-				for(var j = 0; j < guize.xize_num; j++){
-					var xize = guize.xizes[j];
-					for(var k = 0; k < xize.yuansu.length; k++){
-						var yuan = parseInt(xize.yuansu[k]);
-						if(yuan > a_length - 1){
-							if(((user_gender+a_length-1) != yuan) && ((user_student_type +a_length+1)!=yuan)){
-								flag = false;
+				if(guize.content.indexOf("radar") != -1){
+					radar_list.push("radar");
+					radar_flag = true;
+				}
+				if(radar_flag){
+					HTMLContent += guize.content;
+					break;
+				}
+				else{
+					for(var j = 0; j < guize.xize_num; j++){
+						var xize = guize.xizes[j];
+						for(var k = 0; k < xize.yuansu.length; k++){
+							var yuan = parseInt(xize.yuansu[k]);
+							if(yuan > a_length - 1){
+								if(((user_gender+a_length-1) != yuan) && ((user_student_type +a_length+1)!=yuan)){
+									flag = false;
+								}
 							}
-						}
-						else{
-							if(select_answer.indexOf(yuan) == -1){
-								flag = false;
+							else{
+								if(select_answer.indexOf(yuan) == -1){
+									flag = false;
+								}
 							}
 						}
 					}
-				}
-				if(flag){
-					right_guize = i;
-					HTMLContent += guize.content;
-					break;
+					if(flag){
+						right_guize = i;
+						HTMLContent += guize.content;
+						break;
+					}
 				}
 			}
 			break;
 		}
 		case 3:{
-			//console.log(JSON.stringify(answer));
-			//console.log(JSON.stringify(question));
-			//console.log(JSON.stringify(self_rq));
-
+			//单项填空题
 			var a_length = 1;
 			var right_guize = -1;
 			for(var i = 0; i < self_rq.guize_num; i++){
@@ -736,6 +870,7 @@ function calArr(caozuo,count_arr){
 function clean_QandA(){
 	var new_questions = new Array();
 	var new_answers = new Array();
+	var new_results = new Array();
 	for(var i = 0; i < questions.length; i++){
 		var q = questions[i];
 		if(q.s_type != 8){
@@ -750,15 +885,25 @@ function clean_QandA(){
 		}
 	}
 	answers_from_database = new_answers;
+	for(var i = 0; i < results.length; i++){
+		var r = results[i];
+		if(r.s_type != 8){
+			new_results.push(r);
+		}
+	}
+	results = new_results;
+
+
 }
 
 function showSelfReport(){
 	if(report_template == "") return;
-	self_report_qstring = JSON.parse(report_template);
-	for(var i = 0; i < self_report_qstring.length; i++){
-		self_rq = self_report_qstring[i];
+	self_report_questions = JSON.parse(report_template);
+	for(var i = 0; i < self_report_questions.length; i++){
+		self_rq = self_report_questions[i];
 		var HTMLContent = createSRHtml(self_rq);
 		$("#report").append(HTMLContent);
+		if(radar_flag) drawRadars(self_rq);
 	}
 }
 

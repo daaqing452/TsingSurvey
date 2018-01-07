@@ -28,6 +28,55 @@ function drawBar(myid,mylabels,mydata){
     myChart.setOption(option);
 }
 
+function drawRadar(myid,zuobiao,all_ave,your_ave){
+    var myChart = echarts.init(document.getElementById(myid));
+    var myIndicatior = [];
+    for(var i = 0; i < zuobiao.length; i++){
+        myIndicatior.push({ name: zuobiao[i], max: 4});
+    }
+    // 指定图表的配置项和数据
+    var option = {
+        tooltip: {},
+        legend: {
+            x : 'center',
+            y : 'bottom',
+            data: ['平均水平 ', '你 '],
+        },
+        radar: {
+            // shape: 'circle',
+            name: {
+                textStyle: {
+                    color: '#999',
+                    backgroundColor: '#999',
+                    borderRadius: 3,
+                    padding: [3, 5]
+               }
+            },
+            indicator: myIndicatior,
+            
+        },
+        series: [{
+            name: '',
+            type: 'radar',
+            // areaStyle: {normal: {}},
+            data : [
+                {
+                    value : all_ave,
+                    name : '平均水平 '
+                },
+                 {
+                    value : your_ave,
+                    name : '你 '
+                }
+            ],
+            itemStyle : { normal: {label : {show: true}}},
+        }]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+}
+
 function drawHBar(myid,mylabels,mydata){
 	var myChart = echarts.init(document.getElementById(myid));
     // 指定图表的配置项和数据
