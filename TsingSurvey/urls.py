@@ -33,10 +33,13 @@ urlpatterns = [
     url(r'^profile/(\d{1,10})/$', profile),
 
     url(r'^survey/(\d{1,10})/$', survey),
+    url(r'^report/(\d{1,10})/$', report),
+
     url(r'^bonus/', bonus),
     url(r'^upload_file/', upload_file),
     url(r'^uploadFile/$', uploadFile),
     url(r'^search/$', search),
+
     url(r'^prize/$', prize),
     url(r'^prize_ticket/([p,u])/(\d{1,10})/$', prize_ticket),
     url(r'^prize_add/$', prize_add),
