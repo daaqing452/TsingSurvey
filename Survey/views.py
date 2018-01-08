@@ -252,6 +252,12 @@ def survey(request, qid):
 	rdata['status'] = status
 	return render(request, 'survey.html', rdata)
 
+def report(request, qid):
+	# 验证身份
+	rdata = {}
+	rdata['user'] = user = request.user
+	return render(request, 'report.html', rdata)
+
 def bonus(request):
 	# 验证身份
 	if not request.user.is_authenticated:

@@ -71,7 +71,7 @@ function release() {
 	var ifpublic = $('#ifpublic').prop('checked') ? 1 : 0;
 	var credit = $('#credit').val();
 	if (credit == "") credit = -1;
-	if((new RegExp("^-{0,1}[1-9][0-9]*$")).test(credit) == false){
+	if((new RegExp("^-{0,1}[0-9]+$")).test(credit) == false){
 		alert("积分需填写数字");
 		return;
 	}
