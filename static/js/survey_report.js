@@ -257,7 +257,6 @@ function clearOut(b){
 
 function add_guize(b){
 	$b = $(b);
-	updateRadioName();
 	var guize_table = $(".guize").find("table").eq(0).clone();
 	
 	guize_table.appendTo($(".guize_modal"));
@@ -266,6 +265,7 @@ function add_guize(b){
 	var bianji_length = bianji_list.length
 	bianji_list.push("huodongneirong_bianji_"+bianji_list.length);
 	editor[bianji_length] = KindEditor.create('textarea[name="huodongneirong_bianji_'+bianji_length+'"]',options_2);
+	updateRadioName();
 
 }
 
