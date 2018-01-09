@@ -152,20 +152,31 @@ function drawRadars(rq){
 						group.push(q_options[parseInt(yuansu[k])].text);
 						var hanghao = Math.floor(parseInt(yuansu[k])/q.n_set);
 						valid_num += 1;
+						for(var r_index = 0; r_index < r_options.length; r_index++){
+							if(q_options[parseInt(yuansu[k])].text == r_options[r_index].text){
+								all_score += r_options[r_index].ratio * get_score(q_options,r_options[r_index].image);
+								
+							}
+						}
 						if(user_is_staff){
-							your_score += r_options[parseInt(yuansu[k])].ratio * get_score(q_options,r_options[parseInt(yuansu[k])].image);
+							your_score += 0;		
 						}
 						else{
 							your_score += get_score(q_options,a_select[hanghao][3]);
 						}
-
-						all_score += r_options[parseInt(yuansu[k])].ratio * get_score(q_options,r_options[parseInt(yuansu[k])].image);
+						
 					}
 				}
-				your_score = your_score / valid_num;
+				if(user_is_staff){
+					your_score = all_score;
+				}
 
-				your_ave.push(your_score+1);
-				all_ave.push(all_score+1);
+				your_score = your_score / valid_num;
+				all_score = all_score / valid_num;
+				your_ave.push(Math.round((your_score+1)*100)/100);
+				all_ave.push(Math.round((all_score+1)*100)/100);
+				//console.log(all_ave);
+				//console.log(all_score);
 				//groups.push(group);
 				zuobiao.push(xize.leidazuobiao);
 				
