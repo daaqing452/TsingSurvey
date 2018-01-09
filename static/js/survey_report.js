@@ -548,6 +548,19 @@ function exportSr() {
 	});
 }
 
+function withdraw_report() {
+	$.ajax({
+		url: window.location.href,
+		type: 'POST',
+		data: {'op': 'withdraw_report'},
+		success: function(data) {
+			var data = JSON.parse(data);
+			alert("撤回成功");
+			window.location.reload();
+		}
+	});
+}
+
 //选择该规则下展示内容：自定义、雷达图
 function wayToShow(b){
 	$b = $(b);
