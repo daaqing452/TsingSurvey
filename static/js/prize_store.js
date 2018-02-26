@@ -34,3 +34,11 @@ function remove_prize_from_store(node) {
 		});
 	}
 }
+
+function add_prize(b){
+	$("#myModal_body").empty();
+}
+
+function commitRS(){
+	$("#myModal").modal("hide");
+}
