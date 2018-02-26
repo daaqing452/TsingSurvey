@@ -1,14 +1,30 @@
 {% extends "base.html" %}
 	{% load static %}
     {% block context %}
-<script src='{% static 'js/prize_add.js' %}'> </script>
+<script src='{% static 'js/prize_store.js' %}'> </script>
 <div class="col-md-offset-1 col-md-10 ">
 
 <h3>查看商家</h3>
 <div>
-	{% for store in stores %}
-	<a href="/prize_ticket/u/{{ store.id }}/">{{ store.nickname }}</a><br/>
+<table class="table">
+	<tr>
+		<td>商家用户名</td>
+		<td>商家昵称</td>
+		<td>可操作奖品</td>
+	</tr>
+	{% for pair in storepairs %}
+	<tr sid={{ pair.store.id }}>
+		<td><a href="/prize_ticket/u/{{ store.id }}/">{{ pair.store.username }}</a></td>
+		<td><p id="nickname" onclick="change_nickname(this)">{{ pair.store.nickname }}</p></td>
+		<td>
+			{% for prize in pair.prizes %}
+				<a style="float:left" onclick="remove_prize_from_store(this)" pid={{ prize.id }}>{{ prize.title }}&nbsp;</a>
+			{% endfor %}
+			<span style="float:right" class="glyphicon glyphicon-plus"/> 
+		</td>
+	<tr>
 	{% endfor %}
+</table>
 </div>
 
 </div>

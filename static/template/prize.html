@@ -27,7 +27,13 @@
 	</tr>
 	{% for prize in prizes %}
 	<tr pid="{{ prize.id }}">
-		<td>{{ prize.title }}</td>
+		<td
+			{% if user.is_staff %}
+				onclick="change_title(this)"
+				{% endif %}
+			>
+			<p id="title"> {{ prize.title }} </p>
+		</td>
 		<td style="width: 25%">
 			<button id="description" content="{{ prize.description }}" onclick="show_description(this)" class="btn-primary">查看</button>
 			{% if user.is_staff %}
@@ -39,7 +45,6 @@
 			onclick="change_credit(this)"
 			{% endif %}
 		>
-			
 			<p id="credit">{{ prize.credit }}</p>
 		</td>
 		<td

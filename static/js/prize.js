@@ -23,6 +23,23 @@ function show_description(node){
 
 }
 
+function change_title(node) {
+	var pid = $(node).parents("tr").eq(0).attr("pid");
+	var p = $(node).parents("tr").find("p#title");
+	var new_title = prompt('新的奖品名称', '');
+	if (new_title == null) new_title = p.html();
+	if (new_title == '') new_title = p.html();
+	$.ajax({
+		url: window.location.href,
+		type: 'POST',
+		data: {'op': 'change_title', 'title': new_title, 'pid': pid},
+		success: function(data) {
+			var data = JSON.parse(data);
+			p.html(new_title);
+		}
+	});
+}
+
 function change_credit(node) {
 	var pid = $(node).parents("tr").eq(0).attr("pid");
 	var p = $(node).parents("tr").find("p#credit");
