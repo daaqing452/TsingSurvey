@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from SUser.models import *
 import time
@@ -19,6 +20,11 @@ def remakeq(questionaire, qid_dict, editable):
 		d['id'] = questionaire.id
 		d['create_time'] = questionaire.create_time
 		d['editable'] = editable
+		
+		d['founder'] = '已移除'
+		founders =  User.objects.filter(id=questionaire.founder)
+		if len(founders) > 0:
+			d['founder'] = founders[0].username
 
 		if questionaire.title == '':
 			d['title'] = '（无标题）'
@@ -31,7 +37,7 @@ def remakeq(questionaire, qid_dict, editable):
 			d['fill'] = '尚未填写'
 		else:
 			d['fill'] = '已填写'
-		
+
 		if questionaire.status == 0:
 			d['status'] = '尚未发布'
 		elif questionaire.status == 1:
@@ -40,6 +46,8 @@ def remakeq(questionaire, qid_dict, editable):
 			d['status'] = '已关闭'
 		elif questionaire.status == 3:
 			d['status'] = '已生成报告'
+		elif questionaire.status == 4:
+			d['status'] = '待审核'
 		else:
 			d['status'] = '错误'
 		

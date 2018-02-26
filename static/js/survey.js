@@ -5,7 +5,7 @@ $(document).ready(function(){
 		type: 'POST',
 		data: {'op': 'load'},
 		success: function(data) {
-			data = JSON.parse(data);
+			var data = JSON.parse(data);
 			situation = data['status'];
 			title = data['title'];
 			qstring = data['qstring'];
@@ -57,7 +57,11 @@ $(document).ready(function(){
 				report_template = data['report_template'];
 				clean_QandA(); //去掉标注文本
 				showReport(user_is_staff,user_gender);
-
+			}
+			if (situation == 4){
+				questions = JSON.parse(qstring);
+				showPage();
+				getindex();
 			}
 		}
 	});
@@ -91,7 +95,7 @@ function exportt() {
 		type: 'POST',
 		data: {'op': 'export'},
 		success: function(data) {
-			data = JSON.parse(data);
+			var data = JSON.parse(data);
 			if (data['result'] == 'no') {
 				alert(data['info']);
 				return;
@@ -99,6 +103,30 @@ function exportt() {
 			export_path = '/' + data['export_path'];
 			$('a#download').attr('href', export_path);
 			document.getElementById("download").click();
+		}
+	});
+}
+
+function verify_yes() {
+	$.ajax({
+		url: window.location.href,
+		type: 'POST',
+		data: {'op': 'verify_yes'},
+		success: function(data) {
+			var data = JSON.parse(data);
+			window.location.href = '/index/';
+		}
+	});
+}
+
+function verify_no() {
+	$.ajax({
+		url: window.location.href,
+		type: 'POST',
+		data: {'op': 'verify_no'},
+		success: function(data) {
+			var data = JSON.parse(data);
+			window.location.href = '/index/';
 		}
 	});
 }

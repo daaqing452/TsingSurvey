@@ -12,6 +12,7 @@
 		<td align=center> 标题 </td>
 		<td align=center> 是否填写？ </td>
 		{% if editable %}
+		<td align=center> 发放人 </td>
 		<td align=center> 问卷状态 </td>
 		<td align=center> 填写人数 </td>
 		<td> </td>
@@ -27,6 +28,7 @@
 		<td align=center>  {{ rq.fill }} </td>
 		{% if editable %}
 			{% if rq.editable %}
+			<td align=cetner> {{ rq.founder }} </td>
 			<td align=center> {{ rq.status }} </td>
 			<td align=center> {{ rq.filled_number }} </td>
 			<td qid='{{ rq.id }}' onclick='delete_questionaire(this)'> <span class='glyphicon glyphicon-remove'> </span> </td>

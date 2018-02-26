@@ -22,6 +22,8 @@ import math
 #	 0 修改中（随时修改）
 #	 1 发布中
 #	 2 已结束
+#	 3 报告公开
+#	 4 待审核
 
 def survey(request, qid):
 	# 验证身份
@@ -57,7 +59,7 @@ def survey(request, qid):
 
 		# 加载问卷请求
 		if op == 'load':
-			if status == 0:
+			if status == 0 or status == 4:
 				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions}))
 			elif status == 1:
 				answeraire = Answeraire.objects.filter(qid=qid, uid=user.id)
@@ -66,15 +68,7 @@ def survey(request, qid):
 				else:
 					astring = '{}'
 				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions, 'astring': astring}))
-			elif status == 2:
-				answeraire = Answeraire.objects.filter(qid=qid, uid=user.id)
-				if len(answeraire):
-					astring = answeraire[0].answers
-				else:
-					astring = '{}'
-				report = Analysis.get_report(qid)
-				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions, 'report': report, 'gender_code': suser.gender_code, 'student_type_code': suser.student_type_code, 'astring': astring, 'is_staff': user.is_staff, 'report_template': questionaire.report_template}))
-			elif status == 3:
+			elif status == 2 or status == 3:
 				answeraire = Answeraire.objects.filter(qid=qid, uid=user.id)
 				if len(answeraire):
 					astring = answeraire[0].answers
@@ -128,6 +122,18 @@ def survey(request, qid):
 			questionaire.save()
 			return HttpResponse(json.dumps({}))
 
+		# 审核通过
+		if op == 'verify_yes':
+			questionaire.status = 1
+			questionaire.save()
+			return HttpResponse(json.dumps({}))
+
+		# 审核不通过
+		if op == 'verify_no':
+			questionaire.status = 0
+			questionaire.save()
+			return HttpResponse(json.dumps({}))
+
 		# 问卷修改状态
 		if status == 0:
 			# 添加可选样本列表
@@ -163,7 +169,10 @@ def survey(request, qid):
 						qid_dict[str(questionaire.id)] = 0
 						suser.qid_list = json.dumps(qid_dict)
 						suser.save()
-					questionaire.status = 1
+					if user.is_staff:
+						questionaire.status = 1
+					else:
+						questionaire.status = 4
 					questionaire.release_time = now
 					questionaire.public = ifpublic
 					questionaire.credit = credit
@@ -247,6 +256,12 @@ def survey(request, qid):
 		elif status == 3:
 			qid_dict = json.loads(suser.qid_list)
 			if (not questionaire.public) and (not qid in qid_dict) and (not editable):
+				rdata['viewable'] = 0
+				rdata['info'] = '没有权限访问'
+
+		# 问卷管理员发布，待审核状态
+		elif status == 4:
+			if not editable:
 				rdata['viewable'] = 0
 				rdata['info'] = '没有权限访问'
 
