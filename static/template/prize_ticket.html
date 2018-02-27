@@ -12,9 +12,10 @@
 {% else %}
 <h3>交易记录</h3>
 <div style="float:right">
-<button class="btn-success" onclick="refresh_prize_list('total')"> 全部({{total}}) </button>
-<button class="btn-info" onclick="refresh_prize_list('cleared')"> 已结算({{cleared}}) </button>
-<button class="btn-warning" onclick="refresh_prize_list('used')"> 未结算({{uncleared}}) </button>
+<button class="btn-primary" onclick="refresh_prize_list('total')"> 全部({{total}}) </button>
+<button class="btn-success" onclick="refresh_prize_list('cleared')"> 已结算({{cleared}}) </button>
+<button class="btn-info" onclick="refresh_prize_list('uncleared')"> 未结算({{uncleared}}) </button>
+<button class="btn-warning" onclick="refresh_prize_list('unused')"> 未使用({{unused}}) </button>
 </div>
 <!--<p style="float:right">已结算/已消费/已兑换：{{ cleared }}/{{ used }}/{{ total }} &nbsp;&nbsp;&nbsp;&nbsp; 待结算金额：{{ money }}</p>-->
 {% endif %}

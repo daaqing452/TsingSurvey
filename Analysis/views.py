@@ -473,7 +473,7 @@ def prize_ticket(request, ptype, qid=-1):
 			else:
 				nickname = susers[0].nickname
 			prize = prizes[0]
-			ticket_list.append({'tid': ticket.id, 'pid': prize.id, 'title': prize.title, 'nickname': nickname, 'credit': prize.credit, 'price': prize.price, 'used': ticket.used, 'cleared': ticket.cleared, 'use_time': ticket.use_time.strftime('%Y-%m-%d %H:%M:%S'), 'clear_time': ticket.clear_time.strftime('%Y-%m-%d %H:%M:%S')})
+			ticket_list.append({'tid': ticket.id, 'pid': prize.id, 'title': prize.title, 'nickname': nickname, 'credit': prize.credit, 'price': prize.price, 'used': ticket.used, 'cleared': ticket.cleared, 'use_time': ticket.use_time.strftime('%Y-%m-%d %H:%M:%S'), 'clear_time': ticket.clear_time.strftime('%Y-%m-%d %H:%M:%S'), 'description': prize.description})
 		d['tickets'] = list(reversed(ticket_list))
 		return 
 
@@ -481,7 +481,7 @@ def prize_ticket(request, ptype, qid=-1):
 		tp = request.POST.get('type')
 		if tp == 'cleared':
 			tickets = tickets.filter(cleared=True)
-		elif tp == 'used':
+		elif tp == 'uncleared':
 			tickets = tickets.filter(cleared=False).filter(used=True)
 		elif tp == 'unused':
 			tickets = tickets.filter(used=False)
@@ -511,9 +511,10 @@ def prize_ticket(request, ptype, qid=-1):
 			used += int(t['used'])
 			cleared += int(t['cleared'])
 			money += (int(t['used']) - int(t['cleared'])) * int(t['price'])
-		rdata['total'] = used
+		rdata['total'] = len(rdata['tickets'])
 		rdata['cleared'] = cleared
 		rdata['uncleared'] = used - cleared
+		rdata['unused'] = rdata['total'] - used
 		rdata['money'] = money
 
 	return render(request, 'prize_ticket.html', rdata)
