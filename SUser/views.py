@@ -368,7 +368,7 @@ def user_list(request):
 		name = request.POST.get('sample_list_name', '')
 		if name == '': name = time.strftime('%Y%m%d%H%M%S')
 		suser_id_list = [suser.id for suser in SUser.objects.filter(is_sample=True)]
-		SampleList.objects.create(name=name, sample_list=suser_id_list)
+		SampleList.objects.create(name=name, sample_list=json.dumps(suser_id_list))
 		return HttpResponse(json.dumps({}))
 
 	rdata['user_list'] = get_suser_list()

@@ -15,6 +15,7 @@ class Questionaire(models.Model):
 	public = models.BooleanField(default=False)
 	credit = models.IntegerField(default=-1)
 	report_template = models.TextField(default='')
+	sample_list_id = models.IntegerField(default=-1)
 	# abandon?
 	report_id = models.IntegerField(default=-1)
 

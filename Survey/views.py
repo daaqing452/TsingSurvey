@@ -42,6 +42,26 @@ def survey(request, qid):
 		questionaire.questions = qstring
 		questionaire.update_time = datetime.datetime.now()
 
+	def release_to_users(questionaire):
+		sample_list_id = questionaire.sample_list_id
+		if sample_list_id == -1:
+			susers = SUser.objects.filter(is_sample=1)
+		else:
+			sample_list = SampleList.objects.filter(id=sample_list_id)
+			susers = []
+			if len(sample_list) > 0:
+				sample_list = json.loads(sample_list[0].sample_list)
+				for suser_id in sample_list:
+					suser = SUser.objects.filter(id=suser_id)
+					if len(suser) > 0:
+						susers.append(suser[0])
+		for suser in susers:
+			qid_dict = json.loads(suser.qid_list)
+			qid_dict[str(questionaire.id)] = 0
+			suser.qid_list = json.dumps(qid_dict)
+			suser.save()
+		questionaire.status = 1
+
 	# 添加新问卷
 	if op == 'create':
 		questionaire = Questionaire.objects.create(status=0, create_time=now, update_time=now, founder=request.user.id)
@@ -151,31 +171,14 @@ def survey(request, qid):
 					return HttpResponse(json.dumps({}))
 				# 发布问卷请求
 				elif op == 'release':
-					sample_list_id = int(request.POST.get('sample_list_id'))
-					ifpublic = bool(int(request.POST.get('ifpublic')))
-					credit = int(request.POST.get('credit'))
-					susers = SUser.objects.filter(is_sample=1)
-					if sample_list_id != -1:
-						sample_list = SampleList.objects.filter(id=sample_list_id)
-						susers = []
-						if len(sample_list) > 0:
-							sample_list = eval(sample_list[0].sample_list)
-							for suser_id in sample_list:
-								suser = SUser.objects.filter(id=suser_id)
-								if len(suser) > 0:
-									susers.append(suser[0])
-					for suser in susers:
-						qid_dict = json.loads(suser.qid_list)
-						qid_dict[str(questionaire.id)] = 0
-						suser.qid_list = json.dumps(qid_dict)
-						suser.save()
+					questionaire.public = ifpublic = bool(int(request.POST.get('ifpublic')))
+					questionaire.credit = credit = int(request.POST.get('credit'))
+					questionaire.sample_list_id = sample_list_id = int(request.POST.get('sample_list_id'))
 					if user.is_staff:
-						questionaire.status = 1
+						release_to_users(questionaire)
 					else:
 						questionaire.status = 4
 					questionaire.release_time = now
-					questionaire.public = ifpublic
-					questionaire.credit = credit
 					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
 					questionaire.save()
 					return HttpResponse(json.dumps({}))
@@ -264,6 +267,22 @@ def survey(request, qid):
 			if not editable:
 				rdata['viewable'] = 0
 				rdata['info'] = '没有权限访问'
+			else:
+				if questionaire.public:
+					sample_list_name = '公共问卷'
+				else:
+					sample_list_id = questionaire.sample_list_id
+					print(sample_list_id)
+					if sample_list_id != -1:
+						sample_lists = SampleList.objects.filter(id=sample_list_id)
+						if len(sample_lists) > 0:
+							sample_list_name = sample_lists[0].name
+						else:
+							sample_list_name = '（未找到）'
+					else:
+						sample_list_name = '（全体样本）'
+				rdata['sample_list_name'] = sample_list_name
+				rdata['credit'] = questionaire.credit
 
 		# 问卷出错状态
 		else:

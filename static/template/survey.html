@@ -155,6 +155,9 @@
 	{% endifequal %}
 
 	{% ifequal status 4 %}
+		<span style="float:left">积分：{{ credit }}</span><br/>
+		<span style="float:left">问卷发布对象：{{ sample_list_name }} </span><br/>
+		<br/>
 		{% if user.is_staff %}
 		<button id="verify_no" class="btn btn-danger btn-sm" onclick="verify_no()" style="float:right"> 审核不通过 </button>
 		<button id="verify_yes" class="btn btn-success btn-sm" onclick="verify_yes()" style="float:right"> 审核通过 </button>
