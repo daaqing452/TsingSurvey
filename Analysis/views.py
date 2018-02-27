@@ -612,12 +612,29 @@ def prize_store(request):
 		SUser.objects.filter(id=int(request.POST.get('sid'))).update(nickname=request.POST.get('nickname'))
 		return HttpResponse(json.dumps({}))
 
-	if op == 'remove_prize_from_store':
-		prize = Prize.objects.get(id=int(request.POST.get('pid')))
-		store = json.loads(prize.store)
-		store.remove(int(request.POST.get('sid')))
-		prize.store = json.dumps(store)
-		prize.save()
+	if op == 'get_prize_list':
+		sid = int(request.POST.get('sid'))
+		prizes = Prize.objects.all()
+		prize_list = []
+		for prize in prizes:
+			prize_list.append({'pid': prize.id, 'title': prize.title, 'in': sid in json.loads(prize.store)})
+		return HttpResponse(json.dumps({'prize_list': prize_list}))
+
+	if op == 'renew_prize_for_store':
+		sid = int(request.POST.get('sid'))
+		pid_list = [int(pid) for pid in json.loads(request.POST.get('pid_list'))]
+		manage_list = []
+		for prize in Prize.objects.all():
+			stores = json.loads(prize.store)
+			exp_in = prize.id in pid_list
+			pre_in = sid in stores
+			if exp_in != pre_in:
+				if exp_in:
+					stores.append(sid)
+				else:
+					stores.remove(sid)
+				prize.store = json.dumps(stores)
+				prize.save()
 		return HttpResponse(json.dumps({}))
 
 	storepairs = []
@@ -632,5 +649,6 @@ def prize_store(request):
 		d['prizes'] = prizes
 		storepairs.append(d)
 	rdata['storepairs'] = storepairs
+	rdata['prizes'] = Prize.objects.all()
 
 	return render(request, 'prize_store.html', rdata)

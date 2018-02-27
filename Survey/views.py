@@ -272,7 +272,6 @@ def survey(request, qid):
 					sample_list_name = '公共问卷'
 				else:
 					sample_list_id = questionaire.sample_list_id
-					print(sample_list_id)
 					if sample_list_id != -1:
 						sample_lists = SampleList.objects.filter(id=sample_list_id)
 						if len(sample_lists) > 0:
