@@ -54,3 +54,31 @@ function clear_money() {
 		});
 	}
 }
+
+function refresh_prize_list(tp) {
+	$.ajax({
+		url: window.location.href,
+		type: "POST",
+		data: {"op": "refresh_prize_list", "type": tp},
+		success: function(data) {
+			var data = JSON.parse(data);
+			var tickets = data['tickets'];
+			var table = $("table#main");
+			$("tr#item").remove();
+			for (var i = 0; i < tickets.length; i++) {
+				var t = tickets[i];
+				var s = "<tr id='item' tid=" + t["tid"] + ">";
+				s += "<td>" + t["title"] + "</td>";
+				s += "<td>" + t["nickname"] + "</td>";
+				s += "<td>" + t["credit"] + "</td>";
+				s += "<td>" + t["price"] + "</td><td>";
+				if (t["used"]) s += "√";
+				s += "</td><td>";
+				if (t["cleared"]) s += "√";
+				s += "</td><td>" + t["use_time"] + "</td>";
+				s += "<td>" + t["clear_time"] + "</td>";
+				table.append(s);
+			}
+		}
+	})
+}

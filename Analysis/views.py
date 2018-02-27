@@ -450,37 +450,56 @@ def prize_ticket(request, ptype, qid=-1):
 			return render(request, 'permission_denied.html', {})
 		qsuser = SUser.objects.get(id=qid)
 		if qsuser.is_store:
-			# 商家交易记录
+			# 某商家交易记录
 			rdata['personal'] = False
 			rdata['is_store'] = True
-			tickets = []
-			tickets += PrizeTicket.objects.filter(oid=qid)
+			tickets = PrizeTicket.objects.filter(oid=qid)
 		else:
-			# 用户兑换记录
+			# 某用户兑换记录
 			rdata['personal'] = True
 			tickets = PrizeTicket.objects.filter(uid=qid)
 	else:
 		return render(request, 'permission_denied.html', {})
 
-	# 去掉不合法的
-	ticket_list = []
-	for ticket in tickets:
-		prizes = Prize.objects.filter(id=ticket.pid)
-		if len(prizes) == 0: continue
-		susers = SUser.objects.filter(id=ticket.uid)
-		if len(susers) == 0:
-			nickname = '已删除'
-		else:
-			nickname = susers[0].nickname
-		ticket_list.append({'ticket': ticket, 'prize': prizes[0], 'nickname': nickname})
-	rdata['tickets'] = list(reversed(ticket_list))
+	def remake_tickets(tickets, d):
+		# 去掉不合法的
+		ticket_list = []
+		for ticket in tickets:
+			prizes = Prize.objects.filter(id=ticket.pid)
+			if len(prizes) == 0: continue
+			susers = SUser.objects.filter(id=ticket.uid)
+			if len(susers) == 0:
+				nickname = '已删除'
+			else:
+				nickname = susers[0].nickname
+			prize = prizes[0]
+			ticket_list.append({'tid': ticket.id, 'pid': prize.id, 'title': prize.title, 'nickname': nickname, 'credit': prize.credit, 'price': prize.price, 'used': ticket.used, 'cleared': ticket.cleared, 'use_time': ticket.use_time.strftime('%Y-%m-%d %H:%M:%S'), 'clear_time': ticket.clear_time.strftime('%Y-%m-%d %H:%M:%S')})
+		d['tickets'] = list(reversed(ticket_list))
+		return 
+
+	if op == 'refresh_prize_list':
+		tp = request.POST.get('type')
+		if tp == 'cleared':
+			tickets = tickets.filter(cleared=True)
+		elif tp == 'used':
+			tickets = tickets.filter(cleared=False).filter(used=True)
+		elif tp == 'unused':
+			tickets = tickets.filter(used=False)
+		d = {}
+		remake_tickets(tickets, d)
+		return HttpResponse(json.dumps(d))
+
+	remake_tickets(tickets, rdata)
 
 	if op == 'clear_money':
 		money = 0
-		for pair in rdata['tickets']:
-			money += (int(pair['ticket'].used) - int(pair['ticket'].cleared)) * pair['prize'].price
-			pair['ticket'].cleared = True
-			pair['ticket'].save()
+		for t in rdata['tickets']:
+			ticket = PrizeTicket.objects.get(id=t['tid'])
+			prize = Prize.objects.get(id=t['pid'])
+			money += (int(ticket.used) - int(ticket.cleared)) * prize.price
+			ticket.cleared = True
+			ticket.clear_time = datetime.datetime.now()
+			ticket.save()
 		return HttpResponse(json.dumps({'money': money}))
 
 	# 计算金额
@@ -488,13 +507,13 @@ def prize_ticket(request, ptype, qid=-1):
 		used = 0
 		cleared = 0
 		money = 0
-		for pair in rdata['tickets']:
-			used += int(pair['ticket'].used)
-			cleared += int(pair['ticket'].cleared)
-			money += (int(pair['ticket'].used) - int(pair['ticket'].cleared)) * pair['prize'].price
-		rdata['total'] = len(rdata['tickets'])
-		rdata['used'] = used
+		for t in rdata['tickets']:
+			used += int(t['used'])
+			cleared += int(t['cleared'])
+			money += (int(t['used']) - int(t['cleared'])) * int(t['price'])
+		rdata['total'] = used
 		rdata['cleared'] = cleared
+		rdata['uncleared'] = used - cleared
 		rdata['money'] = money
 
 	return render(request, 'prize_ticket.html', rdata)

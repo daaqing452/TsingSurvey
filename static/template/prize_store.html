@@ -15,7 +15,7 @@
 	</tr>
 	{% for pair in storepairs %}
 	<tr sid={{ pair.store.id }}>
-		<td><a href="/prize_ticket/u/{{ store.id }}/">{{ pair.store.username }}</a></td>
+		<td><a href="/prize_ticket/u/{{ pair.store.id }}/">{{ pair.store.username }}</a></td>
 		<td><p id="nickname" onclick="change_nickname(this)">{{ pair.store.nickname }}</p></td>
 		<td id="manage_prizes" align="left">
 			{% for prize in pair.prizes %}

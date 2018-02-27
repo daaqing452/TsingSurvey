@@ -11,15 +11,20 @@
 <h3>已兑换奖品</h3>
 {% else %}
 <h3>交易记录</h3>
-<p style="float:right">已结算/已消费/已兑换：{{ cleared }}/{{ used }}/{{ total }} &nbsp;&nbsp;&nbsp;&nbsp; 待结算金额：{{ money }}</p>
+<div style="float:right">
+<button class="btn-success" onclick="refresh_prize_list('total')"> 全部({{total}}) </button>
+<button class="btn-info" onclick="refresh_prize_list('cleared')"> 已结算({{cleared}}) </button>
+<button class="btn-warning" onclick="refresh_prize_list('used')"> 未结算({{uncleared}}) </button>
+</div>
+<!--<p style="float:right">已结算/已消费/已兑换：{{ cleared }}/{{ used }}/{{ total }} &nbsp;&nbsp;&nbsp;&nbsp; 待结算金额：{{ money }}</p>-->
 {% endif %}
 {% if user.is_staff and is_store %}
-<button class="btn-primary" style="float:left" onclick="clear_money()">一键结算</button>
+<button class="btn-primary" style="float:left" onclick="clear_money()">结算(总金额:{{money}})</button>
 {% endif %}
 <br/>
 <br/>
-<table class="table">
-	<tr id="ticket_item" tid={{ pair.ticket }}>
+<table id="main" class="table">
+	<tr tid={{ pair.ticket }}>
 		<td> 奖品名称 </td>
 		{% if personal %}
 		<td> 奖品描述 </td>
@@ -33,28 +38,29 @@
 		<td> 是否消费 </td>
 		<td> 是否结算 </td>
 		<td> 消费时间 </td>
+		<td> 结算时间 </td>
 		{% endif %}
 	</tr>
-	{% for pair in tickets %}
-	<tr tid={{ pair.ticket.id }}>
-		<td> {{ pair.prize.title }} </td>
+	{% for t in tickets %}
+	<tr id="item" tid={{ t.id }}>
+		<td> {{ t.title }} </td>
 		{% if personal %}
-		
-		<td style="width: 25%"><button content="{{ pair.prize.description }}" onclick="show_description(this)" class="btn-primary">查看</button></td>
+		<td style="width: 25%"><button content="{{ t.description }}" onclick="show_description(this)" class="btn-primary">查看</button></td>
 		{% endif %}
-		<td> {{ pair.nickname }} </td>
-		<td> {{ pair.prize.credit }} </td>
-		<td> {{ pair.prize.price }} </td>
+		<td> {{ t.nickname }} </td>
+		<td> {{ t.credit }} </td>
+		<td> {{ t.price }} </td>
 		{% if personal %}
-			{% if pair.ticket.used %}
+			{% if t.used %}
 			<td>已消费</td>
 			{% else %}
-			<td style="width: 25%"> <button class="btn-success" tid="{{ pair.ticket.id }}" onclick="exchange(this)">消费</button> </td>
+			<td style="width: 25%"> <button class="btn-success" tid="{{ t.id }}" onclick="exchange(this)">消费</button> </td>
 			{% endif %}
 		{% else %}
-		<td> {% if pair.ticket.used %} √ {% else %}  {% endif %} </td>
-		<td> {% if pair.ticket.cleared %} √ {% else %}  {% endif %} </td>
-		<td> {{ pair.ticket.use_time | date:"Y-m-d H:i:s" }} </td>
+		<td> {% if t.used %} √ {% else %}  {% endif %} </td>
+		<td> {% if t.cleared %} √ {% else %}  {% endif %} </td>
+		<td> {{ t.use_time }} </td>
+		<td> {{ t.clear_time }} </td>
 		{% endif %}
 	</tr>
 	{% endfor %}

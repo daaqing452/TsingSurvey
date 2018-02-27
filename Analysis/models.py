@@ -17,6 +17,7 @@ class PrizeTicket(models.Model):
 	count = models.IntegerField(default=0)
 	used = models.BooleanField(default=0)
 	cleared = models.BooleanField(default=0)
-	exchange_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
 	use_status = models.IntegerField(default=0)
+	exchange_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
 	use_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
+	clear_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
