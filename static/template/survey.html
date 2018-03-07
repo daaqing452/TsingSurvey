@@ -53,6 +53,7 @@
 	<div id="self_report_btn" class="btn-group" style="display: none;">
 		<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"  onclick="createSelfReport(0)"> 添加描述 </button>
 		<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"  onclick="createSelfReport(1)"> 添加报告内容 </button>
+		<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"  onclick="createSelfReport(2)"> 添加总体情况图表 </button>
 	</div>
 	{% endif %}
 	{% endif %}
@@ -91,7 +92,7 @@
 	    <div class="modal-content">
 	      <div class="modal-header">
 	        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-	        <h4 class="modal-title" id="myModalLabel"> 添加题目 </h4>
+	        
 	      </div>
 	      <div class="modal-body" id="myModal_body"> 
 	       
@@ -105,8 +106,8 @@
 	</div>
 	{% endifequal %}
 
-	<div style="text-align:left;">
-		<table id="questions"  style="table-layout:fixed;word-break:break-all;border: 0px;" >
+	<div style="text-align:left;width: 100%" >
+		<table id="questions"  style="table-layout:fixed;word-break:break-all;border: 0px;width: 100%" >
 		</table>
 	</div>
 
