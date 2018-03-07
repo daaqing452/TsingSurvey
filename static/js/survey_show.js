@@ -947,8 +947,7 @@ function doughnut(b,rq=-1){
 		$b.parents("td").append("<div id=\""+canvas_id+"\" class=\"doughnut\" style=\"width: 100%;height:400px;\"></div>");
 	}
 	else{
-		var format = uniqueID(new Date());
-		canvas_id = 'canvas' +now_page+"show" + format;
+		canvas_id = getCanvasId();
 		$b.parents("td").children("div#"+canvas_id).remove();
 		$b.parents("td").prepend("<div id=\""+canvas_id+"\" class=\"doughnut\" style=\"width: 100%;height:400px;\"></div>");
 	}
@@ -992,8 +991,7 @@ function bar(b,rq=-1){
 		$b.parents("td").append("<div id=\""+canvas_id+"\" class=\"bar\" style=\"width: 100%;height:400px;\"></div>");
 	}
 	else{
-		var format = uniqueID(new Date());
-		canvas_id = 'canvas' +now_page+"show" + format;
+		canvas_id = getCanvasId();
 		$b.parents("td").children("div#"+canvas_id).remove();
 		$b.parents("td").prepend("<div id=\""+canvas_id+"\" class=\"bar\" style=\"width: 100%;height:400px;\"></div>");
 	}
@@ -1041,8 +1039,7 @@ function Hbar(b,rq=-1){
 		$b.parents("td").append("<div id=\""+canvas_id+"\" class=\"Hbar\" style=\"width: 100%;height:400px;\"></div>");
 	}
 	else{
-		var format = uniqueID(new Date());
-		canvas_id = 'canvas' +now_page+"show" + format;
+		canvas_id = getCanvasId();
 		$b.parents("td").children("div#"+canvas_id).remove();
 		$b.parents("td").prepend("<div id=\""+canvas_id+"\" class=\"Hbar\" style=\"width: 100%;height:400px;\"></div>");
 	}
@@ -1089,8 +1086,7 @@ function Mbar(b,rq=-1){
 		$b.parents("td").append("<div id=\""+canvas_id+"\" class=\"Mbar\" style=\"width: 100%;height:400px;\"></div>");
 	}
 	else{
-		var format = uniqueID(new Date());
-		canvas_id = 'canvas' +now_page+"show" + format;
+		canvas_id = getCanvasId();
 		$b.parents("td").children("div#"+canvas_id).remove();
 		$b.parents("td").prepend("<div id=\""+canvas_id+"\" class=\"Mbar\" style=\"width: 100%;height:400px;\"></div>");
 	}
@@ -1134,12 +1130,33 @@ function Sbar(b,rq=-1){
 		$b.parents("td").append("<div id=\""+canvas_id+"\" class=\"Sbar\" style=\"width: 100%;height:400px;\"></div>");
 	}
 	else{
-		var format = uniqueID(new Date());
-		canvas_id = 'canvas' +now_page+"show" + format;
+		canvas_id = getCanvasId();
 		$b.parents("td").children("div#"+canvas_id).remove();
 		$b.parents("td").prepend("<div id=\""+canvas_id+"\" class=\"Sbar\" style=\"width: 100%;height:400px;\"></div>");
 	}
 	drawSBar(canvas_id,rowlabels,collabels,data);
+}
+
+function getCanvasId(){
+	var format = uniqueID(new Date());
+	canvas_id = 'canvas' +now_page+"show" + format;
+	if($("#"+canvas_id).length>0){
+		console.log("in!")
+		var num = 0;
+		var flag = 1;
+		while(flag == 1){
+			console.log("roop " + num)
+			if($("#"+canvas_id+num).length <= 0){
+				canvas_id = canvas_id+num;
+				flag = 0;
+				break;
+			}
+			else{
+				num += 1;
+			}
+		}
+	}
+	return canvas_id;
 }
 
 function uniqueID(now_t){
