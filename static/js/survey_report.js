@@ -1,9 +1,11 @@
 var self_report_questions = new Array();
+var now_page = "sr" //sr: selfreport; ar: allreport
 //var user_gender = 1;
 //var user_student_type = 1;
 
 //在modal中的题目样例
 function createModalHtml(q){
+	//flag: 0:all; 1:self(male,female; phd,master)
 	var HTMLContent = "<td>";
 	var index = q.index;
 	HTMLContent += "<div><font size=\"3\">"+(index + 1).toString() + "." + q.title+"</font>";
@@ -82,6 +84,7 @@ function createModalHtml(q){
 			break;
 		}
 	}
+	
 	HTMLContent += "<br/>性别<br/>"
 	HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\"男\" name=\"checkbox_name\">男</p>";	
 	HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\"女\" name=\"checkbox_name\">女</p>";
@@ -100,7 +103,7 @@ function createRHtml(rq){
 	if(rq.s_type == 8){
 		HTMLContent += "<div style=\"width:100%;\">" +rq.title_html + "</div>";
 	}
-	if(rq.s_type != 8){
+	if((rq.s_type != 8) && (rq.s_type != 9)){
 		for(var i = 0; i < rq.guize_num; i++){
 			HTMLContent += "<div style=\"width:100%;\">[规则&nbsp;"+(i+1)+ "]<br/>";
 			//console.log(rq.guizes[i].content.indexOf("radar"));
@@ -113,6 +116,9 @@ function createRHtml(rq){
 			}
 			HTMLContent += "</div>"
 		}
+	}
+	if(rq.s_type == 9){
+		HTMLContent += "";
 	}
 	if(situation == 2){
 		HTMLContent += "<br><div><button class=\"btn btn-danger btn-sm\" onclick=\"deleteRQ(this)\">删除";
@@ -287,7 +293,7 @@ function showReport(user_is_staff,user_gender){
 	//console.log(user_is_staff);
 	//drawRadar("radar_test",[],[]);
 	if(user_is_staff){
-		module_select(0);
+		module_select(1);
 	}
 	else{
 		showSelfReport();
@@ -311,7 +317,7 @@ function createSelfReport(id){
 			$("#myModal_body").empty();
 			$("#myModal_body").append("<h4>说明：先选择题目，勾选题目下所需选项，点击加入规则后进行操作。其中填空题可以选择计算操作，其他题型为选中操作。</h4>");
 			$("#myModal_body").append("<h3>选择题目</h3>");
-			var rep_select_html = "<div><select id=\"q_select\" onchange=\"select_onchange(this)\"><option value = \"\">--请选择--</option>";
+			var rep_select_html = "<div><select id=\"q_select\" onchange=\"select_onchange(this,1)\"><option value = \"\">--请选择--</option>";
 			for(var i = 0; i < questions.length; i ++){
 				var q = questions[i];
 				if(q.s_type == 8){
@@ -334,18 +340,49 @@ function createSelfReport(id){
 			editor[0] = KindEditor.create('textarea[name="'+bianji_list[0]+'"]',options_2);
 			break;
 		}
+		case 2:{
+			$("#myModal_body").empty();
+			$("#myModal_body").append("<h4>说明：先选择题目，勾选题目下所需选项，并选择展示图表，提供预览。</h4>");
+			$("#myModal_body").append("<h3>选择题目</h3>");
+			var rep_select_html = "<div><select id=\"q_select\" onchange=\"select_onchange(this,0)\"><option value = \"\">--请选择--</option>";
+			for(var i = 0; i < questions.length; i ++){
+				var q = questions[i];
+				if(q.s_type == 8){
+					continue;
+				}
+				else{
+					rep_select_html += "<option value=\""+i.toString()+"\">"+(q.index+1).toString()+". "+q.title+"</option>"
+				}
+			}
+			rep_select_html += "</select></div>";
+			$("#myModal_body").append(rep_select_html);
+			$("#myModal_body").append(table_html); //原题展示
+			break;
+		}
 	}
 	updateRadioName();
 
 }
 
-function select_onchange(b){
-	$b = $(b);
-	var q_id = $b.find("option:selected").val();
-	var HTMLContent = createModalHtml(questions[q_id]);
-	var original_q_table = $("#myModal_body").children(".table").eq(0);
-	original_q_table.empty();
-	original_q_table.append("<tr style=\"text-align:left;\">"+HTMLContent+"</tr>");
+function select_onchange(b,flag){
+	//flag: 0: all; 1: self(male, female, Ph.d., Master)
+	if(flag == 0){
+		$b = $(b);
+		var r_id = $b.find("option:selected").val();
+		var HTMLContent = createReportHtml(results[r_id]);
+		var original_q_table = $("#myModal_body").children(".table").eq(0);
+		original_q_table.empty();
+		original_q_table.append("<tr style=\"text-align:left;\">"+HTMLContent+"</tr>");
+	}
+	if(flag == 1){
+		$b = $(b);
+		var q_id = $b.find("option:selected").val();
+		var HTMLContent = createModalHtml(questions[q_id]);
+		var original_q_table = $("#myModal_body").children(".table").eq(0);
+		original_q_table.empty();
+		original_q_table.append("<tr style=\"text-align:left;\">"+HTMLContent+"</tr>");
+	}
+
 }
 
 
@@ -380,10 +417,22 @@ function updateRadioName(){
 var radar_list = [];
 
 function getRQFromModal(){
-	if(report_status.s_type == 0){
+	//console.log(report_status.s_type);
+	if(report_status.s_type == 0){ //添加描述
 		var rq = {s_type:8};
 		rq.title_html = editor_title.html();
 		rq.guize_num = 0;
+		return rq;
+	}
+	else if(report_status.s_type == 2){ //添加总体情况图表
+		if($("div#canvassr0").length == 0){
+			return {s_type:-1};
+		}
+		var rq = {s_type:9};
+		//哪一种图表（图表名称）
+		rq.title_html = $("div#myModal_body").find("div#canvassr0").prop("class");
+		//哪一题
+		rq.guize_num = $("div#myModal_body").children("div").eq(0).children("select").eq(0).find("option:selected").val();
 		return rq;
 	}
 	else{
@@ -448,23 +497,58 @@ function getRQFromModal(){
 	
 }
 
+function drawGraphs(b,rq){
+	var $b = $(b);
+	var temp = $b.children("td").eq(0).children("div").eq(0);
+
+	switch(rq.title_html){
+		case "doughnut":{
+			doughnut(temp,rq);
+			break;
+		}
+		case "bar":{
+			bar(temp,rq);
+			break;
+		}
+		case "Hbar":{
+			Hbar(temp,rq);
+			break;
+		}
+		case "Mbar":{
+			Mbar(temp,rq);
+			break;
+		}
+		case "Sbar":{
+			Sbar(temp,rq);
+			break;
+		}
+
+	}
+
+}
+
 function commitRS(){
 	var rq = getRQFromModal();
 	if(rq.s_type == -1){
 		return;
 	}
 	$("#myModal").modal('hide');
-	if(rq.s_type != 8){
-		for(var i = 0; i < bianji_list.length; i++){
-			editor[i].remove();
+	if(rq.s_type != 9){
+		if(rq.s_type != 8){
+			for(var i = 0; i < bianji_list.length; i++){
+				editor[i].remove();
+			}
 		}
-	}
-	else{
-		editor_title.remove();
+		else{
+			editor_title.remove();
+		}
 	}
 	var new_row = q_table.insertRow(-1);
 	new_row.innerHTML  = createRHtml(rq);
 	if(radar_flag) drawRadars(rq);
+	if(rq.s_type == 9){
+		drawGraphs($(new_row),rq);
+	}
 	report_status.index ++;
 	updateReport();
 	self_report_questions.push(rq);
@@ -483,6 +567,7 @@ function module_select(id){
 	$("#chapter_"+id).parent().eq(0).attr("class","active");
 	switch(id){
 		case 0:{
+			now_page = "ar";
 			for(var i = 0; i < results.length; i ++){
 				var new_row = q_table.insertRow(-1);
 				var result = results[i];
@@ -493,6 +578,7 @@ function module_select(id){
 			break;
 		}
 		case 1:{
+			now_page = "sr";
 			$("#self_report_btn").show();
 			$("#saveSr_btn").show();
 			$("#exportSr_btn").show();
@@ -503,6 +589,9 @@ function module_select(id){
 				var new_row = q_table.insertRow(-1);
 				new_row.innerHTML  = createRHtml(rq);
 				if(radar_flag) drawRadars(rq);
+				if(rq.s_type == 9){
+					drawGraphs($(new_row),rq);
+				}
 				report_status.index ++;
 			}
 			break;
@@ -934,7 +1023,11 @@ function showSelfReport(){
 		var HTMLContent = createSRHtml(self_rq);
 		$("#report").append(HTMLContent);
 		if(radar_flag) drawRadars(self_rq);
+		if(rq.s_type == 9){
+			drawGraphs($(new_row),rq);
+		}
 	}
 }
+
 
 

@@ -905,16 +905,26 @@ function createReportHtml(result){
 
 function clearCanvas(b){
 	var $b = $(b);
-	var canvas_id = 'canvas' + $b.parents("tr").index();
+	var canvas_id = 'canvas' +now_page + $b.parents("tr").index();
 	$b.parents("td").children("div#"+canvas_id).remove();
 }
 
 
 
-function doughnut(b){
+function doughnut(b,rq=-1){
 	var $b = $(b);
-	var index = $b.parents("tr").index();
-	
+	var index;
+	if(rq == -1){
+		if(now_page == "ar"){
+			index = $b.parents("tr").index();
+		}
+		else if(now_page == "sr"){
+			index = $("div#myModal_body").children("div").eq(0).children("select").eq(0).find("option:selected").val();
+		}
+	}
+	else{
+		index = rq.guize_num;
+	}
 	var result = results[index];
 	var option_text = new Array();
 	var option_num = new Array();
@@ -930,19 +940,36 @@ function doughnut(b){
 	}
 	
 
-	var canvas_id = 'canvas' + $b.parents("tr").index();
-	$b.parents("td").children("div#"+canvas_id).remove();
-	$b.parents("td").append("<div id=\""+canvas_id+"\" style=\"width: 600px;height:400px;margin:0 100px 0 100px\"></div>");
-	
+	var canvas_id;
+	if(rq == -1){
+		canvas_id = 'canvas' +now_page + $b.parents("tr").index();
+		$b.parents("td").children("div#"+canvas_id).remove();
+		$b.parents("td").append("<div id=\""+canvas_id+"\" class=\"doughnut\" style=\"width: 100%;height:400px;\"></div>");
+	}
+	else{
+		canvas_id = getCanvasId();
+		$b.parents("td").children("div#"+canvas_id).remove();
+		$b.parents("td").prepend("<div id=\""+canvas_id+"\" class=\"doughnut\" style=\"width: 100%;height:400px;\"></div>");
+	}
     drawDoughnut(canvas_id, option_text, option_num);
     
 
 }
 
-function bar(b){
+function bar(b,rq=-1){
 	var $b = $(b);
-	var index = $b.parents("tr").index();
-	
+	var index;
+	if(rq == -1){
+		if(now_page == "ar"){
+			index = $b.parents("tr").index();
+		}
+		else if(now_page == "sr"){
+			index = $("div#myModal_body").children("div").eq(0).children("select").eq(0).find("option:selected").val();
+		}
+	}
+	else{
+		index = rq.guize_num;
+	}
 	var result = results[index];
 	var option_text = new Array();
 	var option_num = new Array();
@@ -957,18 +984,38 @@ function bar(b){
 		option_num.push(option.num);
 	}
 	
-
-	var canvas_id = 'canvas' + $b.parents("tr").index();
-	$b.parents("td").children("div#"+canvas_id).remove();
-	$b.parents("td").append("<div id=\""+canvas_id+"\" style=\"width: 600px;height:400px;margin:0 100px 0 100px\"></div>");
+	var canvas_id;
+	if(rq == -1){
+		canvas_id = 'canvas' +now_page + $b.parents("tr").index();
+		$b.parents("td").children("div#"+canvas_id).remove();
+		$b.parents("td").append("<div id=\""+canvas_id+"\" class=\"bar\" style=\"width: 100%;height:400px;\"></div>");
+	}
+	else{
+		canvas_id = getCanvasId();
+		$b.parents("td").children("div#"+canvas_id).remove();
+		$b.parents("td").prepend("<div id=\""+canvas_id+"\" class=\"bar\" style=\"width: 100%;height:400px;\"></div>");
+	}
 	
+
+
     drawBar(canvas_id, option_text, option_num);
     
 }
 
-function Hbar(b){
+function Hbar(b,rq=-1){
 	var $b = $(b);
-	var index = $b.parents("tr").index();
+	var index;
+	if(rq == -1){
+		if(now_page == "ar"){
+			index = $b.parents("tr").index();
+		}
+		else if(now_page == "sr"){
+			index = $("div#myModal_body").children("div").eq(0).children("select").eq(0).find("option:selected").val();
+		}
+	}
+	else{
+		index = rq.guize_num;
+	}
 	
 	var result = results[index];
 	var option_text = new Array();
@@ -985,19 +1032,36 @@ function Hbar(b){
 	}
 	
 
-	var canvas_id = 'canvas' + $b.parents("tr").index();
-	$b.parents("td").children("div#"+canvas_id).remove();
-	$b.parents("td").append("<div id=\""+canvas_id+"\" style=\"width: 600px;height:400px;margin:0 100px 0 100px\"></div>");
-	
+	var canvas_id;
+	if(rq == -1){
+		canvas_id = 'canvas' +now_page + $b.parents("tr").index();
+		$b.parents("td").children("div#"+canvas_id).remove();
+		$b.parents("td").append("<div id=\""+canvas_id+"\" class=\"Hbar\" style=\"width: 100%;height:400px;\"></div>");
+	}
+	else{
+		canvas_id = getCanvasId();
+		$b.parents("td").children("div#"+canvas_id).remove();
+		$b.parents("td").prepend("<div id=\""+canvas_id+"\" class=\"Hbar\" style=\"width: 100%;height:400px;\"></div>");
+	}
     drawHBar(canvas_id, option_text, option_num);
     
 }
 
 
-function Mbar(b){
+function Mbar(b,rq=-1){
 	var $b = $(b);
-	var index = $b.parents("tr").index();
-	
+	var index;
+	if(rq == -1){
+		if(now_page == "ar"){
+			index = $b.parents("tr").index();
+		}
+		else if(now_page == "sr"){
+			index = $("div#myModal_body").children("div").eq(0).children("select").eq(0).find("option:selected").val();
+		}
+	}
+	else{
+		index = rq.guize_num;
+	}
 	var result = results[index];
 	var rowlabels = new Array();
 	var collabels = new Array();
@@ -1015,16 +1079,34 @@ function Mbar(b){
 	for(var i = 0; i < n_row; i++){
 		rowlabels.push(result.options[i*n_col].text);
 	}
-	var canvas_id = 'canvas' + $b.parents("tr").index();
-	$b.parents("td").children("div#"+canvas_id).remove();
-	$b.parents("td").append("<div id=\""+canvas_id+"\" style=\"width: 600px;height:400px;margin:0 100px 0 100px\"></div>");
+	var canvas_id;
+	if(rq == -1){
+		canvas_id = 'canvas' +now_page + $b.parents("tr").index();
+		$b.parents("td").children("div#"+canvas_id).remove();
+		$b.parents("td").append("<div id=\""+canvas_id+"\" class=\"Mbar\" style=\"width: 100%;height:400px;\"></div>");
+	}
+	else{
+		canvas_id = getCanvasId();
+		$b.parents("td").children("div#"+canvas_id).remove();
+		$b.parents("td").prepend("<div id=\""+canvas_id+"\" class=\"Mbar\" style=\"width: 100%;height:400px;\"></div>");
+	}
 	drawMBar(canvas_id,rowlabels,collabels,data);
 }
 
-function Sbar(b){
+function Sbar(b,rq=-1){
 	var $b = $(b);
-	var index = $b.parents("tr").index();
-	
+	var index;
+	if(rq == -1){
+		if(now_page == "ar"){
+			index = $b.parents("tr").index();
+		}
+		else if(now_page == "sr"){
+			index = $("div#myModal_body").children("div").eq(0).children("select").eq(0).find("option:selected").val();
+		}
+	}
+	else{
+		index = rq.guize_num;
+	}
 	var result = results[index];
 	var rowlabels = new Array();
 	var collabels = ["0","1"];
@@ -1041,9 +1123,52 @@ function Sbar(b){
 	for(var i = 0; i < n_row; i++){
 		rowlabels.push(result.options[i*n_col].text);
 	}
-	var canvas_id = 'canvas' + $b.parents("tr").index();
-	$b.parents("td").children("div#"+canvas_id).remove();
-	$b.parents("td").append("<div id=\""+canvas_id+"\" style=\"width: 600px;height:400px;margin:0 100px 0 100px\"></div>");
+	var canvas_id;
+	if(rq == -1){
+		canvas_id = 'canvas' +now_page + $b.parents("tr").index();
+		$b.parents("td").children("div#"+canvas_id).remove();
+		$b.parents("td").append("<div id=\""+canvas_id+"\" class=\"Sbar\" style=\"width: 100%;height:400px;\"></div>");
+	}
+	else{
+		canvas_id = getCanvasId();
+		$b.parents("td").children("div#"+canvas_id).remove();
+		$b.parents("td").prepend("<div id=\""+canvas_id+"\" class=\"Sbar\" style=\"width: 100%;height:400px;\"></div>");
+	}
 	drawSBar(canvas_id,rowlabels,collabels,data);
 }
+
+function getCanvasId(){
+	var format = uniqueID(new Date());
+	canvas_id = 'canvas' +now_page+"show" + format;
+	if($("#"+canvas_id).length>0){
+		console.log("in!")
+		var num = 0;
+		var flag = 1;
+		while(flag == 1){
+			console.log("roop " + num)
+			if($("#"+canvas_id+num).length <= 0){
+				canvas_id = canvas_id+num;
+				flag = 0;
+				break;
+			}
+			else{
+				num += 1;
+			}
+		}
+	}
+	return canvas_id;
+}
+
+function uniqueID(now_t){
+	var year = prefixzero(now_t.getFullYear().toString());
+	var month = prefixzero((now_t.getMonth()+1).toString());
+	var day = prefixzero(now_t.getDate().toString());
+	var hour = prefixzero(now_t.getHours().toString());
+	var minute = prefixzero(now_t.getMinutes().toString());
+	var second = prefixzero(now_t.getSeconds().toString());
+	var t_format = year + month + day + hour + minute + second;
+	return t_format;
+}
+
+
 
