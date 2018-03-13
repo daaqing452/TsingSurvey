@@ -381,8 +381,7 @@ function getQFromModal(){
 	}
 	q.title_html = title_editor.html();
 	q.title = title_editor.text();
-	console.log(q.title_html);
-	console.log(q.title);
+	
 	switch(current_status.s_type){
 		case 1:{
 			var rows = document.getElementById("options").rows;
