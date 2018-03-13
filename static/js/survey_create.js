@@ -69,6 +69,10 @@ function release() {
 	var title = $('input#title').val();
 	var sample_list_id = $('select#sample_list').val();
 	var ifpublic = $('#ifpublic').prop('checked') ? 1 : 0;
+	if (sample_list_id == -1 && !ifpublic) {
+		alert('请选择样本列表！');
+		return;
+	}
 	var credit = $('#credit').val();
 	if (credit == "") credit = 0;
 	if((new RegExp("^[0-9]+$")).test(credit) == false){

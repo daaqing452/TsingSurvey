@@ -173,7 +173,8 @@ def survey(request, qid):
 				elif op == 'release':
 					questionaire.public = ifpublic = bool(int(request.POST.get('ifpublic')))
 					questionaire.credit = credit = int(request.POST.get('credit'))
-					questionaire.sample_list_id = sample_list_id = int(request.POST.get('sample_list_id'))
+					if request.POST.get('sample_list_id') is not None:
+						questionaire.sample_list_id = sample_list_id = int(request.POST.get('sample_list_id'))
 					if user.is_staff or credit == 0:
 						release_to_users(questionaire)
 					else:

@@ -118,15 +118,17 @@
 
 	
 	{% ifequal status 0 %}
+		{% if user.is_staff %}
 		<select id='sample_list' style='float:right;height: 30px;'>
-			<option value='-1'> </option>
+			<option value='-1'> 请选择样本列表 </option>
 			{% for sample_list in sample_lists %}
 			<option value='{{ sample_list.id }}'> {{ sample_list.name }} </option>
 			{% endfor %}
 		</select>
+		{% endif %}
 		<button id="save_btn" class="btn btn-success btn-sm" onclick="save()" style="float:right"> 暂存 </button>
 		<button id="release_btn" class="btn btn-success btn-sm" onclick="release()" style="float:right"> 发布 </button>
-		<input id="ifpublic" type="checkbox">公共问卷</input>&nbsp;&nbsp;&nbsp;&nbsp;
+		<input id="ifpublic" type="checkbox" {% if not user.is_staff %} checked="true" disabled="disabled" {% endif %}>公共问卷</input>&nbsp;&nbsp;&nbsp;&nbsp;
 		完成获得<input style="width:40px" id="credit" type="text">积分</input>
 	{% endifequal %}
 
