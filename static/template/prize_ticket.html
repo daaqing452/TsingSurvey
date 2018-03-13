@@ -25,7 +25,7 @@
 <br/>
 <br/>
 <table id="main" class="table">
-	<tr tid={{ pair.ticket }}>
+	<tr>
 		<td> 奖品名称 </td>
 		{% if personal %}
 		<td> 奖品描述 </td>
@@ -43,7 +43,7 @@
 		{% endif %}
 	</tr>
 	{% for t in tickets %}
-	<tr id="item" tid={{ t.id }}>
+	<tr id="item" tid={{ t.tid }}>
 		<td> {{ t.title }} </td>
 		{% if personal %}
 		<td style="width: 25%"><button content="{{ t.description }}" onclick="show_description(this)" class="btn-primary">查看</button></td>
@@ -55,7 +55,7 @@
 			{% if t.used %}
 			<td>已消费</td>
 			{% else %}
-			<td style="width: 25%"> <button class="btn-success" tid="{{ t.id }}" onclick="exchange(this)">消费</button> </td>
+			<td style="width: 25%"> <button class="btn-success" tid="{{ t.tid }}" onclick="exchange(this)">消费</button> </td>
 			{% endif %}
 		{% else %}
 		<td> {% if t.used %} √ {% else %}  {% endif %} </td>

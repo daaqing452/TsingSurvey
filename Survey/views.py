@@ -173,8 +173,9 @@ def survey(request, qid):
 				elif op == 'release':
 					questionaire.public = ifpublic = bool(int(request.POST.get('ifpublic')))
 					questionaire.credit = credit = int(request.POST.get('credit'))
-					questionaire.sample_list_id = sample_list_id = int(request.POST.get('sample_list_id'))
-					if user.is_staff:
+					if request.POST.get('sample_list_id') is not None:
+						questionaire.sample_list_id = sample_list_id = int(request.POST.get('sample_list_id'))
+					if user.is_staff or credit == 0:
 						release_to_users(questionaire)
 					else:
 						questionaire.status = 4
@@ -227,16 +228,16 @@ def survey(request, qid):
 				# 判断暂存还是提交
 				if complete == 'yes':
 					qid_dict[str(qid)] = 1
-					suser.qid_list = json.dumps(qid_dict)
-					suser.save()
 					answeraire.submitted = True
 					answeraire.save()
+					suser.qid_list = json.dumps(qid_dict)
 					# 计算积分
-					k = (len(json.loads(astring)) - 1) / 5 + 1
-					credit = int(k * math.pow(1.05, len(qid_dict)))
-					if questionaire.credit != -1:
-						credit = questionaire.credit;
-					suser.credit += credit
+					# k = (len(json.loads(astring)) - 1) / 5 + 1
+					# credit = int(k * math.pow(1.05, len(qid_dict)))
+					# if questionaire.credit != -1:
+					# 	credit = questionaire.credit;
+					# suser.credit += credit
+					suser.credit += questionaire.credit
 					suser.save()
 					return HttpResponse(json.dumps({'credit': credit}))
 				else:

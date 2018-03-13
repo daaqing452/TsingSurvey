@@ -430,6 +430,7 @@ def prize_ticket(request, ptype, qid=-1):
 
 	if op == 'if_scan_qrcode':
 		jdata = {'result': 'not scaned'}
+		print(request.POST.get('tid'))
 		tid = int(request.POST.get('tid'))
 		if PrizeTicket.objects.get(id=tid).use_status > 0:
 			jdata['result'] = 'scaned'
