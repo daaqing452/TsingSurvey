@@ -53,13 +53,15 @@ def index(request):
 			questionaires = Questionaire.objects.filter(id=int(qid))
 			if len(questionaires) > 0:
 				questionaire = questionaires[0]
-				rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
-				qid_list.append(questionaire.id)
+				if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
+					rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
+					qid_list.append(questionaire.id)
 		# 公共问卷
 		for questionaire in Questionaire.objects.filter(public=True):
 			if int(questionaire.id) in qid_list: continue
-			rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
-			qid_list.append(questionaire.id)
+			if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
+				rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
+				qid_list.append(questionaire.id)
 
 	rdata['rq_list'] = rq_list
 	rdata['editable'] = user.is_staff or suser.admin_survey
@@ -441,10 +443,12 @@ def profile(request, uid):
 		questionaires = Questionaire.objects.filter(id=qid)
 		if len(questionaires) > 0:
 			questionaire = questionaires[0]
-			rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
+			if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
+				rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
 	for questionaire in Questionaire.objects.filter(public=True):
 		if str(questionaire.id) in qid_dict: continue
-		rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
+		if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
+			rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
 	rdata['rq_list'] = rq_list
 
 	return render(request, 'profile.html', rdata)
