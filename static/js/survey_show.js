@@ -923,7 +923,7 @@ function doughnut(b,rq=-1){
 		}
 	}
 	else{
-		index = rq.guize_num;
+		index = rq.index;
 	}
 	var result = results[index];
 	var option_text = new Array();
@@ -968,7 +968,7 @@ function bar(b,rq=-1){
 		}
 	}
 	else{
-		index = rq.guize_num;
+		index = rq.index;
 	}
 	var result = results[index];
 	var option_text = new Array();
@@ -1014,7 +1014,7 @@ function Hbar(b,rq=-1){
 		}
 	}
 	else{
-		index = rq.guize_num;
+		index = rq.index;
 	}
 	
 	var result = results[index];
@@ -1039,10 +1039,13 @@ function Hbar(b,rq=-1){
 		$b.parents("td").append("<div id=\""+canvas_id+"\" class=\"Hbar\" style=\"width: 100%;height:400px;\"></div>");
 	}
 	else{
+		
 		canvas_id = getCanvasId();
 		$b.parents("td").children("div#"+canvas_id).remove();
 		$b.parents("td").prepend("<div id=\""+canvas_id+"\" class=\"Hbar\" style=\"width: 100%;height:400px;\"></div>");
+		
 	}
+	
     drawHBar(canvas_id, option_text, option_num);
     
 }
@@ -1060,7 +1063,7 @@ function Mbar(b,rq=-1){
 		}
 	}
 	else{
-		index = rq.guize_num;
+		index = rq.index;
 	}
 	var result = results[index];
 	var rowlabels = new Array();
@@ -1105,7 +1108,7 @@ function Sbar(b,rq=-1){
 		}
 	}
 	else{
-		index = rq.guize_num;
+		index = rq.index;
 	}
 	var result = results[index];
 	var rowlabels = new Array();
@@ -1141,11 +1144,11 @@ function getCanvasId(){
 	var format = uniqueID(new Date());
 	canvas_id = 'canvas' +now_page+"show" + format;
 	if($("#"+canvas_id).length>0){
-		console.log("in!")
+		
 		var num = 0;
 		var flag = 1;
 		while(flag == 1){
-			console.log("roop " + num)
+			
 			if($("#"+canvas_id+num).length <= 0){
 				canvas_id = canvas_id+num;
 				flag = 0;

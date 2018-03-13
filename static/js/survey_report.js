@@ -1,10 +1,12 @@
 var self_report_questions = new Array();
 var now_page = "sr" //sr: selfreport; ar: allreport
+var drag_previous_index = -1; //表格拖拽前tr位置
+var drag_after_index = -1; //表格拖拽后tr位置
 //var user_gender = 1;
 //var user_student_type = 1;
 
 //在modal中的题目样例
-function createModalHtml(q){
+function createModalHtml(q,gender_student = 1){
 	//flag: 0:all; 1:self(male,female; phd,master)
 	var HTMLContent = "<td>";
 	var index = q.index;
@@ -84,14 +86,15 @@ function createModalHtml(q){
 			break;
 		}
 	}
-	
-	HTMLContent += "<br/>性别<br/>"
-	HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\"男\" name=\"checkbox_name\">男</p>";	
-	HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\"女\" name=\"checkbox_name\">女</p>";
-	HTMLContent += "<br/>学历<br/>"
-	HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\"硕士\" name=\"checkbox_name\">硕士</p>";	
-	HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\"博士\" name=\"checkbox_name\">博士</p>";	
-	HTMLContent += "</td>";
+	if(gender_student == 1){
+		HTMLContent += "<br/>性别<br/>"
+		HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\"男\" name=\"checkbox_name\">男</p>";	
+		HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\"女\" name=\"checkbox_name\">女</p>";
+		HTMLContent += "<br/>学历<br/>"
+		HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\"硕士\" name=\"checkbox_name\">硕士</p>";	
+		HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\"博士\" name=\"checkbox_name\">博士</p>";	
+		HTMLContent += "</td>";
+	}
 	return HTMLContent;
 }
 
@@ -120,10 +123,10 @@ function createRHtml(rq){
 	if(rq.s_type == 9){
 		HTMLContent += "";
 	}
-	if(situation == 2){
-		HTMLContent += "<br><div><button class=\"btn btn-danger btn-sm\" onclick=\"deleteRQ(this)\">删除";
-		HTMLContent += "<button class=\"btn btn-success btn-sm\" onclick=\"moveRQup(this)\">上移</button><button class=\"btn btn-success btn-sm\" onclick=\"moveRQdown(this)\">下移</button></div><hr>";
-	}
+	
+	HTMLContent += "<br><div><button class=\"btn btn-danger btn-sm\" onclick=\"deleteRQ(this)\">删除";
+	HTMLContent += "<button class=\"btn btn-success btn-sm\" onclick=\"moveRQup(this)\">上移</button><button class=\"btn btn-success btn-sm\" onclick=\"moveRQdown(this)\">下移</button></div><hr>";
+	
 	HTMLContent += "</td>";
 	return HTMLContent;
 }
@@ -296,7 +299,9 @@ function showReport(user_is_staff,user_gender){
 		module_select(1);
 	}
 	else{
-		showSelfReport();
+		if(situation == 3){
+			showSelfReport();
+		}
 	}
 }
 
@@ -304,6 +309,7 @@ function showReport(user_is_staff,user_gender){
 //在管理员编辑个人报告模板时的弹出框
 function createSelfReport(id){
 	report_status.s_type = id;
+	tableDragable();
 	switch(id){
 		case 0:{
 			$("#myModal_body").empty();
@@ -432,7 +438,7 @@ function getRQFromModal(){
 		//哪一种图表（图表名称）
 		rq.title_html = $("div#myModal_body").find("div#canvassr0").prop("class");
 		//哪一题
-		rq.guize_num = $("div#myModal_body").children("div").eq(0).children("select").eq(0).find("option:selected").val();
+		rq.index = $("div#myModal_body").children("div").eq(0).children("select").eq(0).find("option:selected").val();
 		return rq;
 	}
 	else{
@@ -500,7 +506,10 @@ function getRQFromModal(){
 function drawGraphs(b,rq){
 	var $b = $(b);
 	var temp = $b.children("td").eq(0).children("div").eq(0);
-
+	if(temp.length == 0){
+		$b.children("td").eq(0).append("<div></div>");
+		temp = $b.children("td").eq(0).children("div").eq(0);
+	}
 	switch(rq.title_html){
 		case "doughnut":{
 			doughnut(temp,rq);
@@ -560,6 +569,7 @@ function module_select(id){
 	$("#export_btn").hide();
 	$("#saveSr_btn").hide();
 	$("#exportSr_btn").hide();
+	$("#preview_btn").hide();
 	var length = $("#nav_1").children("li").length;
 	for(var i = 0; i < length; i++){
 		$("#chapter_"+i).parent().eq(0).attr("class","");
@@ -580,8 +590,14 @@ function module_select(id){
 		case 1:{
 			now_page = "sr";
 			$("#self_report_btn").show();
-			$("#saveSr_btn").show();
+			if(situation == 2){
+				$("#saveSr_btn").show();
+			}
+			if(situation == 3){
+				$("#exportSr_btn").text("修改个人报告");
+			}
 			$("#exportSr_btn").show();
+			$("#preview_btn").show();
 			if(report_template == "") break;
 			self_report_questions = JSON.parse(report_template);
 			for(var i = 0; i < self_report_questions.length; i ++){
@@ -594,9 +610,52 @@ function module_select(id){
 				}
 				report_status.index ++;
 			}
+		    tableDragable();
 			break;
 		}
 	}
+}
+
+var fixHelper = function(e, ui) {  
+   //console.log(ui)   
+    ui.children().each(function() {  
+        $(this).width($(this).width());     //在拖动时，拖动行的cell（单元格）宽度会发生改变。在这里做了处理就没问题了   
+    });  
+    return ui;  
+};  
+
+function reorderTrContent(pindex,nindex){
+	if(pindex == -1 || nindex == -1){
+		return;
+	}
+	
+	if(pindex < nindex){
+		for(var i = pindex; i < nindex; i++){
+			swap_self_report_questions(i,i+1);
+		}
+	}
+	else if(pindex > nindex){
+		for(var i = pindex; i > nindex; i--){
+			swap_self_report_questions(i,i-1);
+		}
+	}
+
+}
+           
+function tableDragable(){
+    $("#questions tbody").sortable({                //这里是talbe tbody，绑定 了sortable   
+        helper: fixHelper,                  //调用fixHelper   
+        axis:"y",  
+        start:function(e, ui){  
+        	drag_previous_index = ui.item.index();
+        	return ui;  
+        },  
+        stop:function(e, ui){
+        	drag_after_index = ui.item.index();
+        	reorderTrContent(drag_previous_index,drag_after_index); 
+        	return ui;                  
+        }  
+    }).disableSelection();  
 }
 
 function addOption_2(b){
@@ -643,6 +702,7 @@ function exportSr() {
 		success: function(data) {
 			var data = JSON.parse(data);
 			alert("发布成功");
+
 			window.location.reload();
 		}
 	});
@@ -677,7 +737,8 @@ function wayToShow(b){
 
 function createSRHtml(self_rq){
 	//self_rq 模板; answer 用户答案; question 原问题；
-	var HTMLContent = "<div style=\"100%\">";
+	var HTMLContent = "<td>"; 
+	HTMLContent += "<div style=\"100%\">";
 	if(self_rq.s_type != 8){
 		var q_index = self_rq.index;
 		var answer = answers_from_database[q_index];
@@ -916,6 +977,7 @@ function createSRHtml(self_rq){
 		}
 	}
 	HTMLContent += "</div>";
+	HTMLContent += "</td>";
 	return HTMLContent;
 }
 
@@ -1019,15 +1081,39 @@ function showSelfReport(){
 	if(report_template == "") return;
 	self_report_questions = JSON.parse(report_template);
 	for(var i = 0; i < self_report_questions.length; i++){
-		self_rq = self_report_questions[i];
-		var HTMLContent = createSRHtml(self_rq);
-		$("#report").append(HTMLContent);
+		var self_rq = self_report_questions[i];
+		
+		var new_row = q_table.insertRow(-1);
+		new_row.innerHTML  = createSRHtml(self_rq);
 		if(radar_flag) drawRadars(self_rq);
-		if(rq.s_type == 9){
-			drawGraphs($(new_row),rq);
+		if(self_rq.s_type == 9){
+			drawGraphs($(new_row),self_rq);
 		}
+		report_status.index ++;
 	}
 }
 
+//预览部分函数开始
+function previewShow(){
+
+}
+
+function preview(){
+	$("#myModal_body").empty();
+	$("#myModalLabel").text("个人报告预览");
+	$(".modal-footer").children("button").eq(1).hide();
+	$(".modal-footer").children("button").eq(2).show();
+	$("#myModal_body").append("<table></table>");
+	var $table = $("#myModal_body").children("table").eq(0);
+	var answers_from_database_copy = JSON.parse(JSON.stringify(answers_from_database));
+	console.log(JSON.stringify(answers_from_database_copy))
+	for(var i = 0; i < self_report_questions.length; i ++){
+		now_report = self_report_questions[i];
+		var index = now_report.index;
+		var HTMLContent = createModalHtml(questions[index],-1);
+		$table.append("<tr style=\"text-align:left;\">"+HTMLContent+"</tr>");
+	}
 
 
+}
+//预览部分函数结束
