@@ -381,7 +381,7 @@ function getQFromModal(){
 	}
 	q.title_html = title_editor.html();
 	q.title = title_editor.text();
-	
+
 	switch(current_status.s_type){
 		case 1:{
 			var rows = document.getElementById("options").rows;
@@ -865,7 +865,9 @@ function modifyQ(b){
 			$("#myModal_body").append(table_html,table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
-			$("#s_title").html(q.title_html);
+			$("#myModal_body").children(".table").eq(0).find("textarea").eq(0).attr("name","title_bianji");
+			title_editor = KindEditor.create('textarea[name="title_bianji"]',options);
+			title_editor.html(q.title_html);
 			$mymodal_table.eq(1).attr("id","options");
 			$mymodal_table.eq(1).addClass("table-striped");
 			$mymodal_table.eq(1).append("<tbody></tbody>");
@@ -901,9 +903,7 @@ function modifyQ(b){
 			$mymodal_table.eq(2).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
 			$mymodal_tbody.append(condition_html);
-			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
-		    myNicEditor.setPanel('myNicPanel');
-		    myNicEditor.addInstance('s_title');
+			
 			break;
 		}
 		case 2:{
@@ -911,7 +911,9 @@ function modifyQ(b){
 			$("#myModal_body").append(table_html,table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
-			$("#s_title").html(q.title_html);
+			$("#myModal_body").children(".table").eq(0).find("textarea").eq(0).attr("name","title_bianji");
+			title_editor = KindEditor.create('textarea[name="title_bianji"]',options);
+			title_editor.html(q.title_html);
 			$mymodal_table.eq(1).attr("id","options");
 			$mymodal_table.eq(1).addClass("table-striped");
 			$mymodal_table.eq(1).append("<tbody></tbody>");
@@ -958,9 +960,7 @@ function modifyQ(b){
 			if(q.max_select != ""){
 				$mymodal_tbody.find("#max_select").children("input[type=\"text\"]").val(q.max_select);
 			}
-			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
-		    myNicEditor.setPanel('myNicPanel');
-		    myNicEditor.addInstance('s_title');
+			
 			break;
 		}
 		case 3:{
@@ -968,14 +968,14 @@ function modifyQ(b){
 			$("#myModal_body").append(table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
-			$("#s_title").html(q.title_html);
+			$("#myModal_body").children(".table").eq(0).find("textarea").eq(0).attr("name","title_bianji");
+			title_editor = KindEditor.create('textarea[name="title_bianji"]',options);
+			title_editor.html(q.title_html);
 			$mymodal_table.eq(1).attr("id","conditions");
 			$mymodal_table.eq(1).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
 			$mymodal_tbody.append(condition_html);
-			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
-		    myNicEditor.setPanel('myNicPanel');
-		    myNicEditor.addInstance('s_title');
+			
 			break;
 		}
 		case 4:{
@@ -983,7 +983,9 @@ function modifyQ(b){
 			$("#myModal_body").append(table_html,table_html,table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
-			$("#s_title").html(q.title_html);
+			$("#myModal_body").children(".table").eq(0).find("textarea").eq(0).attr("name","title_bianji");
+			title_editor = KindEditor.create('textarea[name="title_bianji"]',options);
+			title_editor.html(q.title_html);
 			$mymodal_table.eq(1).addClass("table-striped");
 			$mymodal_table.eq(1).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(1).children().eq(0);
@@ -1014,9 +1016,7 @@ function modifyQ(b){
 			$mymodal_table.eq(3).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(3).children().eq(0);
 			$mymodal_tbody.append(condition_html);
-			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
-		    myNicEditor.setPanel('myNicPanel');
-		    myNicEditor.addInstance('s_title');
+			
 			break;
 		}
 		case 5:{
@@ -1024,7 +1024,9 @@ function modifyQ(b){
 			$("#myModal_body").append(table_html,table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
-			$("#s_title").html(q.title_html);
+			$("#myModal_body").children(".table").eq(0).find("textarea").eq(0).attr("name","title_bianji");
+			title_editor = KindEditor.create('textarea[name="title_bianji"]',options);
+			title_editor.html(q.title_html);
 			$mymodal_table.eq(1).attr("id","options");
 			$mymodal_table.eq(1).addClass("table-striped");
 			$mymodal_table.eq(1).append("<tbody></tbody>");
@@ -1056,9 +1058,7 @@ function modifyQ(b){
 			if(q.max_select != ""){
 				$mymodal_tbody.find("#max_select").children("input[type=\"text\"]").val(q.max_select);
 			}
-			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
-		    myNicEditor.setPanel('myNicPanel');
-		    myNicEditor.addInstance('s_title');
+			
 			break;
 		}
 		case 6:{
@@ -1066,7 +1066,9 @@ function modifyQ(b){
 			$("#myModal_body").append(table_html,table_html,table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
-			$("#s_title").html(q.title_html);
+			$("#myModal_body").children(".table").eq(0).find("textarea").eq(0).attr("name","title_bianji");
+			title_editor = KindEditor.create('textarea[name="title_bianji"]',options);
+			title_editor.html(q.title_html);
 			$mymodal_table.eq(1).attr("id","options_row");
 			$mymodal_table.eq(1).addClass("table-striped");
 			$mymodal_table.eq(1).append("<tbody></tbody>");
@@ -1105,9 +1107,7 @@ function modifyQ(b){
 			$mymodal_table.eq(3).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(3).children().eq(0);
 			$mymodal_tbody.append(condition_html);
-			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
-		    myNicEditor.setPanel('myNicPanel');
-		    myNicEditor.addInstance('s_title');
+			
 			break;
 		}
 		case 7:{
@@ -1115,7 +1115,9 @@ function modifyQ(b){
 			$("#myModal_body").append(table_html,table_html,table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
-			$("#s_title").html(q.title_html);
+			$("#myModal_body").children(".table").eq(0).find("textarea").eq(0).attr("name","title_bianji");
+			title_editor = KindEditor.create('textarea[name="title_bianji"]',options);
+			title_editor.html(q.title_html);
 			$mymodal_table.eq(1).attr("id","options");
 			$mymodal_table.eq(1).addClass("table-striped");
 			$mymodal_table.eq(1).append("<tbody></tbody>");
@@ -1136,9 +1138,7 @@ function modifyQ(b){
 			$mymodal_table.eq(2).append("<tbody></tbody>");
 			$mymodal_tbody = $mymodal_table.eq(2).children().eq(0);
 			$mymodal_tbody.append(condition_html);
-			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
-			myNicEditor.setPanel('myNicPanel');
-			myNicEditor.addInstance('s_title');
+			
 			break;
 		}
 		case 8:{
@@ -1146,10 +1146,10 @@ function modifyQ(b){
 			$("#myModal_body").append(table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(table_title_html);
-			$("#s_title").html(q.title_html);
-			var myNicEditor = new nicEditor({buttonList : ['fontFamily','fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','forecolor','bgcolor']});
-		    myNicEditor.setPanel('myNicPanel');
-		    myNicEditor.addInstance('s_title');
+			$("#myModal_body").children(".table").eq(0).find("textarea").eq(0).attr("name","title_bianji");
+			title_editor = KindEditor.create('textarea[name="title_bianji"]',options);
+			title_editor.html(q.title_html);
+			
 			break;
 		}
 	}
