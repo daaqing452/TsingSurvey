@@ -59,6 +59,7 @@ def index(request):
 		# 公共问卷
 		for questionaire in Questionaire.objects.filter(public=True):
 			if int(questionaire.id) in qid_list: continue
+			if questionaire.status == 4: continue
 			if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
 				rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
 				qid_list.append(questionaire.id)
@@ -447,6 +448,7 @@ def profile(request, uid):
 				rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
 	for questionaire in Questionaire.objects.filter(public=True):
 		if str(questionaire.id) in qid_dict: continue
+		if questionaire.status == 4: continue
 		if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
 			rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
 	rdata['rq_list'] = rq_list
