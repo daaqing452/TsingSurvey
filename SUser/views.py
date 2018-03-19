@@ -50,7 +50,6 @@ def index(request):
 			for questionaire in Questionaire.objects.filter(founder=user.id):
 				rq_list.append(Utils.remakeq(questionaire, [], True))
 				qid_list.append(questionaire.id)
-
 		else:
 			# 普通用户
 			for qid in qid_dict:

@@ -24,7 +24,7 @@ def check_fill(qid, qid_dict):
 		return 1
 
 def check_questionaire_in_index(user, questionaire, qid_dict):
-	return not (not user.is_staff and check_fill(questionaire.id, qid_dict) != 1 and (questionaire.status == 2) or  (questionaire.status == 3))
+	return not (not user.is_staff and check_fill(questionaire.id, qid_dict) != 1 and (questionaire.status == 2 or questionaire.status == 3))
 
 def remakeq(questionaire, qid_dict, editable):
 		d = {}
