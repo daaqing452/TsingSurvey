@@ -300,12 +300,33 @@ function showReport(user_is_staff,user_gender){
 	}
 	else{
 		if(situation == 3){
-			showSelfReport();
+			module_select_user(1);
 		}
 		else if(situation == 2){
 			showPage();
 			getindex();
 			fillAnswer();
+		}
+	}
+}
+
+function module_select_user(id){
+	$("#questions").empty();
+	var length = $("#nav_2").children("li").length;
+	for(var i = 0; i < length; i++){
+		$("#chapter_user_"+i).parent().eq(0).attr("class","");
+	}
+	$("#chapter_user_"+id).parent().eq(0).attr("class","active");
+	switch(id){
+		case 0:{
+			showPage();
+			getindex();
+			fillAnswer();
+			break;
+		}
+		case 1:{
+			showSelfReport();
+			break;
 		}
 	}
 }
@@ -599,9 +620,9 @@ function module_select(id){
 				$("#saveSr_btn").show();
 			}
 			if(situation == 3){
-				$("#exportSr_btn").text("修改个人报告");
+				$("#saveSr_btn").text("修改个人报告");
 			}
-			$("#exportSr_btn").show();
+			$("#saveSr_btn").show();
 			$("#preview_btn").show();
 			if(report_template == "") break;
 			self_report_questions = JSON.parse(report_template);
