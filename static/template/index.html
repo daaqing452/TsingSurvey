@@ -11,8 +11,10 @@
 		<td align=center> 创建日期 </td>
 		<td align=center> 标题 </td>
 		<td align=center> 是否填写？ </td>
-		{% if editable %}
+		{% if user.is_staff %}
 		<td align=center> 发放人 </td>
+		{% endif %}
+		{% if editable %}
 		<td align=center> 问卷状态 </td>
 		<td align=center> 填写人数 </td>
 		<td> </td>
@@ -26,9 +28,11 @@
 		<td align=center> {{ rq.create_time | date:"Y-m-d H:i:s" }} </td>
 		<td align=center> <a href='/survey/{{ rq.id }}'> {{ rq.title }} </a> </td>
 		<td align=center>  {{ rq.fill }} </td>
+		{% if user.is_staff %}
+		<td align=cetner> {{ rq.founder }} </td>
+		{% endif %}
 		{% if editable %}
 			{% if rq.editable %}
-			<td align=cetner> {{ rq.founder }} </td>
 			<td align=center> {{ rq.status }} </td>
 			<td align=center> {{ rq.filled_number }} </td>
 			<td qid='{{ rq.id }}' onclick='delete_questionaire(this)'> <span class='glyphicon glyphicon-remove'> </span> </td>

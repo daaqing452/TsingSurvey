@@ -60,6 +60,8 @@ def remakeq(questionaire, qid_dict, editable):
 			d['status'] = '已生成报告'
 		elif questionaire.status == 4:
 			d['status'] = '待审核'
+		elif questionaire.status == 5:
+			d['status'] = '审核未通过'
 		else:
 			d['status'] = '错误'
 		

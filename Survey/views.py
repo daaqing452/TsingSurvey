@@ -19,11 +19,12 @@ import time
 import math
 
 # 问卷状态
-#	 0 修改中（随时修改）
-#	 1 发布中
-#	 2 已结束
-#	 3 报告公开
-#	 4 待审核
+#	0 修改中（随时修改）
+#	1 发布中
+#	2 已结束
+#	3 报告公开
+#	4 待审核
+#	5 审核未通过，其他同 0
 
 def survey(request, qid):
 	# 验证身份
@@ -79,7 +80,7 @@ def survey(request, qid):
 
 		# 加载问卷请求
 		if op == 'load':
-			if status == 0 or status == 4:
+			if status == 0 or status == 4 or status == 5:
 				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions}))
 			elif status == 1:
 				answeraire = Answeraire.objects.filter(qid=qid, uid=user.id)
@@ -150,12 +151,12 @@ def survey(request, qid):
 
 		# 审核不通过
 		if op == 'verify_no':
-			questionaire.status = 0
+			questionaire.status = 5
 			questionaire.save()
 			return HttpResponse(json.dumps({}))
 
 		# 问卷修改状态
-		if status == 0:
+		if status == 0 or status == 5:
 			# 添加可选样本列表
 			rdata['sample_lists'] = SampleList.objects.all()
 
@@ -171,18 +172,21 @@ def survey(request, qid):
 					return HttpResponse(json.dumps({}))
 				# 发布问卷请求
 				elif op == 'release':
+					jdata = {}
 					questionaire.public = ifpublic = bool(int(request.POST.get('ifpublic')))
 					questionaire.credit = credit = int(request.POST.get('credit'))
 					if request.POST.get('sample_list_id') is not None:
 						questionaire.sample_list_id = sample_list_id = int(request.POST.get('sample_list_id'))
 					if user.is_staff or credit == 0:
 						release_to_users(questionaire)
+						jdata['result'] = '发布成功'
 					else:
 						questionaire.status = 4
+						jdata['result'] = '已提交审核'
 					questionaire.release_time = now
 					update_questionaire(questionaire, request.POST.get('title'), request.POST.get('qstring'))
 					questionaire.save()
-					return HttpResponse(json.dumps({}))
+					return HttpResponse(json.dumps(jdata))
 
 		# 问卷填写状态
 		elif status == 1:
@@ -239,7 +243,7 @@ def survey(request, qid):
 					# suser.credit += credit
 					suser.credit += questionaire.credit
 					suser.save()
-					return HttpResponse(json.dumps({'credit': credit}))
+					return HttpResponse(json.dumps({'credit': questionaire.credit}))
 				else:
 					return HttpResponse(json.dumps({}))
 
@@ -252,9 +256,13 @@ def survey(request, qid):
 
 		# 问卷结束/报告编辑状态
 		elif status == 2:
-			if not editable:
+			qid_dict = json.loads(suser.qid_list)
+			if (not questionaire.public) and ((not qid in qid_dict) or (qid_dict[qid]) != 1) and (not editable):
 				rdata['viewable'] = 0
-				rdata['info'] = '问卷已关闭，没有权限访问'
+				rdata['info'] = '没有权限访问'
+			#if not editable:
+			#	rdata['viewable'] = 0
+			#	rdata['info'] = '问卷已关闭，没有权限访问'
 
 		# 报告公开状态
 		elif status == 3:

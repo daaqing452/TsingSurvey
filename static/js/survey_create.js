@@ -84,8 +84,8 @@ function release() {
 		type: 'POST',
 		data: {'op': 'release', 'title': title, 'qstring': Qstring, 'sample_list_id': sample_list_id, 'ifpublic': ifpublic, 'credit': credit},
 		success: function(data) {
-			data = JSON.parse(data);
-			alert('发布成功');
+			var data = JSON.parse(data);
+			alert(data['result']);
 			window.location.reload();
 		}
 	});

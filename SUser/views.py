@@ -31,6 +31,9 @@ def index(request):
 	suser = SUser.objects.get(uid=user.id)
 	qid_dict = json.loads(suser.qid_list)
 
+	def cmp_by_time(x):
+		return x['create_time']
+
  	# 高级管理员
 	if user.is_staff:
 		questionaire_list = Questionaire.objects.all()
@@ -47,23 +50,26 @@ def index(request):
 			for questionaire in Questionaire.objects.filter(founder=user.id):
 				rq_list.append(Utils.remakeq(questionaire, [], True))
 				qid_list.append(questionaire.id)
-		# 普通用户
-		for qid in qid_dict:
-			if int(qid) in qid_list: continue
-			questionaires = Questionaire.objects.filter(id=int(qid))
-			if len(questionaires) > 0:
-				questionaire = questionaires[0]
+
+		else:
+			# 普通用户
+			for qid in qid_dict:
+				if int(qid) in qid_list: continue
+				questionaires = Questionaire.objects.filter(id=int(qid))
+				if len(questionaires) > 0:
+					questionaire = questionaires[0]
+					if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
+						rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
+						qid_list.append(questionaire.id)
+			# 公共问卷
+			for questionaire in Questionaire.objects.filter(public=True):
+				if int(questionaire.id) in qid_list: continue
+				if questionaire.status == 4: continue
 				if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
 					rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
 					qid_list.append(questionaire.id)
-		# 公共问卷
-		for questionaire in Questionaire.objects.filter(public=True):
-			if int(questionaire.id) in qid_list: continue
-			if questionaire.status == 4: continue
-			if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
-				rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
-				qid_list.append(questionaire.id)
-
+	
+	rq_list.sort(key=lambda x: x['create_time'], reverse=True)
 	rdata['rq_list'] = rq_list
 	rdata['editable'] = user.is_staff or suser.admin_survey
 	return render(request, 'index.html', rdata)
@@ -451,6 +457,7 @@ def profile(request, uid):
 		if questionaire.status == 4: continue
 		if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
 			rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
+	rq_list.sort(key=lambda x: x['create_time'], reverse=True)
 	rdata['rq_list'] = rq_list
 
 	return render(request, 'profile.html', rdata)
