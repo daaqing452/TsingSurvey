@@ -302,6 +302,11 @@ function showReport(user_is_staff,user_gender){
 		if(situation == 3){
 			showSelfReport();
 		}
+		else if(situation == 2){
+			showPage();
+			getindex();
+			fillAnswer();
+		}
 	}
 }
 
@@ -1099,6 +1104,7 @@ function previewShow(){
 }
 
 function preview(){
+	/*
 	$("#myModal_body").empty();
 	$("#myModalLabel").text("个人报告预览");
 	$(".modal-footer").children("button").eq(1).hide();
@@ -1113,7 +1119,7 @@ function preview(){
 		var HTMLContent = createModalHtml(questions[index],-1);
 		$table.append("<tr style=\"text-align:left;\">"+HTMLContent+"</tr>");
 	}
-
+	*/
 
 }
 //预览部分函数结束

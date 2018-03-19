@@ -43,6 +43,7 @@ $(document).ready(function(){
 				report_template = data['report_template'];
 				clean_QandA(); //去掉标注文本
 				showReport(user_is_staff,user_gender);
+
 				//alert(questions[0].s_type);
 				//showPage();
 				//getindex();
@@ -61,6 +62,11 @@ $(document).ready(function(){
 			if (situation == 4){
 				questions = JSON.parse(qstring);
 				showPage();
+				getindex();
+			}
+			if(situation == 5){
+				questions = JSON.parse(qstring);
+				createPage();
 				getindex();
 			}
 		}
