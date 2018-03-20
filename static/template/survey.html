@@ -14,7 +14,7 @@
     
 
 
-	{% ifequal status 0 %}
+	{% if status == 0 or status == 5 %}
 	<div class="input-group">
       <div class="input-group-addon"> 标题 </div>
       <input type='text' id='title' value='{{ questionaire.title }}' />
@@ -32,7 +32,7 @@
 	</div>
 	<br/>
 	<br/>
-	{% endifequal %}
+	{% endif %}
 
 	{% ifequal status 1 %}
 	<br/>
@@ -70,7 +70,7 @@
 
 
 
-	{% ifequal status 0 %}
+	{% if status == 0 or status == 5 %}
 	<!-- Modal -->
 	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
 	  <div class="modal-dialog" style="width:1100px">
@@ -105,7 +105,7 @@
 	    </div>
 	  </div>
 	</div>
-	{% endifequal %}
+	{% endif %}
 
 	{% if status == 2 or status == 3 %}
 	<!-- Modal -->
@@ -144,7 +144,7 @@
 	<canvas type='clone_canvas' style='display:none'> </canvas>
 
 	
-	{% ifequal status 0 %}
+	{% if status == 0 or status == 5 %}
 		{% if user.is_staff %}
 		<select id='sample_list' style='float:right;height: 30px;'>
 			<option value='-1'> 请选择样本列表 </option>
@@ -157,7 +157,7 @@
 		<button id="release_btn" class="btn btn-success btn-sm" onclick="release()" style="float:right"> 发布 </button>
 		<input id="ifpublic" type="checkbox" {% if not user.is_staff %} checked="true" disabled="disabled" {% endif %}>公共问卷</input>&nbsp;&nbsp;&nbsp;&nbsp;
 		完成获得<input style="width:40px" id="credit" type="text"/>积分
-	{% endifequal %}
+	{% endif %}
 
 	{% ifequal status 1 %}
 	{% ifequal permission_submit 1 %}

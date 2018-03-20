@@ -135,8 +135,6 @@ def survey(request, qid):
 			questionaire.save()
 			return HttpResponse(json.dumps({}))
 
-		rdata['editable'] = editable = (user.is_staff or questionaire.founder == user.id)
-
 		# 撤回报告
 		if op == 'withdraw_report':
 			questionaire.status = 2
@@ -154,6 +152,8 @@ def survey(request, qid):
 			questionaire.status = 5
 			questionaire.save()
 			return HttpResponse(json.dumps({}))
+
+		rdata['editable'] = editable = (user.is_staff or questionaire.founder == user.id)
 
 		# 问卷修改状态
 		if status == 0 or status == 5:
