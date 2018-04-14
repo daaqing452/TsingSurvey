@@ -317,6 +317,7 @@ def bonus(request):
 
 	return render(request, 'bonus.html', rdata)
 
+
 def upload_file(request):
 	# 验证身份
 	if not request.user.is_authenticated:
@@ -354,3 +355,23 @@ def save_file(path, file_name, data):
     file.write(data)
     file.flush()
     file.close()
+
+def help_center(request):
+	# 验证身份
+	if not request.user.is_authenticated:
+		return Utils.redirect_login(request, '../login/')
+	rdata = {}
+	rdata['user'] = user = request.user
+	suser = SUser.objects.get(uid=user.id)
+	rdata['editable'] = user.is_staff or suser.admin_survey
+	return render(request, 'helps.html', rdata)
+
+def tip(request):
+	# 验证身份
+	if not request.user.is_authenticated:
+		return Utils.redirect_login(request, '../login/')
+	rdata = {}
+	rdata['user'] = user = request.user
+	suser = SUser.objects.get(uid=user.id)
+	rdata['editable'] = user.is_staff or suser.admin_survey
+	return render(request, 'tip.html', rdata)

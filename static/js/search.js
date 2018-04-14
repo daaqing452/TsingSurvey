@@ -19,7 +19,6 @@ $(document).ready(function(){
 				}
 				for (i in result) {
 					var d = result[i];
-					at
 					tr.attr('type', 'item');
 					tr.find('[type="qid"]').text(d['id']);
 					tr.find('[type="title"]').text(d['title']);

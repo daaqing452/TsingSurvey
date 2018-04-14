@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+  {% load static %}
+    {% block context %}
+<script src='{% static 'js/helps.js' %}'> </script>
+<div class="col-md-offset-1 col-md-10 ">
+<h3 class="text-center"> 帮助中心 </h3> 
+<table class="table table-hover"> 
+	<tr>
+		<td align=center> 创建日期 </td>
+		<td align=center> 标题 </td>
+		{% if editable %}
+		<td> </td>
+		{% endif %}
+	</tr>
+	<!--Get articles from dataset-->
+	<tr>
+
+	</tr>
+</table>
+{% if editable %}
+<button class="btn btn-success " style="float:right" onclick="add_one()"> 添加 </button> <br/>
+{% endif %}
+</div>
+{% endblock context %}
