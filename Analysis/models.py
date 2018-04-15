@@ -21,3 +21,10 @@ class PrizeTicket(models.Model):
 	exchange_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
 	use_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
 	clear_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
+
+class Help(models.Model):
+	title = models.CharField(max_length=128, default='')
+	content = models.TextField(default='')
+	attachment = models.TextField(default='[]')
+	founder = models.IntegerField(default=-1)
+	release_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')

@@ -37,7 +37,13 @@ function save(){
 	tip = get_content();
 	tip_string = JSON.stringify(tip);
 	$.ajax({
-		//save to database
+		url: window.location.href,
+        type: 'POST',
+        data: {'op': 'save', 'tip': tip_string},
+        success: function(data) {
+        	var data = JSON.parse(data);
+        	alert('暂存成功');
+        }
 	});
 	return;
 }
@@ -46,7 +52,13 @@ function submit(){
 	tip = get_content();
 	tip_string = JSON.stringify(tip);
 	$.ajax({
-		//save to database and situation changes
+		url: window.location.href,
+        type: 'POST',
+        data: {'op': 'release', 'tip': tip_string},
+        success: function(data) {
+        	var data = JSON.parse(data);
+        	alert('发布成功');
+        }
 	});
 	return;
 }

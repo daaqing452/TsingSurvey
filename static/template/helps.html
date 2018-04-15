@@ -17,7 +17,7 @@
 
 	</tr>
 </table>
-{% if editable %}
+{% if user.is_staff %}
 <button class="btn btn-success " style="float:right" onclick="add_one()"> 添加 </button> <br/>
 {% endif %}
 </div>

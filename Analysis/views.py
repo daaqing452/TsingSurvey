@@ -673,3 +673,35 @@ def prize_store(request):
 	rdata['prizes'] = Prize.objects.all()
 
 	return render(request, 'prize_store.html', rdata)
+
+def help_center(request):
+	# 验证身份
+	if not request.user.is_authenticated():
+		return Utils.redirect_login(request)
+	rdata = {}
+	rdata['user'] = user = request.user
+	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
+	op = request.POST.get('op')
+
+	return render(request, 'helps.html', rdata)
+
+def tip(request):
+	# 验证身份
+	if not request.user.is_authenticated():
+		return Utils.redirect_login(request)
+	if not request.user.is_staff:
+		return render(request, 'permission_denied.html', {})
+	rdata = {}
+	rdata['user'] = user = request.user
+	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
+	op = request.POST.get('op')
+
+	if op == 'realease':
+		tip_string = json.loads(request.POST.get('tip'))
+		title = tip_string['title']
+		content = tip_string['html']
+		attachment = tip_string['attachments']
+		help = Help.objects.create(title=title, content=content, attachment=attachment, fonuder=suser.id, release_time=datetime.datetime.now())
+		return HttpResponse(json.dumps({}))
+
+	return render(request, 'tip.html', rdata)
