@@ -8,14 +8,16 @@
 	<tr>
 		<td align=center> 创建日期 </td>
 		<td align=center> 标题 </td>
-		{% if editable %}
+		{% if user.is_staff %}
 		<td> </td>
 		{% endif %}
 	</tr>
-	<!--Get articles from dataset-->
+	{% for help in helps %}
 	<tr>
-
+		<td> {{ help.create_time | date:"Y-m-d H:i:s" }} </td>
+		<td><a href='/tip/{{ help.id }}/'> {{ help.title }} </a></td>
 	</tr>
+	{% endfor %}
 </table>
 {% if user.is_staff %}
 <button class="btn btn-success " style="float:right" onclick="add_one()"> 添加 </button> <br/>

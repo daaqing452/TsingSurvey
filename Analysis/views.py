@@ -683,9 +683,15 @@ def help_center(request):
 	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
 	op = request.POST.get('op')
 
+	if user.is_staff:
+		helps = reversed(Help.objects.all())
+	else:
+		helps = reversed(Help.objects.filter(released=True))
+
+	rdata['helps'] = helps
 	return render(request, 'helps.html', rdata)
 
-def tip(request):
+def tip(request, hid):
 	# 验证身份
 	if not request.user.is_authenticated():
 		return Utils.redirect_login(request)
@@ -696,12 +702,21 @@ def tip(request):
 	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
 	op = request.POST.get('op')
 
-	if op == 'realease':
+	if op == 'create':
+		help = Help.objects.create(founder=suser.id, create_time=datetime.datetime.now())
+		return HttpResponse(json.dumps({'hid': help.id}))
+
+	if op == 'load':
+		help = Help.objects.load(id=int(request.POST.get('hid')))
+		return HttpResponse(json.dumps({'title': help.title, 'content': help.content, 'attachment': attachment}))
+
+	if op == 'save' or op == 'release':
 		tip_string = json.loads(request.POST.get('tip'))
 		title = tip_string['title']
 		content = tip_string['html']
 		attachment = tip_string['attachments']
-		help = Help.objects.create(title=title, content=content, attachment=attachment, fonuder=suser.id, release_time=datetime.datetime.now())
+		released = (op == 'release')
+		help = Help.objects.create(title=title, content=content, attachment=attachment, released=released, release_time=datetime.datetime.now())
 		return HttpResponse(json.dumps({}))
 
 	return render(request, 'tip.html', rdata)

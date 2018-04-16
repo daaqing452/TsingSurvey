@@ -1,3 +1,11 @@
 function add_one(){
-	window.location.href = '/tip/'
+	$.ajax({
+		url: '/tip/00000/',
+		type: 'POST',
+		data: {'op': 'create'},
+		success: function(data) {
+			data = JSON.parse(data);
+			window.location.href = '/tip/' + data['hid'] + '/'
+		}
+	});
 }
