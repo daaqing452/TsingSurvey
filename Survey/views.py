@@ -102,14 +102,14 @@ def survey(request, qid):
 
 		# 删除问卷
 		if op == 'delete':
-			questionaire.delete();
-			return HttpResponse(json.dumps({}));
+			questionaire.delete()
+			return HttpResponse(json.dumps({}))
 
 		# 复制问卷
 		if op == 'copy':
 			new_questionaire = Questionaire.objects.create(status=0, create_time=now, update_time=now, founder=user.id, title=questionaire.title, questions=questionaire.questions)
 			new_questionaire.save()
-			return HttpResponse(json.dumps({}));
+			return HttpResponse(json.dumps({}))
 
 		# 导出问卷
 		if op == 'export':

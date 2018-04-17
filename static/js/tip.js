@@ -71,6 +71,7 @@ function submit(){
         success: function(data) {
         	var data = JSON.parse(data);
         	alert('发布成功');
+            window.location.href = '/help_center/';
         }
 	});
 	return;

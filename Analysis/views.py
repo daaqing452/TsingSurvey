@@ -702,12 +702,17 @@ def tip(request, hid):
 	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
 	op = request.POST.get('op')
 
+	helps = Help.objects.filter(id=int(hid))
+	if len(helps) == 0:
+		rdata['info'] = '帮助不存在'
+	else:
+		help = helps[0]
+
 	if op == 'create':
 		help = Help.objects.create(founder=suser.id, create_time=datetime.datetime.now())
 		return HttpResponse(json.dumps({'hid': help.id}))
 
 	if op == 'load':
-		help = Help.objects.get(id=int(request.POST.get('hid')))
 		return HttpResponse(json.dumps({'title': help.title, 'content': help.content, 'attachment': help.attachment}))
 
 	if op == 'save' or op == 'release':
@@ -717,6 +722,10 @@ def tip(request, hid):
 		attachment = tip_string['attachments']
 		released = (op == 'release')
 		help = Help.objects.filter(id=int(hid)).update(title=title, content=content, attachment=attachment, released=released, release_time=datetime.datetime.now())
+		return HttpResponse(json.dumps({}))
+
+	if op == 'delete':
+		help.delete()
 		return HttpResponse(json.dumps({}))
 
 	return render(request, 'tip.html', rdata)
