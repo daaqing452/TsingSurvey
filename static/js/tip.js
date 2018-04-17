@@ -1,6 +1,19 @@
 var editor;
 var tip;
 $(document).ready(function(){
+    var url_arr = window.location.href.split("/");
+    var hid = url_arr[url_arr.length-2];
+    $.ajax({
+        url: window.location.href,
+        type: 'POST',
+        data: {'op': 'load','hid': hid},
+        success: function(data) {
+            var data = JSON.parse(data);
+            tip = {title:data['title'],content:data['content'],attachment:data['attachment']}
+            //fill_content();
+        }
+    });
+
 	editor = KindEditor.create('textarea[id="tip_text"]', {
         resizeType : 1,
         allowPreviewEmoticons : false,
