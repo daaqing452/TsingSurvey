@@ -707,7 +707,7 @@ def tip(request, hid):
 		return HttpResponse(json.dumps({'hid': help.id}))
 
 	if op == 'load':
-		help = Help.objects.load(id=int(request.POST.get('hid')))
+		help = Help.objects.filter(id=int(request.POST.get('hid')))
 		return HttpResponse(json.dumps({'title': help.title, 'content': help.content, 'attachment': attachment}))
 
 	if op == 'save' or op == 'release':
