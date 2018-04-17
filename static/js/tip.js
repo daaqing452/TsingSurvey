@@ -1,6 +1,16 @@
 var editor;
 var tip;
 $(document).ready(function(){
+    $.ajax({
+        url: window.location.href,
+        type: 'POST',
+        data: {'op': 'load'},
+        success: function(data) {
+            tip = {title:data['title'],content:data['content'],attachment:data['attachment']}
+            console.log(JSON.stringify(tip));
+        }
+    });
+
 	editor = KindEditor.create('textarea[id="tip_text"]', {
         resizeType : 1,
         allowPreviewEmoticons : false,

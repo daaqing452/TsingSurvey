@@ -313,7 +313,7 @@ def export(qid):
 
 def search(request):
 	# 验证身份
-	if not request.user.is_authenticated():
+	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
 	if not request.user.is_staff:
 		return render(request, 'permission_denied.html', {})
@@ -359,7 +359,7 @@ def search(request):
 
 def prize(request):
 	# 验证身份
-	if not request.user.is_authenticated():
+	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
 	rdata = {}
 	rdata['user'] = user = request.user
@@ -415,7 +415,7 @@ def prize(request):
 
 def prize_ticket(request, ptype, qid=-1):
 	# 验证身份
-	if not request.user.is_authenticated():
+	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
 	rdata = {}
 	rdata['user'] = user = request.user
@@ -522,7 +522,7 @@ def prize_ticket(request, ptype, qid=-1):
 
 def prize_add(request):
 	# 验证身份
-	if not request.user.is_authenticated():
+	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
 	if not request.user.is_staff:
 		return render(request, 'permission_denied.html', {})
@@ -543,7 +543,7 @@ def prize_add(request):
 
 def prize_add_store(request):
 	# 验证身份
-	if not request.user.is_authenticated():
+	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
 	if not request.user.is_staff:
 		return render(request, 'permission_denied.html', {})
@@ -578,7 +578,7 @@ def prize_add_store(request):
 
 def prize_exchange(request, tid):
 	# 验证身份，只有特定商家和特定用户
-	if not request.user.is_authenticated():
+	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
 	rdata = {}
 	rdata['user'] = user = request.user
@@ -621,7 +621,7 @@ def prize_exchange(request, tid):
 	return render(request, 'prize_exchange.html', rdata)
 
 def prize_store(request):
-	if not request.user.is_authenticated():
+	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
 	if not request.user.is_staff:
 		return render(request, 'permission_denied.html', {})
@@ -676,7 +676,7 @@ def prize_store(request):
 
 def help_center(request):
 	# 验证身份
-	if not request.user.is_authenticated():
+	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
 	rdata = {}
 	rdata['user'] = user = request.user
@@ -693,7 +693,7 @@ def help_center(request):
 
 def tip(request, hid):
 	# 验证身份
-	if not request.user.is_authenticated():
+	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
 	if not request.user.is_staff:
 		return render(request, 'permission_denied.html', {})
