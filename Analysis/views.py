@@ -716,7 +716,7 @@ def tip(request, hid):
 		content = tip_string['html']
 		attachment = tip_string['attachments']
 		released = (op == 'release')
-		help = Help.objects.create(title=title, content=content, attachment=attachment, released=released, release_time=datetime.datetime.now())
+		help = Help.objects.filter(id=int(hid)).update(title=title, content=content, attachment=attachment, released=released, release_time=datetime.datetime.now())
 		return HttpResponse(json.dumps({}))
 
 	return render(request, 'tip.html', rdata)
