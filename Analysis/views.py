@@ -713,7 +713,7 @@ def tip(request, hid):
 		return HttpResponse(json.dumps({'hid': help.id}))
 
 	if op == 'load':
-		return HttpResponse(json.dumps({'title': help.title, 'content': help.content, 'attachment': help.attachment}))
+		return HttpResponse(json.dumps({'title': help.title, 'content': help.content, 'attachment': help.attachment, 'released': help.released}))
 
 	if op == 'save' or op == 'release':
 		tip_string = json.loads(request.POST.get('tip'))
