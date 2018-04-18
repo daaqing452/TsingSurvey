@@ -695,8 +695,6 @@ def tip(request, hid):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	if not request.user.is_staff:
-		return render(request, 'permission_denied.html', {})
 	rdata = {}
 	rdata['user'] = user = request.user
 	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
@@ -707,6 +705,8 @@ def tip(request, hid):
 		rdata['info'] = '帮助不存在'
 	else:
 		help = helps[0]
+		if not request.user.is_staff and not help.released:
+			return render(request, 'permission_denied.html', {})
 
 	if op == 'create':
 		help = Help.objects.create(founder=suser.id, create_time=datetime.datetime.now())
