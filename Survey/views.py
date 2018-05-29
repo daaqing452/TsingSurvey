@@ -369,7 +369,7 @@ def specialcondition(request):
 		username_list = lis.split('\n')
 		for username in username_list:
 			puser = User.objects.get(username=username)
-			answeraires = Answeraire.objects.filter(uid=puser.id)
+			answeraires = Answeraire.objects.filter(qid=238, uid=puser.id)
 			if len(answeraires) > 0:
 				print('find', username)
 			else:
