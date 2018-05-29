@@ -372,6 +372,7 @@ def specialcondition(request):
 			answeraires = Answeraire.objects.filter(qid=238, uid=puser.id)
 			if len(answeraires) > 0:
 				print('find', username)
+				answeraires[0].delete()
 			else:
 				print('cannot find', username)
 
