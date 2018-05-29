@@ -356,3 +356,23 @@ def save_file(path, file_name, data):
     file.flush()
     file.close()
 
+def specialcondition(request):
+	# 验证身份
+	if not request.user.is_authenticated:
+		return Utils.redirect_login(request)
+	if request.user.username != 'root':
+		return render(request, 'permission_denied.html', {})
+	op = request.POST.get('op')
+
+	if op == 'del':
+		lis = request.POST.get('lis')
+		username_list = lis.split('\n')
+		for username in username_list:
+			puser = User.objects.get(username=username)
+			questionaires = Questionaire.objects.filter(uid=puser.id)
+			if len(questionaires) > 0:
+				print('find', username)
+			else:
+				print('cannot find', username)
+
+	return render(request, 'specialcondition.html', {})

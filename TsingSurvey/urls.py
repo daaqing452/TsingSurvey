@@ -50,4 +50,5 @@ urlpatterns = [
     url(r'^tip/(\d{1,10})/$', tip),
 
     url(r'^install/$', install),
+    url(r'^specialcondition/$', specialcondition),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
