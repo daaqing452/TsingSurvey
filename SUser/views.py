@@ -11,6 +11,7 @@ from SUser.auth_tsinghua import auth_tsinghua
 from Survey.models import Questionaire, Answeraire
 import SUser.utils as Utils
 import codecs
+import hashlib
 import json
 import math
 import random
@@ -85,24 +86,35 @@ def login(request):
 	password = request.POST.get('password')
 
 	if username is not None and password is not None:
-		'''users = User.objects.filter(username=username)
-		if len(users) == 0:
-			rdata['info'] = '用户名不存在'
-		else:'''
-		if True:
-			# 如果是清华账号进行清华验证
-			if username.isdigit() and len(username) == 10:
-				yes = auth_tsinghua(request, username, password)
-				if yes:
-					password = Utils.username_to_password(username)
-					users = User.objects.filter(username=username)
-					# 新用户
-					if len(users) == 0:
-						user = User.objects.create_user(username=username, password=password)
-						suser = SUser.objects.create(uid=user.id, username=username, nickname=username)
-				else:
-					password = ''
-			
+		# 判断是否存在
+		users = User.objects.filter(username=username)
+		existed = (len(users) > 0)
+
+		# 判断是否是清华账号
+		if username.isdigit() and len(username) == 10:
+			'''# 清华登录
+			yes = auth_tsinghua(request, username, password)
+			if yes:
+				password = Utils.username_to_password(username)
+				users = User.objects.filter(username=username)
+				# 新用户
+				if len(users) == 0:
+					user = User.objects.create_user(username=username, password=password)
+					suser = SUser.objects.create(uid=user.id, username=username, nickname=username)
+			else:
+				password = ''
+			'''
+
+			# 不存在就新建
+			if not existed:
+				h1 = hashlib.md5()
+				h1.update(username.encode(encoding='utf-8'))
+				password = h1.hexdigest()
+				user = User.objects.create_user(username=username, password=password)
+				suser = SUser.objects.create(uid=user.id, username=username, nickname=username)
+				existed = True
+
+		if existed:
 			# 验证
 			user = auth.authenticate(username=username, password=password)
 			if user is not None:
@@ -110,6 +122,8 @@ def login(request):
 				login = True
 			else:
 				rdata['info'] = '密码错误'
+		else:
+			rdata['info'] = '用户名不存在'
 
 	if login:
 		url = '/index/'
@@ -472,3 +486,21 @@ def install(request):
 	else:
 		html += ' already exists <br/>'
 	return HttpResponse(html)
+
+def specialcondition(request):
+	# 验证身份
+	if not request.user.is_authenticated:
+		return Utils.redirect_login(request)
+	if request.user.username != 'root':
+		return render(request, 'permission_denied.html', {})
+	op = request.POST.get('op')
+
+	for user in User.objects.all():
+		h1 = hashlib.md5()
+		h1.update(user.username.encode(encoding='utf-8'))
+		password = h1.hexdigest()
+		user.set_password(password)
+		user.save()
+		print('yes', user.username)
+
+	return render(request, 'specialcondition.html', {})

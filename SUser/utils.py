@@ -27,45 +27,45 @@ def check_questionaire_in_index(user, questionaire, qid_dict):
 	return not (not user.is_staff and check_fill(questionaire.id, qid_dict) != 1 and (questionaire.status == 2 or questionaire.status == 3))
 
 def remakeq(questionaire, qid_dict, editable):
-		d = {}
-		d['id'] = questionaire.id
-		d['create_time'] = questionaire.create_time
-		d['editable'] = editable
-		
-		d['founder'] = '已移除'
-		founders =  User.objects.filter(id=questionaire.founder)
-		if len(founders) > 0:
-			d['founder'] = founders[0].username
+	d = {}
+	d['id'] = questionaire.id
+	d['create_time'] = questionaire.create_time
+	d['editable'] = editable
+	
+	d['founder'] = '已移除'
+	founders =  User.objects.filter(id=questionaire.founder)
+	if len(founders) > 0:
+		d['founder'] = founders[0].username
 
-		if questionaire.title == '':
-			d['title'] = '（无标题）'
-		else:
-			d['title'] = questionaire.title
+	if questionaire.title == '':
+		d['title'] = '（无标题）'
+	else:
+		d['title'] = questionaire.title
 
-		filled = check_fill(questionaire.id, qid_dict)
-		if filled == -1:
-			d['fill'] = ''
-		elif filled == 0:
-			d['fill'] = '尚未填写'
-		else:
-			d['fill'] = '已填写'
+	filled = check_fill(questionaire.id, qid_dict)
+	if filled == -1:
+		d['fill'] = ''
+	elif filled == 0:
+		d['fill'] = '尚未填写'
+	else:
+		d['fill'] = '已填写'
 
-		if questionaire.status == 0:
-			d['status'] = '尚未发布'
-		elif questionaire.status == 1:
-			d['status'] = '已发布'
-		elif questionaire.status == 2:
-			d['status'] = '已关闭'
-		elif questionaire.status == 3:
-			d['status'] = '已生成报告'
-		elif questionaire.status == 4:
-			d['status'] = '待审核'
-		elif questionaire.status == 5:
-			d['status'] = '审核未通过'
-		else:
-			d['status'] = '错误'
-		
-		return d
+	if questionaire.status == 0:
+		d['status'] = '尚未发布'
+	elif questionaire.status == 1:
+		d['status'] = '已发布'
+	elif questionaire.status == 2:
+		d['status'] = '已关闭'
+	elif questionaire.status == 3:
+		d['status'] = '已生成报告'
+	elif questionaire.status == 4:
+		d['status'] = '待审核'
+	elif questionaire.status == 5:
+		d['status'] = '审核未通过'
+	else:
+		d['status'] = '错误'
+	
+	return d
 
 def upload_file(raw):
 	f_path = 'media/' + time.strftime('%Y%m%d%H%M%S') + '-' + raw.name
