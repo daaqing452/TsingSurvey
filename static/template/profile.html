@@ -1,7 +1,9 @@
 {% extends "base.html" %}
   {% load static %}
     {% block context %}
+<script src='{% static 'js/md5.js' %}'> </script>
 <script src='{% static 'js/profile.js' %}'> </script>
+
 <div class="col-md-offset-2 col-md-8 ">
 <div class="row">
   <div class="col-md-6"><img id='head' puid='{{ puser.id }}' style="float:center"> </img></div>
@@ -25,7 +27,7 @@
 				<td>
           <span id="nickname">{{ psuser.nickname }}</span>
           {% ifequal user.id puser.id %}
-          <a style="float:right" onclick="change_nickname(this)"><span class="glyphicon glyphicon-pencil"></span></a>
+          <a style="float:right" ><span class="glyphicon glyphicon-pencil"></span></a>
           {% endifequal %}
         </td>
 			</tr>
@@ -40,6 +42,7 @@
   <div style="float:right">
     <a href='/prize/'><button class="btn btn-sm btn-primary">积分兑换</button></a>
     <a href='/prize_ticket/u/{{ psuser.id }}/'><button class="btn btn-sm btn-success">已兑换奖品</button></a>
+    <button data-toggle="modal" data-target="#myModal" class="btn btn-sm btn-warning">修改密码</button>
   </div>
   {% endifequal %}
   </div>
@@ -66,5 +69,42 @@
 {% endfor %}
 </table>
 </div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog" style="width:300px">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel"> 修改密码 </h4>
+        </div>
+        <div class="modal-body" id="myModal_body">
+          <table>
+            <tr>
+              <td style='float:right'>原密码：</td>
+              <td><input class='form-control' id='old_password' type='password'/></td>
+            </tr>
+            <tr>
+              <td style='float:right'>新密码：</td>
+              <td><input class='form-control' id='new_password' type='password'/></td>
+            </tr>
+            <tr>
+              <td style='float:right'>确认新密码：</td>
+              <td><input class='form-control' id='new_password_2' type='password'/>
+            </tr>
+          </table>
+          <br/>
+          <span id="info">&nbsp;</span>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default " data-dismiss="modal" > 关闭 </button>
+          <button type="button" class="btn btn-primary" onclick="change_password()"> 确定 </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
     {% endblock context %}

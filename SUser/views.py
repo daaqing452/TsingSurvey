@@ -457,6 +457,20 @@ def profile(request, uid):
 		psuser.save()
 		return HttpResponse(json.dumps({}))
 
+	if op == 'change_password':
+		old_password = request.POST.get('old_password')
+		new_password = request.POST.get('new_password')
+		user2 = auth.authenticate(username=user.username, password=old_password)
+		jdata = {}
+		if user2 is not None and user2 == user and user2.is_active:
+			user.set_password(new_password)
+			user.save()
+			jdata['result'] = 'yes'
+			return HttpResponse(json.dumps(jdata))
+		else:
+			jdata['result'] = 'no'
+			return HttpResponse(json.dumps(jdata))
+
 	qid_dict = json.loads(psuser.qid_list)
 	rq_list = []
 	for qid in qid_dict:

@@ -20,3 +20,37 @@ function change_nickname(node) {
 		}
 	});
 }
+
+function change_password() {
+	var old_password = $("#old_password").val();
+	var new_password = $("#new_password").val();
+	var new_password_2 = $("#new_password_2").val();
+
+	if (new_password != new_password_2) {
+		$("#info").text("两次输入的新密码不相同！");
+		return;
+	}
+	if (new_password == '') {
+		$("#info").text("新密码不能为空！");
+		return;
+	}
+
+	old_password = hex_md5(old_password);
+	new_password = hex_md5(new_password);
+
+	$.ajax({
+		url: window.location.href,
+		type: 'POST',
+		data: {'op': 'change_password', 'old_password': old_password, 'new_password': new_password},
+		success: function(data) {
+			var data = JSON.parse(data);
+			var result = data['result'];
+			if (result == 'yes') {
+				alert('密码修改成功！');
+				$("#myModal").modal("hide");
+			} else {
+				$("#info").text("原密码错误！");
+			}
+		}
+	});
+}
