@@ -1167,6 +1167,11 @@ function showSelfReport(){
 		}
 		report_status.index ++;
 	}
+	var imgs = $("img");
+	for(var i = 0; i < imgs.length; i++){
+		var img = imgs.eq(i).attr("width","60%");
+
+	}
 }
 
 //预览部分函数开始
