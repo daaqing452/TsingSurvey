@@ -652,12 +652,34 @@ function module_select(id){
 			}
 		    tableDragable();
 		    var imgs = $("img");
-			for(var i = 0; i < imgs.length; i++){
-				var img = imgs.eq(i).attr("width","60%");
-			}
+		    if(IsPC()){
+		    	for(var i = 0; i < imgs.length; i++){
+					var img = imgs.eq(i).attr("width","60%");
+				}
+		    }
+		    else{
+		    	for(var i = 0; i < imgs.length; i++){
+					var img = imgs.eq(i).attr("width","90%");
+				}
+		    }
 			break;
 		}
 	}
+}
+
+function IsPC() {
+    var userAgentInfo = navigator.userAgent;
+    var Agents = ["Android", "iPhone",
+                "SymbianOS", "Windows Phone",
+                "iPad", "iPod"];
+    var flag = true;
+    for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+            flag = false;
+            break;
+        }
+    }
+    return flag;
 }
 
 var fixHelper = function(e, ui) {  
@@ -1172,10 +1194,16 @@ function showSelfReport(){
 		report_status.index ++;
 	}
 	var imgs = $("img");
-	for(var i = 0; i < imgs.length; i++){
-		var img = imgs.eq(i).attr("width","60%");
-
-	}
+	if(IsPC()){
+    	for(var i = 0; i < imgs.length; i++){
+			var img = imgs.eq(i).attr("width","60%");
+		}
+    }
+    else{
+    	for(var i = 0; i < imgs.length; i++){
+			var img = imgs.eq(i).attr("width","90%");
+		}
+    }
 }
 
 //预览部分函数开始
