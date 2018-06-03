@@ -59,6 +59,19 @@ function createModalHtml(q,gender_student = 1){
 			HTMLContent += "</form></div>";
 			break;
 		}
+		case 5:{
+			HTMLContent += "</div>";
+			HTMLContent += "<div><form>";
+			for(var i = 0; i < q.n_option; i ++)
+			{
+				var option = q.options[i];
+				HTMLContent += "<p class=\"q_item\"><input type=\"checkbox\" content=\""+option.text+"\" name=\"checkbox_name\"> "+option.index+". ";
+				HTMLContent += option.text+"</p>";
+				
+			}
+			HTMLContent += "</form></div>";
+			break;
+		}
 		case 6:{
 			HTMLContent += "</div>";
 			HTMLContent += "<div><form>";
@@ -342,7 +355,7 @@ function createSelfReport(id){
 			$("#myModal_body").append(table_html);
 			var $mymodal_table = $("#myModal_body").children(".table");
 			$mymodal_table.eq(0).append(report_title_html);
-			editor_title = KindEditor.create('textarea[name="res_title"]',options); 
+			editor_title = KindEditor.create('textarea[name="res_title"]',options_2); 
 			break;
 		}
 		case 1:{
@@ -618,6 +631,7 @@ function module_select(id){
 			$("#self_report_btn").show();
 			if(situation == 2){
 				$("#saveSr_btn").show();
+				$("#exportSr_btn").show();
 			}
 			if(situation == 3){
 				$("#saveSr_btn").text("修改个人报告");
@@ -706,7 +720,7 @@ function delOption_2(b){
 function saveSr(){
 	var self_report_qstring = JSON.stringify(self_report_questions);
 	//存到数据库
-	//console.log(self_report_qstring);
+	console.log(self_report_qstring);
 	$.ajax({
 		url: window.location.href,
 		type: 'POST',
@@ -714,6 +728,7 @@ function saveSr(){
 		success: function(data) {
 			var data = JSON.parse(data);
 			alert("保存成功");
+			window.location.reload();
 		}
 	});
 }
@@ -841,6 +856,41 @@ function createSRHtml(self_rq){
 			break;
 		}
 		case 4:{ //下拉单选
+			//console.log(JSON.stringify(answer));
+			//console.log(JSON.stringify(question));
+			//console.log(JSON.stringify(self_rq));
+			var select_answer = answer.select[0][0];
+			var a_length = question.n_option;
+			var right_guize = -1;
+			for(var i = 0; i < self_rq.guize_num; i++){
+				var guize = self_rq.guizes[i];
+				var flag = true;
+				for(var j = 0; j < guize.xize_num; j++){
+					var xize = guize.xizes[j];
+					for(var k = 0; k < xize.yuansu.length; k++){
+						var yuan = parseInt(xize.yuansu[k]);
+						if(yuan > a_length - 1){
+							if(((user_gender+a_length-1) != yuan) && ((user_student_type +a_length+1)!=yuan)){
+								flag = false;
+							}
+						}
+						else{
+							if(select_answer != yuan){
+								flag = false;
+							}
+						}
+					}
+				}
+				if(flag){
+					right_guize = i;
+					HTMLContent += guize.content;
+					break;
+				}
+			}
+			break;
+		}
+		case 5:{
+			//排序题
 			//console.log(JSON.stringify(answer));
 			//console.log(JSON.stringify(question));
 			//console.log(JSON.stringify(self_rq));

@@ -3245,7 +3245,7 @@ _extend(KCmd, {
 		border = _undef(border, 0);
 
 		var html = '<img src="' + _escape(url) + '" data-ke-src="' + _escape(url) + '" ';
-		html += 'width="30%" ';
+		html += 'width="60%" ';
 		if (width) {
 			html += 'width="' + _escape(width) + '" ';
 			//html += 'width="20px" ';
