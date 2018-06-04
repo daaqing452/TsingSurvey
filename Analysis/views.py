@@ -137,8 +137,8 @@ def export(qid):
 		cost_time = answeraire.submit_time - answeraire.load_time
 		sheet1.write(i + 1, 2, str(cost_time))
 		sheet2.write(i + 1, 2, str(cost_time))
-		sheet1.write(i + 1, 3, User.objects.get(id=answeraire.uid).username)
-		sheet2.write(i + 1, 3, User.objects.get(id=answeraire.uid).username)
+		sheet1.write(i + 1, 3, answeraire.username)
+		sheet2.write(i + 1, 3, answeraire.username)
 		sheet1.write(i + 1, 4, answeraire.ip)
 		sheet2.write(i + 1, 4, answeraire.ip)
 		sheet1.write(i + 1, 5, answeraire.agent)
