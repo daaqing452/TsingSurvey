@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+	{% load static %}
+    {% block context %}
+<script src='{% static 'js/prize_exchange.js' %}'> </script>
+<div class="col-md-offset-1 col-md-10 ">
+
+<h2>消费</h2>
+<br/>
+
+<div id="confirm">
+	<h3> {{ prize.title }} </h3>
+	<h4> 金额：{{ prize.price }} </h4>
+	<button style="width:200px; height:100px; font-size: 45px" class="btn-success" onclick="exchange()">消费</button>
+</div>
+<div id="wait" style="display:none">
+	<h4>等待对方确认...</h4>
+</div>
+<div id="success" style="display:none">
+	<h4>消费成功！</h4>
+	<a href="/prize/"><button style="width:200px; height:100px; font-size: 45px" class="btn-primary">返回</button></a>
+</div>
+{% endblock context %}

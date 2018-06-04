@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+	{% load static %}
+    {% block context %}
+
+{% ifequal viewable 1 %}
+<div class="col-md-offset-2 col-md-8 ">
+	<div class="panel panel-primary">
+    	<div class="panel-heading">
+        	
+        	<p id='qid' qid='{{ qid }}' class="panel-title"> ID：{{ qid }} </p>
+    	</div>
+    	<div class="panel-body">
+        	
+    
+
+
+	{% if status == 0 or status == 5 %}
+	<div class="input-group">
+      <div class="input-group-addon"> 标题 </div>
+      <input type='text' id='title' value='{{ questionaire.title }}' />
+    </div>
+    </br>
+    <div class="btn-group" name="my-btn-group">
+	<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"  onclick="createSurvey(1)"> 单项选择 </button>
+	<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="createSurvey(2)"> 多项选择 </button>
+	<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="createSurvey(3)"> 单项填空题 </button>
+	<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="createSurvey(7)"> 多项填空题 </button>
+	<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="createSurvey(4)"> 下拉单选 </button>
+	<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="createSurvey(5)"> 排序题 </button>
+	<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="createSurvey(6)"> 矩阵题 </button>
+	<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="createSurvey(8)"> 添加说明 </button>
+	</div>
+	<br/>
+	<br/>
+	{% endif %}
+
+	{% ifequal status 1 %}
+	<br/>
+	<p class = "h2" id='title'> </p>
+	<br/>
+	{% endifequal %}
+
+	{% if status == 2 or status == 3 %}
+	{% if editable %}
+	<br/>
+	<p class = "h2" id='title'> </p>
+	<ul id="nav_1" class="nav nav-tabs">
+        <li role="presentation"><a id="chapter_0" href="javascript:void(0)" onclick="module_select(0)">汇总报告</a></li>
+        <li role="presentation" ><a  id="chapter_1" href="javascript:void(0)" onclick="module_select(1)">个人报告</a></li>
+    </ul>
+    <br/>
+    {% if status == 2 or status == 3%}
+	<div id="self_report_btn" class="btn-group" style="display: none;">
+		<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"  onclick="createSelfReport(0)"> 添加描述 </button>
+		<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"  onclick="createSelfReport(1)"> 添加报告内容 </button>
+		<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"  onclick="createSelfReport(2)"> 添加总体情况图表 </button>
+	</div>
+	{% endif %}
+	{% endif %}
+	{% if not editable %}
+	<br/>
+	<p class="h2" id='title'> </p>
+	<ul id="nav_2" class="nav nav-tabs">
+        <li role="presentation"><a id="chapter_user_0" href="javascript:void(0)" onclick="module_select_user(0)">问卷填写情况</a></li>
+        <li role="presentation" ><a  id="chapter_user_1" href="javascript:void(0)" onclick="module_select_user(1)">个人报告</a></li>
+    </ul>
+    <br/>
+	{% endif %}
+	{% endif %}
+
+
+
+	{% if status == 0 or status == 5 %}
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+	  <div class="modal-dialog" style="width:1100px">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+
+	      </div>
+	      <div class="modal-body" id="myModal_body"> 
+	       
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default " data-dismiss="modal" onclick="closeModal()"> 关闭 </button>
+	        <button type="button" class="btn btn-primary" onclick="commitS()">保存 </button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+	<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+	  <div class="modal-dialog" style="width:1100px">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+
+	      </div>
+	      <div class="modal-body" id="myModal_body2"> 
+	       
+	      </div>
+	      <div class="modal-footer">
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	{% endif %}
+
+	{% if status == 2 or status == 3 %}
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+	  <div class="modal-dialog" style="width:1100px">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title" id="myModalLabel" ></h4>
+	        
+	      </div>
+	      <div class="modal-body" id="myModal_body"> 
+	       
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default " data-dismiss="modal" onclick="closeModal()"> 关闭 </button>
+	        <button type="button" class="btn btn-primary" onclick="commitRS()">保存 </button>
+	        <button type="button" class="btn btn-primary" style="display: none;" onclick="previewShow()"> 预览 </button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	{% endif %}
+
+	<div style="text-align:left;width: 100%" >
+		<table id="questions"  style="table-layout:fixed;word-break:break-all;border: 0px;width: 100%" >
+		<tbody>
+			
+		</tbody>
+		</table>
+	</div>
+
+	
+	
+
+	<canvas type='clone_canvas' style='display:none'> </canvas>
+
+	
+	{% if status == 0 or status == 5 %}
+		{% if user.is_staff %}
+		<select id='sample_list' style='float:right;height: 30px;'>
+			<option value='-1'> 请选择样本列表 </option>
+			{% for sample_list in sample_lists %}
+			<option value='{{ sample_list.id }}'> {{ sample_list.name }} </option>
+			{% endfor %}
+		</select>
+		{% endif %}
+		<button id="save_btn" class="btn btn-success btn-sm" onclick="save()" style="float:right"> 暂存 </button>
+		<button id="release_btn" class="btn btn-success btn-sm" onclick="release()" style="float:right"> 发布 </button>
+		<input id="ifpublic" type="checkbox" {% if not user.is_staff %} checked="true" disabled="disabled" {% endif %}>公共问卷</input>&nbsp;&nbsp;&nbsp;&nbsp;
+		完成获得<input style="width:40px" id="credit" type="text"/>积分
+	{% endif %}
+
+	{% ifequal status 1 %}
+	{% ifequal permission_submit 1 %}
+	<div style="text-align:left;">
+		<button id ="submit_btn" class="btn btn-success btn-sm" onclick="submit(0)" style="float:right"> 提交 </button>
+	</div>
+	{% endifequal %}
+	{% if editable %}
+	<button id="close_btn" class="btn btn-success btn-sm" onclick="closeup()" style="float:right"> 关闭问卷 </button>
+	{% endif %}
+	{% endifequal %}
+
+	{% if status == 2 or status == 3 %}
+	{% if editable %}
+
+	<button id="export_btn" class="btn btn-success btn-sm"  onclick="exportt()" style="float:right; display: none;"> 导出 </button>
+	<button id="saveSr_btn" class="btn btn-success btn-sm" onclick="saveSr()" style="float:right; display: none;"> 保存报告模板 </button>
+	<button id="exportSr_btn" class="btn btn-success btn-sm" onclick="exportSr()" style="float:right; display: none;"> 发布个人报告 </button>
+	<button id="preview_btn" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal" onclick="preview()" style="float:right; display: none;"> 预览 </button>
+	<a id='download'> </a>
+	{% endif %}
+	{% endif %}
+
+	{% ifequal status 3 %}
+	<button id="export_btn" class="btn btn-success btn-sm"  onclick="exportt()" style="float:right; display: none;"> 导出 </button>
+	{% endifequal %}
+
+	{% ifequal status 4 %}
+		<span style="float:left">积分：{{ credit }}</span><br/>
+		<span style="float:left">问卷发布对象：{{ sample_list_name }} </span><br/>
+		<br/>
+		{% if user.is_staff %}
+		<button id="verify_no" class="btn btn-danger btn-sm" onclick="verify_no()" style="float:right"> 审核不通过 </button>
+		<button id="verify_yes" class="btn btn-success btn-sm" onclick="verify_yes()" style="float:right"> 审核通过 </button>
+		{% else %}
+		<h4>待审核<h4>
+		{% endif %}
+	{% endifequal %}
+
+	</div>
+	</div>
+	</div>
+
+{% endifequal %}
+
+<div style="display: none;"  class="guize">
+    <h4>报告展现规则&nbsp <button class="btn btn-sm btn-success" onclick="add_guize(this)">新增规则</button></h4>
+
+    <table class="table table-condensed" style="table-layout:fixed;word-break:break-all;">
+    		<thead>
+    			<th colspan="6" align="center">规则内容 &nbsp <button class="btn btn-sm btn-danger" onclick="del_guize(this)">删除规则</button> </th>
+    		</thead>
+            <tr>
+                <td align="center">元素</td>
+                <td align="center">操作</td>
+                <td align="center">结果操作</td>
+                <td align="center">结果对比值</td>
+                <td align="center">雷达图坐标标题</td>
+                <td align="center">操作</td>
+            </tr>
+            <tr class="xize_tr">
+                <td><div class="guizeneirong" style=" width: 100%; height: 60px; text-align:left; border:0.5px solid #000; overflow:scroll;"></div><button class="btn btn-sm btn-info" onclick="putIn(this)">加入规则</button><button class="btn btn-sm btn-warning" onclick="clearOut(this)">清空元素</button></td>
+                <td>
+                	<input type="radio" class="caozuo" name="caozuo" content="选中">选中
+                	<input type="radio" class="caozuo" name="caozuo" content="求和">求和
+                	<input type="radio" class="caozuo" name="caozuo" content="求平均">求平均
+                	<input type="radio" class="caozuo" name="caozuo" content="乘积">乘积
+
+                </td>
+                <td>
+                	<input type="radio" class="fuhao" name="fuhao" content=">">&gt
+                	<input type="radio" class="fuhao" name="fuhao" content="="> =
+                	<input type="radio" class="fuhao" name="fuhao" content="<">&lt
+                	<input type="radio" class="fuhao" name="fuhao" content="<=">&lt=
+                	<input type="radio" class="fuhao" name="fuhao" content=">=">&gt=
+                </td>
+                <td><textarea style="width: 100%; height: 60px; overflow: auto; resize: none;"></textarea></td>
+                <td><textarea style="width: 100%; height: 60px; overflow: auto; resize: none;"></textarea></td>
+                
+                <td align="center" style="vertical-align: middle;">
+                    <span class="glyphicon glyphicon-plus" onclick="addOption_2(this)"></span><span class="glyphicon glyphicon-minus" onclick="delOption_2(this)"></span>
+                </td>
+            </tr>
+            <tr>
+                <td align="center" style="vertical-align: middle;">	报告展示内容 <br/>
+                <input type="radio" class="zhanshi" name="zhanshi" content="zidingyi" onclick="wayToShow(this)">自定义
+                <input type="radio" class="zhanshi" name="zhanshi" content="leidatu" onclick="wayToShow(this)">雷达图
+                </td> 
+                <td colspan="5"><textarea style="width: 100%; height: 100px; overflow: auto; resize: none;"></textarea></td>
+            </tr>
+    </table>
+
+</div>
+
+<!--<form id='goto_bonus' action='/bonus/' method='post' style='display:none'>
+	{% csrf_token %}
+	<input id='credit' type='text' name='credit'/>
+	<input type='submit'/>
+</form>-->
+
+
+<br/>
+{{ info }}
+
+<link href='{% static 'css/survey.css' %}' rel="stylesheet">
+<link href="{% static "kindeditor/themes/default/default.css" %}" rel="stylesheet">
+<script src='{% static 'js/nicEdit-latest.js' %}'> </script>
+<script src='{% static 'js/echarts.min.js' %}'></script>
+<script src='{% static 'js/echart_basic.js' %}'></script>
+<script src="{% static "kindeditor/kindeditor-all.js" %}"></script>
+<script src="{% static "kindeditor/lang/zh-CN.js" %}"></script>
+<script src='{% static 'js/survey_report.js' %}'> </script>
+<script src='{% static 'js/survey.js' %}'> </script>
+<script src='{% static 'js/survey_create.js' %}'> </script>
+<script src='{% static 'js/survey_show.js' %}'> </script>
+    {% endblock context %}
+

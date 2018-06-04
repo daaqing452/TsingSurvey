@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+  {% load static %}
+    {% block context %}
+<script src='{% static 'js/search.js' %}'> </script>
+<div class="col-md-offset-2 col-md-8 ">
+
+<div style="margin:0 auto;">
+<input type="text"  id='keyword' placeholder="请输入关键词">
+<button type="submit"  class=" btn btn-success btn-sm" id='search'>搜索</button>
+</div>
+</br>
+
+<table class="table table-bordered " id='result'>
+	<tr>
+		<td align=center> 问卷标号  </td>
+		<td align=center> 标题 </td>
+		<td align=center> 上次更新时间 </td>
+		<td align=center> 内容 </td>
+	</tr>
+	<tr type='clone' style='display:none'>
+		<td align=center type='qid'> clone_a </td>
+		<td align=center> <a type='title'> clone_b </a> </td>
+		<td align=center type='update_time'> clone_c </td>
+		<td align=center> <span type='context_left'> clone_d </span><span type='context_mid' style='color:red'> clone_e </span><span type='context_right'> clone_f </span> </td>
+	</tr>
+	<tr type='empty' style='display:none'>
+		<td align=center colspan='4' align=center> <No Result> </td>
+	</tr>
+</table>
+</div>
+    {% endblock context %}

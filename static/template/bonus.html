@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+  {% load static %}
+    {% block context %}
+<p class="h1 text-center text-success"> 你得到了 {{ credit }} 积分!!! </p>
+<div style='margin:0 auto;'>
+<img width='500px' src='{% static 'img/bonus.jpg' %}'></img>
+</div>
+
+{% endblock context %}

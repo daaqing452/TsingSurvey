@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+  {% load static %}
+    {% block context %}
+<script src='{% static 'js/md5.js' %}'> </script>
+<script src='{% static 'js/profile.js' %}'> </script>
+
+<div class="col-md-offset-2 col-md-8 ">
+<div class="row">
+  <div class="col-md-6"><img id='head' puid='{{ puser.id }}' style="float:center"> </img></div>
+  <div class="col-md-6">
+  <div class="panel panel-primary">
+    	<div class="panel-heading">
+        	<h5> 个人信息 </h5>
+    	</div>
+    	<div class="panel-body">
+    	<table class = "table table-condensed">
+      <!--<tr class="success">
+				<td > 姓名 </td>
+				<td> {{ user.username }} </td>
+			</tr>-->
+    		<tr class="info">
+				<td > 用户编号 </td>
+				<td> {{ puser.id }} </td>
+			  </tr>
+			<tr class="success">
+				<td> 昵称 </td>
+				<td>
+          <span id="nickname">{{ psuser.nickname }}</span>
+          {% ifequal user.id puser.id %}
+          <a style="float:right" ><span class="glyphicon glyphicon-pencil"></span></a>
+          {% endifequal %}
+        </td>
+			</tr>
+			<tr class="warning">
+				<td> 积分 </td>
+				<td> {{ psuser.credit }} </td>
+			</tr>
+    	</table>
+    	</div>
+  </div>
+  {% ifequal user.id puser.id %}
+  <div style="float:right">
+    <a href='/prize/'><button class="btn btn-sm btn-primary">积分兑换</button></a>
+    <a href='/prize_ticket/u/{{ psuser.id }}/'><button class="btn btn-sm btn-success">已兑换奖品</button></a>
+    <button data-toggle="modal" data-target="#myModal" class="btn btn-sm btn-warning">修改密码</button>
+  </div>
+  {% endifequal %}
+  </div>
+</div>
+
+		
+</br>
+
+<p> <span class="glyphicon glyphicon-pencil"></span> 问卷填写历史 </p>
+<table class="table table-hover">
+<thead>
+<tr>
+	<td> 问卷编号 </td>
+	<td> 标题 </td>
+	<td> 是否填写？</td>
+</tr>
+</thead>
+{% for rq in rq_list %}
+<tr>
+	<td> {{ rq.id }} </td>
+	<td> <a href='/survey/{{ rq.id }}'> {{ rq.title }} </a> </td>
+	<td> {{ rq.fill }} </td> 
+</tr>
+{% endfor %}
+</table>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog" style="width:300px">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel"> 修改密码 </h4>
+        </div>
+        <div class="modal-body" id="myModal_body">
+          <table>
+            <tr>
+              <td style='float:right'>原密码：</td>
+              <td><input class='form-control' id='old_password' type='password'/></td>
+            </tr>
+            <tr>
+              <td style='float:right'>新密码：</td>
+              <td><input class='form-control' id='new_password' type='password'/></td>
+            </tr>
+            <tr>
+              <td style='float:right'>确认新密码：</td>
+              <td><input class='form-control' id='new_password_2' type='password'/>
+            </tr>
+          </table>
+          <br/>
+          <span id="info">&nbsp;</span>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default " data-dismiss="modal" > 关闭 </button>
+          <button type="button" class="btn btn-primary" onclick="change_password()"> 确定 </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    {% endblock context %}

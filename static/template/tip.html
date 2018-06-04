@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+  {% load static %}
+    {% block context %}
+
+<div id="save" class="col-md-offset-2 col-md-8 " style="display:none;">
+	<div class="input-group">
+      <div class="input-group-addon" style="height: 30px"> 标题 </div>
+      <input type='text' id='title' value='{{ tip.title }}' style="width: 100%;height: 30px;"  />
+    </div>
+    <br>
+    <textarea id="tip_text"></textarea>
+    <br/>
+    <div id="attachment_list" align="left"></div>
+    <button class="btn btn-success btn-sm" style="float:right" onclick="save()"> 暂存 </button>
+    <button class="btn btn-success btn-sm" style="float:right" onclick="submit()"> 发布 </button>
+</div>
+<div id="release" class="col-md-offset-2 col-md-8 " style="display:none;">
+	<h3 id="tip_title"></h3>
+	<br>
+	<div id="tip_content"></div>
+	<div id="tip_attachment_list" align="left"></div>
+</div>
+<link href="{% static "kindeditor/themes/default/default.css" %}" rel="stylesheet">
+<script src="{% static "kindeditor/kindeditor-all.js" %}"></script>
+<script src="{% static "kindeditor/lang/zh-CN.js" %}"></script>
+<script src='{% static 'js/tip.js' %}'> </script>
+{% endblock context %}

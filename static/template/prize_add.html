@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+	{% load static %}
+    {% block context %}
+<script src='{% static 'js/prize_add.js' %}'> </script>
+<div class="col-md-offset-1 col-md-10 ">
+
+<h3>添加新奖品</h3>
+<div style="width: 50%; margin: 0 auto;">
+	<table class="table">
+		<tr>
+			<td>奖品名称</td>
+			<td><input style="width: 100%" type="text" id="title"/></td>
+		</tr>
+		<tr>
+			<td>奖品描述</td>
+			<td><textarea style="width:100%" rows="5" id="description"></textarea></td>
+		</tr>
+		<tr>
+			<td>兑换积分</td>
+			<td><input style="width: 100%" type="text" id="credit"/></td>
+		</tr>
+		<tr>
+			<td>金额</td>
+			<td><input style="width: 100%" type="text" id="price"/></td>
+		</tr>
+		<tr>
+			<td>截止日期</td>
+			<td><input style="width: 100%" type="text" id="expire_time" value="2020-12-31"/></td>
+		</tr>
+	</table>
+	<button class="btn-success" style="width: 30%" onclick="add_prize()">添加</button>
+</div>
+
+</div>
+{% endblock context %}

@@ -1,0 +1,18 @@
+
+{% extends "base.html" %}
+  {% load static %}
+    {% block context %}
+<script src='{% static 'js/Chart.min.js' %}'></script>
+<script src='{% static 'js/analysis_chart.js' %}'> </script>
+<script src='{% static 'js/report.js' %}'> </script>
+<p class="h2 text-center" id='title' > </p>
+
+
+<div id='report' style="width:500px;margin:0 auto;" >
+	<canvas type='clone_canvas' style='display:none' height="300" > </canvas>
+
+  <p class='h3 text-center' type='clone_imgtitle' style='display:none'> </p>
+  <img type='clone_img' class="img-responsive" style='display:none'></img>
+</div>
+
+    {% endblock context %}
