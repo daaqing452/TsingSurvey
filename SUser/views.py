@@ -509,12 +509,12 @@ def specialcondition(request):
 		return render(request, 'permission_denied.html', {})
 	op = request.POST.get('op')
 
-	for user in User.objects.all():
-		h1 = hashlib.md5()
-		h1.update(user.username.encode(encoding='utf-8'))
-		password = h1.hexdigest()
-		user.set_password(password)
-		user.save()
-		print('yes', user.username)
+	for answeraire in Answeraire.objects.all():
+		users = User.objects.filter(id=answeraire.uid)
+		if len(users) > 0:
+			answeraire.username = users[0].username
+		else:
+			answeraire.username = '已删除'
+		answeraire.save()
 
 	return render(request, 'specialcondition.html', {})
