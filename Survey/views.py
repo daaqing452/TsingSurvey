@@ -221,7 +221,7 @@ def survey(request, qid):
 				if len(answeraire) > 0:
 					answeraire = answeraire[0]
 				else:
-					answeraire = Answeraire.objects.create(qid=qid, uid=user.id)
+					answeraire = Answeraire.objects.create(qid=qid, uid=user.id, username=user.username)
 				answeraire.load_time = request.POST['load_time']
 				answeraire.submit_time=request.POST['submit_time']
 				answeraire.ip = ip
