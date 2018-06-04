@@ -515,6 +515,7 @@ def specialcondition(request):
 			answeraire.username = users[0].username
 		else:
 			answeraire.username = '已删除'
+		print(answeraire.id, answeraire.username)
 		answeraire.save()
 
 	return render(request, 'specialcondition.html', {})
