@@ -509,13 +509,16 @@ def specialcondition(request):
 		return render(request, 'permission_denied.html', {})
 	op = request.POST.get('op')
 
-	for answeraire in Answeraire.objects.all():
-		users = User.objects.filter(id=answeraire.uid)
-		if len(users) > 0:
-			answeraire.username = users[0].username
-		else:
-			answeraire.username = '已删除'
-		print(answeraire.id, answeraire.username)
-		answeraire.save()
+	f = request.FILES.get('upload', None)
+	if not f is None:
+		f_path = Utils.upload_file(f)
+		f = codecs.open(f_path, 'r', 'gbk')
+		lineno = 0
+		while True:
+			line = f.readline()
+			if len(line) == 0: break
+			username = line[:-1]
+			print(lineno, username)
+			lineno += 1
 
 	return render(request, 'specialcondition.html', {})

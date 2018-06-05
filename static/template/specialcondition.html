@@ -3,22 +3,13 @@
     {% block context %}
 
 <script>
-	function del() {
-		var lis = $("#lis").val();
-		$.ajax({
-			url: window.location.href,
-			type: "POST",
-			data: {"op": "del", "lis": lis},
-			success: function(data) {
-				var data = JSON.parse(data);
-			}
-		})
-	}
+	
 </script>
 
-<textarea id="lis" style="width:200px; height:500px">
-</textarea>
-<br/>
-<button onclick="del()">删除</button>
+<form enctype='multipart/form-data' action="/specialcondition/" method='post'>
+	{% csrf_token %}
+	<input type="file" name='upload'/>
+	<input type="submit"/>
+</form>
 
     {% endblock context %}
