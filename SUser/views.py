@@ -62,15 +62,14 @@ def index(request):
 						rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
 						qid_list.append(questionaire.id)
 			# 该用户名相关的问卷
-			answeraires = Answeraire.objects.filter(username=user.username)
+			answeraires = Answeraire.objects.filter(username=user.username, submitted=True)
 			for answeraire in answeraires:
-				questionaires = Questionaire.object.filter(id=int(answeraire.qid))
+				questionaires = Questionaire.objects.filter(id=answeraire.qid)
 				if len(questionaires) == 0: continue
 				questionaire = questionaires[0]
 				if int(questionaire.id) in qid_list: continue
-				if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
-					rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
-					qid_list.append(questionaire.id)
+				rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
+				qid_list.append(questionaire.id)
 			# 公共问卷
 			for questionaire in Questionaire.objects.filter(public=True):
 				if int(questionaire.id) in qid_list: continue
@@ -491,15 +490,14 @@ def profile(request, uid):
 			if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
 				rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
 	# 该用户名相关的问卷
-	answeraires = Answeraire.objects.filter(username=user.username)
+	answeraires = Answeraire.objects.filter(username=user.username, submitted=True)
 	for answeraire in answeraires:
-		questionaires = Questionaire.object.filter(id=int(answeraire.qid))
+		questionaires = Questionaire.objects.filter(id=int(answeraire.qid))
 		if len(questionaires) == 0: continue
 		questionaire = questionaires[0]
 		if int(questionaire.id) in qid_list: continue
-		if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
-			rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
-			qid_list.append(questionaire.id)
+		rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
+		qid_list.append(questionaire.id)
 	# 公共问卷
 	for questionaire in Questionaire.objects.filter(public=True):
 		if str(questionaire.id) in qid_dict: continue
@@ -542,12 +540,12 @@ def specialcondition(request):
 		while True:
 			line = f.readline()
 			if len(line) == 0: break
-			username = line[:-1]
+			username = line[:-2]
 
 			answeraires[lineno].username = username
 			answeraires[lineno].save()
 
-			print(lineno, answeraires[lineno].username)
+			print(lineno, username, len(answeraires[lineno].username))
 			lineno += 1'''
 
 	return render(request, 'specialcondition.html', {})

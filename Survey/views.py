@@ -75,6 +75,7 @@ def survey(request, qid):
 		rdata['info'] = '问卷不存在'
 	else:
 		questionaire = questionaires[0]
+		answered = len(Answeraire.objects.filter(qid=questionaire.id, username=user.username, submitted=True)) > 0
 		status = questionaire.status
 		suser = SUser.objects.get(uid=user.id)
 
@@ -257,7 +258,7 @@ def survey(request, qid):
 		# 问卷结束/报告编辑状态
 		elif status == 2:
 			qid_dict = json.loads(suser.qid_list)
-			if (not questionaire.public) and ((not qid in qid_dict) or (qid_dict[qid]) != 1) and (not editable):
+			if (not questionaire.public) and ((not qid in qid_dict) or (qid_dict[qid]) != 1) and (not editable) and (not answered):
 				rdata['viewable'] = 0
 				rdata['info'] = '没有权限访问'
 			#if not editable:
@@ -267,7 +268,7 @@ def survey(request, qid):
 		# 报告公开状态
 		elif status == 3:
 			qid_dict = json.loads(suser.qid_list)
-			if (not questionaire.public) and (not qid in qid_dict) and (not editable):
+			if (not questionaire.public) and (not qid in qid_dict) and (not editable) and (not answered):
 				rdata['viewable'] = 0
 				rdata['info'] = '没有权限访问'
 
