@@ -482,6 +482,7 @@ def profile(request, uid):
 
 	qid_dict = json.loads(psuser.qid_list)
 	rq_list = []
+	qid_list = []
 	# 普通用户问卷
 	for qid in qid_dict:
 		questionaires = Questionaire.objects.filter(id=qid)
@@ -489,6 +490,7 @@ def profile(request, uid):
 			questionaire = questionaires[0]
 			if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
 				rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
+				qid_list.append(questionaire.id)
 	# 该用户名相关的问卷
 	answeraires = Answeraire.objects.filter(username=user.username, submitted=True)
 	for answeraire in answeraires:
@@ -500,10 +502,11 @@ def profile(request, uid):
 		qid_list.append(questionaire.id)
 	# 公共问卷
 	for questionaire in Questionaire.objects.filter(public=True):
-		if str(questionaire.id) in qid_dict: continue
+		if questionaire.id in qid_list: continue
 		if questionaire.status == 4: continue
 		if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
 			rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
+			qid_list.append(questionaire.id)
 	rq_list.sort(key=lambda x: x['create_time'], reverse=True)
 	rdata['rq_list'] = rq_list
 
