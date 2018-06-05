@@ -509,6 +509,9 @@ def specialcondition(request):
 		return render(request, 'permission_denied.html', {})
 	op = request.POST.get('op')
 
+	answeraires = Answeraire.objects.filter(qid=89, submitted=1)
+	print(len(answeraires))
+
 	f = request.FILES.get('upload', None)
 	if not f is None:
 		f_path = Utils.upload_file(f)
@@ -518,7 +521,11 @@ def specialcondition(request):
 			line = f.readline()
 			if len(line) == 0: break
 			username = line[:-1]
-			print(lineno, username)
+
+			answeraires[lineno].username = username
+			answeraires[lineno].save()
+
+			print(lineno, answeraires[lineno].username)
 			lineno += 1
 
 	return render(request, 'specialcondition.html', {})
