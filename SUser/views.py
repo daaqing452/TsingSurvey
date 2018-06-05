@@ -52,7 +52,7 @@ def index(request):
 				rq_list.append(Utils.remakeq(questionaire, [], True))
 				qid_list.append(questionaire.id)
 		else:
-			# 普通用户
+			# 普通用户问卷
 			for qid in qid_dict:
 				if int(qid) in qid_list: continue
 				questionaires = Questionaire.objects.filter(id=int(qid))
@@ -61,6 +61,16 @@ def index(request):
 					if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
 						rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
 						qid_list.append(questionaire.id)
+			# 该用户名相关的问卷
+			answeraires = Answeraire.objects.filter(username=user.username)
+			for answeraire in answeraires:
+				questionaires = Questionaire.object.filter(id=int(answeraire.qid))
+				if len(questionaires) == 0: continue
+				questionaire = questionaires[0]
+				if int(questionaire.id) in qid_list: continue
+				if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
+					rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
+					qid_list.append(questionaire.id)
 			# 公共问卷
 			for questionaire in Questionaire.objects.filter(public=True):
 				if int(questionaire.id) in qid_list: continue
@@ -473,12 +483,24 @@ def profile(request, uid):
 
 	qid_dict = json.loads(psuser.qid_list)
 	rq_list = []
+	# 普通用户问卷
 	for qid in qid_dict:
 		questionaires = Questionaire.objects.filter(id=qid)
 		if len(questionaires) > 0:
 			questionaire = questionaires[0]
 			if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
 				rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
+	# 该用户名相关的问卷
+	answeraires = Answeraire.objects.filter(username=user.username)
+	for answeraire in answeraires:
+		questionaires = Questionaire.object.filter(id=int(answeraire.qid))
+		if len(questionaires) == 0: continue
+		questionaire = questionaires[0]
+		if int(questionaire.id) in qid_list: continue
+		if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
+			rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
+			qid_list.append(questionaire.id)
+	# 公共问卷
 	for questionaire in Questionaire.objects.filter(public=True):
 		if str(questionaire.id) in qid_dict: continue
 		if questionaire.status == 4: continue
