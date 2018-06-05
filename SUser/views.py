@@ -509,7 +509,7 @@ def specialcondition(request):
 		return render(request, 'permission_denied.html', {})
 	op = request.POST.get('op')
 
-	answeraires = Answeraire.objects.filter(qid=89, submitted=1)
+	'''answeraires = Answeraire.objects.filter(qid=89, submitted=1)
 	print(len(answeraires))
 
 	f = request.FILES.get('upload', None)
@@ -526,6 +526,6 @@ def specialcondition(request):
 			answeraires[lineno].save()
 
 			print(lineno, answeraires[lineno].username)
-			lineno += 1
+			lineno += 1'''
 
 	return render(request, 'specialcondition.html', {})

@@ -83,14 +83,14 @@ def survey(request, qid):
 			if status == 0 or status == 4 or status == 5:
 				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions}))
 			elif status == 1:
-				answeraire = Answeraire.objects.filter(qid=qid, uid=user.id)
+				answeraire = Answeraire.objects.filter(qid=qid, username=user.username)
 				if len(answeraire):
 					astring = answeraire[0].answers
 				else:
 					astring = '{}'
 				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions, 'astring': astring}))
 			elif status == 2 or status == 3:
-				answeraire = Answeraire.objects.filter(qid=qid, uid=user.id)
+				answeraire = Answeraire.objects.filter(qid=qid, username=user.username)
 				if len(answeraire):
 					astring = answeraire[0].answers
 				else:
@@ -217,7 +217,7 @@ def survey(request, qid):
 				# 记录
 				astring = request.POST.get('astring')
 				complete = request.POST.get('complete', 'no')
-				answeraire = Answeraire.objects.filter(qid=qid, uid=user.id)
+				answeraire = Answeraire.objects.filter(qid=qid, username=user.username)
 				if len(answeraire) > 0:
 					answeraire = answeraire[0]
 				else:
