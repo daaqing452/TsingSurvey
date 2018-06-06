@@ -304,6 +304,21 @@ $(document).ready(function(){
 		})
 	});
 
+	// 清空所有样本
+	$('button#clear_all_sample').click(function() {
+		if (confirm('确认清空所有的样本？')) {
+			$.ajax({
+				url: window.location.href,
+				type: 'POST',
+				data: {'op': 'clear_all_sample'},
+				success: function(data) {
+					var data = JSON.parse(data);
+					refreshUserList(data['user_list']);
+				}
+			});
+		}
+	});
+
 	// 显示名单
 	$('button#list_add').click(function() {
 		window.location.href = '/user_list/?list=all';

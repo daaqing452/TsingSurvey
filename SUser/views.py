@@ -263,6 +263,11 @@ def user_list(request):
 		suser.save()
 		return HttpResponse(json.dumps({}))
 
+	# 清空所有样本
+	if op == 'clear_all_sample':
+		SUser.objects.all().update(is_sample=False)
+		return HttpResponse(json.dumps({}))
+
 	# 导入用户名单
 	f = request.FILES.get('upload', None)
 	if not f is None:
@@ -528,13 +533,5 @@ def specialcondition(request):
 	if request.user.username != 'root':
 		return render(request, 'permission_denied.html', {})
 	op = request.POST.get('op')
-
-	users = User.objects.all()
-	for user in users:
-		if user.id < 65179: continue
-		password = Utils.hash_md5(user.username)
-		user.set_password(password)
-		user.save()
-		print('yes', user.username)
 
 	return render(request, 'specialcondition.html', {})
