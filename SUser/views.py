@@ -360,6 +360,20 @@ def user_list(request):
 	if op == 'get_field_chinese':
 		return HttpResponse(json.dumps({'options': SUser.__var_chinese__}))
 
+	# 获得字段值
+	if op == 'get_field_values':
+		field_id = int(request.POST.get('field_id'))
+		values = eval('SUser.objects.values_list("' + SUser.__var_name__[field_id] + '").distinct()')
+		values = [value[0] for value in values]
+		return HttpResponse(json.dumps({'values': values}))
+
+	# 添加指定条件为样本
+	if op == 'add_condition_sample':
+		field_id = int(request.POST.get('field_id'))
+		value = request.POST.get('value')
+		eval('SUser.objects.filter(' + SUser.__var_name__[field_id] + '="' + value + '").update(is_sample=True)')
+		return HttpResponse(json.dumps({'user_list': get_suser_list()}))
+
 	# 自动样本生成
 	if op == 'auto_sample':
 		# 构造命令
