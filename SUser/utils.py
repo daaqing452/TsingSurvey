@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from SUser.models import *
 import time
 import collections
+import hashlib
 
 def redirect_login(request, login_url='/login/'):
 	request.session['last_url'] = request.get_full_path()
@@ -78,3 +79,8 @@ def upload_file(raw):
 def count(a):
 	c = collections.Counter(a)
 	return dict(c)
+
+def hash_md5(s):
+	h1 = hashlib.md5()
+	h1.update(s.encode(encoding='utf-8'))
+	return h1.hexdigest()
