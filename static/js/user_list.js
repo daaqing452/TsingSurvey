@@ -162,6 +162,7 @@ $(document).ready(function(){
 			data: {'op': 'add_condition_sample', 'field_id': field_id, 'value': value},
 			success: function(data) {
 				var data = JSON.parse(data);
+				alert('设置成功！');
 				refreshUserList(data['user_list']);
 			}
 		});
