@@ -3,13 +3,24 @@
     {% block context %}
 
 <script>
-	
+	function export_multi() {
+		var qids = $('#qids').val();
+		$.ajax({
+			url: window.location.href,
+			type: "POST",
+			data: {"op": "export_multi", "qids": qids},
+			success: function(data) {
+				var data = JSON.parse(data);
+				export_path = '/' + data['export_path'];
+				$('a#download').attr('href', export_path);
+				document.getElementById("download").click();
+			}
+		});
+	}
 </script>
 
-<form enctype='multipart/form-data' action="/specialcondition/" method='post'>
-	{% csrf_token %}
-	<input type="file" name='upload'/>
-	<input type="submit"/>
-</form>
+<input id="qids" type="text">
+<button id="sub" onclick="export_multi()">导出</button>
+<a id="download"></a>
 
     {% endblock context %}

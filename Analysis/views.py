@@ -18,17 +18,11 @@ import numpy as np
 import time
 import xlsxwriter
 
+MATRIX_STAT_RANK = 2
 
-def get_report(qid):
-	MATRIX_STAT_RANK = 2
-	questionaire = Questionaire.objects.get(id=qid)
-	# 已经生成报告
-	if questionaire.report_id != -1:
-		return Report.objects.get(id=questionaire.report_id).report
-	# 还没生成报告
+
+def get_report_base(questionaire, answeraires):
 	questions = json.loads(questionaire.questions)
-	answeraire_list = Answeraire.objects.filter(qid=qid, submitted=True)
-	answeraires = [json.loads(answeraire.answers) for answeraire in answeraire_list]
 	# 预处理+清空
 	counters = []
 	for question in questions:
@@ -94,21 +88,26 @@ def get_report(qid):
 					report['options'].append(roption)
 		reports.append(report)
 	report_str = json.dumps(reports)
+	return report_str
+
+def get_report(qid):
+	questionaire = Questionaire.objects.get(id=qid)
+	# 已经生成报告
+	if questionaire.report_id != -1:
+		return Report.objects.get(id=questionaire.report_id).report
+	# 还没生成报告
+	answeraire_list = Answeraire.objects.filter(qid=qid, submitted=True)
+	answeraires = [json.loads(answeraire.answers) for answeraire in answeraire_list]
+	report_str = get_report_base(questionaire, answeraires)
 	if questionaire.status == 2:
-		report = Report.objects.create(qid=qid, report=report_str)
+		report = Report.objects.create(qid=questionaire.id, report=report_str)
 		questionaire.report_id = report.id
 		questionaire.save()
 	return report_str
 
-def export(qid):
-	questionaires = Questionaire.objects.filter(id=qid)
-	if len(questionaires) == 0:
-		return HttpResponse(json.dumps({'info': 'no that'}))
-	questionaire = json.loads(questionaires[0].questions)
-	answeraires = Answeraire.objects.filter(qid=qid, submitted=True)
-	if len(answeraires) == 0: return None
+
+def export_base(questionaire, answeraires, reports):
 	answers = [json.loads(answeraire.answers) for answeraire in answeraires]
-	reports = json.loads(get_report(qid))
 	# 写入excel
 	excel_name = 'media/' + time.strftime('%Y%m%d%H%M%S') + '-问卷结果.xlsx'
 	excel = xlsxwriter.Workbook(excel_name)
@@ -310,6 +309,28 @@ def export(qid):
 			row += 1
 	excel.close()
 	return excel_name
+
+def export(qid):
+	questionaires = Questionaire.objects.filter(id=qid)
+	if len(questionaires) == 0:
+		return HttpResponse(json.dumps({'info': 'no that'}))
+	questionaire = json.loads(questionaires[0].questions)
+	answeraires = Answeraire.objects.filter(qid=qid, submitted=True)
+	if len(answeraires) == 0: return None
+	reports = json.loads(get_report(qid))
+	return export_base(questionaire, answeraires, reports)
+
+def export_multi(qids):
+	questionaire = Questionaire.objects.get(id=qids[0])
+	questions = json.loads(questionaire.questions)
+	answeraire_list = []
+	for qid in qids:
+		answeraire_list += Answeraire.objects.filter(qid=qid, submitted=True)
+	answeraires = [json.loads(answeraire.answers) for answeraire in answeraire_list]
+	reports = json.loads(get_report_base(questionaire, answeraires))
+	return export_base(questions, answeraire_list, reports)
+
+
 
 def search(request):
 	# 验证身份

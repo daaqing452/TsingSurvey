@@ -114,7 +114,7 @@ def survey(request, qid):
 
 		# 导出问卷
 		if op == 'export':
-			if status == 1 or status == 2:
+			if status == 1 or status == 2 or status == 3:
 				excel_name = Analysis.export(qid)
 				if excel_name == None:
 					return HttpResponse(json.dumps({'result': 'no', 'info': '尚未有人填写问卷！'}))

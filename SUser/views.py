@@ -9,6 +9,7 @@ from django.template import RequestContext
 from SUser.models import SUser, SampleList
 from SUser.auth_tsinghua import auth_tsinghua
 from Survey.models import Questionaire, Answeraire
+import Analysis.views as Analysis
 import SUser.utils as Utils
 import codecs
 import json
@@ -547,5 +548,10 @@ def specialcondition(request):
 	if request.user.username != 'root':
 		return render(request, 'permission_denied.html', {})
 	op = request.POST.get('op')
+
+	if op == 'export_multi':
+		qids = json.loads(request.POST.get('qids'))
+		excel_name = Analysis.export_multi(qids)
+		return HttpResponse(json.dumps({'result': 'yes', 'export_path': excel_name}))
 
 	return render(request, 'specialcondition.html', {})
