@@ -147,12 +147,19 @@ def export_base(questionaire, answeraires, reports):
 	cnt = -1
 	for question in questionaire:
 		s_type = question['s_type']
-		cnt += 1
 		if s_type == 8: continue
+		cnt += 1
 		index_show = question['index']
-		index = cnt
 		title = question['title']
-		selects = [answer[index]['select'] for answer in answers]
+		selects = []
+		for answer in answers:
+			j = -1
+			for sub_answer in answer:
+				if sub_answer['s_type'] != 8: j += 1
+				if j == cnt:
+					selects.append(sub_answer['select'])
+					break
+		# selects2 = [answer[cnt]['select'] for answer in answers]
 		row = 0
 		# 单选题、下拉题
 		if s_type in [1, 4]:
