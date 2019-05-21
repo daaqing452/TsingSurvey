@@ -2,9 +2,11 @@
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from SUser.models import *
+from Survey.models import *
 import time
 import collections
 import hashlib
+import json
 
 def redirect_login(request, login_url='/login/'):
 	request.session['last_url'] = request.get_full_path()
@@ -16,25 +18,39 @@ def username_to_password(username):
 	for c in username: h = h * ord(c) % 10499997
 	return str(h)
 
-def check_fill(qid, qid_dict):
-	if not str(qid) in qid_dict:
-		return -1
-	elif qid_dict[str(qid)] == 0:
-		return 0
-	else:
-		return 1
+# -2 sample list cannot find
+# -1 questionaire cannot find
+#  0 not allowed
+#  1 allowed, not fill
+#  2 allowed, filled
+#  3 allowed, filled, submitted
 
-def check_questionaire_in_index(user, questionaire, qid_dict):
-	return not (not user.is_staff and check_fill(questionaire.id, qid_dict) != 1 and (questionaire.status == 2 or questionaire.status == 3))
+def check_allow(suser, questionaire=None, qid=None):
+	if questionaire == None:
+		questionaires = Questionaire.objects.filter(id=qid)
+		if len(questionaires) == 0: return -1
+		questionaire = questionaires[0]
+	if not questionaire.public and questionaire.founder != suser.username:
+		sample_lists = SampleList.objects.filter(id=questionaire.sample_list_id)
+		if len(sample_lists) == 0: return -2
+		sample_list = json.loads(sample_lists[0].sample_list)
+		if not suser.id in sample_list: return 0
+	return 1
+	
+def check_fill(suser, questionaire):
+	answeraires = Answeraire.objects.filter(qid=questionaire.id, username=suser.username)
+	if len(answeraires) == 0: return 1
+	answeraire = answeraires[0]
+	return (3 if answeraire.submitted else 2);
 
-def remakeq(questionaire, qid_dict, editable):
+def remakeq(suser, questionaire, editable):
 	d = {}
 	d['id'] = questionaire.id
 	d['create_time'] = questionaire.create_time
 	d['editable'] = editable
 	
-	d['founder'] = '已移除'
-	founders =  User.objects.filter(id=questionaire.founder)
+	d['founder'] = '未找到'
+	founders =  SUser.objects.filter(username=questionaire.founder)
 	if len(founders) > 0:
 		d['founder'] = founders[0].username
 
@@ -43,13 +59,15 @@ def remakeq(questionaire, qid_dict, editable):
 	else:
 		d['title'] = questionaire.title
 
-	filled = check_fill(questionaire.id, qid_dict)
-	if filled == -1:
-		d['fill'] = ''
-	elif filled == 0:
+	fill = check_fill(suser, questionaire)
+	if fill == 1:
 		d['fill'] = '尚未填写'
+	elif fill == 2:
+		d['fill'] = '填写未提交'
+	elif fill == 3:
+		d['fill'] = '已提交'
 	else:
-		d['fill'] = '已填写'
+		d['fill'] = ''
 
 	if questionaire.status == 0:
 		d['status'] = '尚未发布'

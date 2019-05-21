@@ -21,7 +21,6 @@ class Questionaire(models.Model):
 
 class Answeraire(models.Model):
 	qid = models.IntegerField()
-	uid = models.IntegerField()
 	username = models.CharField(max_length=64, default='')
 	submitted = models.BooleanField(default=0)
 	load_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')

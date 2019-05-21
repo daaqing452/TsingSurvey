@@ -4,13 +4,13 @@ from django.db import models
 
 class SUser(models.Model):
 	uid = models.IntegerField()
-	qid_list = models.TextField(default='{}')
+	admin_all = models.BooleanField(default=0)
+	admin_survey = models.BooleanField(default=0)
+	# qid_list = models.TextField(default='{}')
 	is_sample = models.BooleanField(default=1)
 	is_store = models.BooleanField(default=0)
 	credit = models.IntegerField(default=0)
 	nickname = models.CharField(max_length=64, default='')
-	
-	admin_survey = models.BooleanField(default=0)
 
 	username                    = models.CharField(max_length=64)
 	name                        = models.CharField(max_length=64, default='')

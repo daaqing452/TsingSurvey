@@ -6,117 +6,116 @@ from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
+from django.views.decorators.csrf import csrf_exempt
 from SUser.models import SUser, SampleList
 from SUser.auth_tsinghua import auth_tsinghua
 from Survey.models import Questionaire, Answeraire
 import Analysis.views as Analysis
 import SUser.utils as Utils
+from SUser.load_survey import load_survey
 import codecs
+import datetime
 import json
 import math
 import random
+import re
 import time
 import sys
 import xlsxwriter
 # reload(sys)
 # sys.setdefaultencoding('utf-8')
 
+MAGIC_NUMBER = 456321887;
+
 def index(request):
 	# 检查身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
 	rdata = {}
-	rdata['user'] = user = request.user
+	suser = SUser.objects.get(uid=request.user.id)
+	rdata['suser'] = suser
 	op = request.POST.get('op')
 
-	suser = SUser.objects.get(uid=user.id)
-	qid_dict = json.loads(suser.qid_list)
+	rq_list = []
+	for questionaire in Questionaire.objects.all():
+		rq = None
+		# 高级管理员
+		if suser.admin_all:
+			rq = Utils.remakeq(suser, questionaire, True)
+			rq['filled_number'] = len(Answeraire.objects.filter(qid=questionaire.id))
+			rq['submitted_number'] = len(Answeraire.objects.filter(qid=questionaire.id, submitted=True))
+		# 问卷管理员：自己发的问卷
+		elif suser.admin_survey and questionaire.founder == suser.id:
+			rq = Utils.remakeq(suser, questionaire, True)
+		# 普通用户：公共问卷
+		elif questionaire.public:
+			if questionaire.status == 1 or questionaire.status == 3:
+				rq = Utils.remakeq(suser, questionaire, False)
+		# 普通用户：被允许填的问卷
+		elif Utils.check_allow(suser, questionaire):
+			if questionaire.status == 1 or questionaire.status == 3:
+				rq = Utils.remakeq(suser, questionaire, False)
+		if rq == None: continue
+		rq_list.append(rq)
+	
+	# 导入问卷
+	f = request.FILES.get('upload', None)
+	if not f is None:
+		filepath = Utils.upload_file(f)
+		qstring = load_survey(filepath)
+		now = datetime.datetime.now()
+		questionaire = Questionaire.objects.create(status=0, create_time=now, update_time=now, founder=request.user.id, questions=qstring)
+		return HttpResponseRedirect('/survey/' + str(questionaire.id) + '/')
 
 	def cmp_by_time(x):
 		return x['create_time']
 
- 	# 高级管理员
-	if user.is_staff:
-		questionaire_list = Questionaire.objects.all()
-		rq_list = [Utils.remakeq(questionaire, qid_dict, True) for questionaire in questionaire_list]
-		for rq in rq_list:
-			answeraires = Answeraire.objects.filter(qid=rq['id'])
-			rq['filled_number'] = len(answeraires)
-	else:
-		# 这里可以添加自动清理机制
-		rq_list = []
-		qid_list = []
-		# 问卷管理员
-		if suser.admin_survey:
-			for questionaire in Questionaire.objects.filter(founder=user.id):
-				rq_list.append(Utils.remakeq(questionaire, [], True))
-				qid_list.append(questionaire.id)
-		else:
-			# 普通用户问卷
-			for qid in qid_dict:
-				if int(qid) in qid_list: continue
-				questionaires = Questionaire.objects.filter(id=int(qid))
-				if len(questionaires) > 0:
-					questionaire = questionaires[0]
-					if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
-						rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
-						qid_list.append(questionaire.id)
-			# 该用户名相关的问卷
-			answeraires = Answeraire.objects.filter(username=user.username, submitted=True)
-			for answeraire in answeraires:
-				questionaires = Questionaire.objects.filter(id=answeraire.qid)
-				if len(questionaires) == 0: continue
-				questionaire = questionaires[0]
-				if int(questionaire.id) in qid_list: continue
-				rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
-				qid_list.append(questionaire.id)
-			# 公共问卷
-			for questionaire in Questionaire.objects.filter(public=True):
-				if int(questionaire.id) in qid_list: continue
-				if questionaire.status == 4: continue
-				if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
-					rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
-					qid_list.append(questionaire.id)
-	
 	rq_list.sort(key=lambda x: x['create_time'], reverse=True)
 	rdata['rq_list'] = rq_list
-	rdata['editable'] = user.is_staff or suser.admin_survey
+	rdata['editable'] = suser.admin_all or suser.admin_survey
 	return render(request, 'index.html', rdata)
 
+@csrf_exempt
 def login(request):
 	# 如果已登录直接跳转
 	if request.user.is_authenticated:
 		return HttpResponseRedirect('/index/')
 	rdata = {}
 	login = False
+	op = request.POST.get('op', '')
+	print('op: ' + op)
 
-	# 获取用户名密码
+	def uglyDecrypt(s):
+		t = ''
+		for i in range(0, len(s), 7):
+			x = 0
+			tt = ''
+			for j in range(6, -1, -1):
+				y = ord(s[i+j]) - 97
+				x = x * 26 + y
+			x = x ^ MAGIC_NUMBER
+			for i in range(3):
+				y = x % 1000
+				if y > 0: tt = chr(y) + tt
+				x = x // 1000
+			t += tt
+		return t
+
 	username = request.POST.get('username')
 	password = request.POST.get('password')
 
 	if username is not None and password is not None:
+		password = uglyDecrypt(password)
+		print(password)
+
 		# 判断是否存在
 		users = User.objects.filter(username=username)
 		existed = (len(users) > 0)
 
 		# 判断是否是清华账号
 		if username.isdigit() and len(username) == 10:
-			'''# 清华登录
-			yes = auth_tsinghua(request, username, password)
-			if yes:
-				password = Utils.username_to_password(username)
-				users = User.objects.filter(username=username)
-				# 新用户
-				if len(users) == 0:
-					user = User.objects.create_user(username=username, password=password)
-					suser = SUser.objects.create(uid=user.id, username=username, nickname=username)
-			else:
-				password = ''
-			'''
-
-			# 不存在就新建
 			if not existed:
-				password = Utils.hash_md5(username)
+				password = username
 				user = User.objects.create_user(username=username, password=password)
 				suser = SUser.objects.create(uid=user.id, username=username, nickname=username)
 				existed = True
@@ -131,6 +130,10 @@ def login(request):
 				rdata['info'] = '密码错误'
 		else:
 			rdata['info'] = '用户名不存在'
+
+	if op == 'get_magic_number':
+		print('hello')
+		return HttpResponse(json.dumps({'magic_number': MAGIC_NUMBER}))
 
 	if login:
 		url = '/index/'
@@ -541,7 +544,7 @@ def install(request):
 		html += ' already exists <br/>'
 	return HttpResponse(html)
 
-def specialcondition(request):
+def developer_admin(request):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
@@ -549,9 +552,11 @@ def specialcondition(request):
 		return render(request, 'permission_denied.html', {})
 	op = request.POST.get('op')
 
-	if op == 'export_multi':
-		qids = json.loads(request.POST.get('qids'))
-		excel_name = Analysis.export_multi(qids)
-		return HttpResponse(json.dumps({'result': 'yes', 'export_path': excel_name}))
+	# if op == 'export_multi':
+	# 	qids = json.loads(request.POST.get('qids'))
+	# 	excel_name = Analysis.export_multi(qids)
+	# 	return HttpResponse(json.dumps({'result': 'yes', 'export_path': excel_name}))
 
-	return render(request, 'specialcondition.html', {})
+
+
+	return render(request, 'developer_admin.html', {})

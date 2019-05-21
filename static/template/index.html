@@ -11,12 +11,12 @@
 		<td align=center> 创建日期 </td>
 		<td align=center> 标题 </td>
 		<td align=center> 是否填写？ </td>
-		{% if user.is_staff %}
+		{% if suser.admin_all %}
 		<td align=center> 发放人 </td>
 		{% endif %}
 		{% if editable %}
 		<td align=center> 问卷状态 </td>
-		<td align=center> 填写人数 </td>
+		<td align=center> 提交/填写人数 </td>
 		<td> </td>
 		<td> </td>
 		<td> </td>
@@ -28,13 +28,13 @@
 		<td align=center> {{ rq.create_time | date:"Y-m-d H:i:s" }} </td>
 		<td align=center> <a href='/survey/{{ rq.id }}'> {{ rq.title }} </a> </td>
 		<td align=center>  {{ rq.fill }} </td>
-		{% if user.is_staff %}
+		{% if suser.admin_all %}
 		<td align=cetner> {{ rq.founder }} </td>
 		{% endif %}
 		{% if editable %}
 			{% if rq.editable %}
 			<td align=center> {{ rq.status }} </td>
-			<td align=center> {{ rq.filled_number }} </td>
+			<td align=center> {{ rq.submitted_number }}/{{ rq.filled_number }} </td>
 			<td qid='{{ rq.id }}' onclick='delete_questionaire(this)'> <span class='glyphicon glyphicon-remove'> </span> </td>
 			<td qid='{{ rq.id }}' onclick='copy_questionaire(this)'> <span class='glyphicon glyphicon-plus'> </span> </td>
 			<td qid='{{ rq.id }}' onclick='export_index(this)'> <span class='glyphicon glyphicon-arrow-down'> </span> </td>
@@ -52,7 +52,13 @@
 	{% endfor %}
 </table>
 	{% if editable %}
-<button id='survey_create' class="btn btn-success " style="float:right"> 添加 </button> <br/>
+<form enctype='multipart/form-data' action='/index/' method='post' style='margin:0px;float:left'>
+	{% csrf_token %}
+	<input type='submit' value='导入问卷' class='btn btn-info' >
+	<input type='file' class='btn' name='upload' style='margin:0px;display:inline;'>
+	{% csrf_token %}
+</form>
+<button id='survey_create' class="btn btn-success " style="float:right;margin-right:10px"> 添加 </button> <br/>
 {% endif %}
 
 </div>
