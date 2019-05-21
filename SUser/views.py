@@ -31,11 +31,8 @@ def index(request):
 	# 检查身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	rdata = {}
-	suser = SUser.objects.get(uid=request.user.id)
-	rdata['suser'] = suser
-	op = request.POST.get('op')
-
+	rdata, op, suser = Utils.get_request_basis(request)
+	
 	rq_list = []
 	for questionaire in Questionaire.objects.all():
 		rq = None
@@ -80,10 +77,8 @@ def login(request):
 	# 如果已登录直接跳转
 	if request.user.is_authenticated:
 		return HttpResponseRedirect('/index/')
-	rdata = {}
+	rdata, op, suser = Utils.get_request_basis(request)
 	login = False
-	op = request.POST.get('op', '')
-	print('op: ' + op)
 
 	def uglyDecrypt(s):
 		t = ''
@@ -132,7 +127,6 @@ def login(request):
 			rdata['info'] = '用户名不存在'
 
 	if op == 'get_magic_number':
-		print('hello')
 		return HttpResponse(json.dumps({'magic_number': MAGIC_NUMBER}))
 
 	if login:
@@ -151,11 +145,9 @@ def user_list(request):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	if not request.user.is_staff:
+	rdata, op, suser = Utils.get_request_basis(request)
+	if not suser.admin_all:
 		return render(request, 'permission_denied.html', {})
-	rdata = {}
-	rdata['user'] = user = request.user
-	op = request.POST.get('op')
 
 	ITEM_PER_PAGE = 50
 	lis = request.GET.get('list', 'all')
@@ -429,11 +421,9 @@ def admin_list(request):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	if not request.user.is_superuser:
+	rdata, op, suser = Utils.get_request_basis(request)
+	if not suser.admin_super:
 		return render(request, 'permission_denied.html', {})
-	rdata = {}
-	rdata['user'] = user = request.user
-	op = request.POST.get('op')
 
 	def get_admin_list():
 		uid_list = []
@@ -473,13 +463,11 @@ def profile(request, uid):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	if (not request.user.is_staff) and (str(request.user.id) != uid):
+	rdata, op, suser = Utils.get_request_basis(request)
+	if (not suser.admin_all) and (int(suser.id) != int(uid)):
 		return render(request, 'permission_denied.html', {})
-	rdata = {}
-	rdata['user'] = user = request.user
 	rdata['puser'] = puser = User.objects.get(id=uid)
-	rdata['psuser'] = psuser = SUser.objects.get(uid=puser.id)
-	op = request.POST.get('op')
+	rdata['psuser'] = psuser = SUser.objects.get(uid=uid)
 
 	if op == 'change_nickname':
 		psuser.nickname = request.POST.get('nickname')
@@ -489,62 +477,35 @@ def profile(request, uid):
 	if op == 'change_password':
 		old_password = request.POST.get('old_password')
 		new_password = request.POST.get('new_password')
-		user2 = auth.authenticate(username=user.username, password=old_password)
+		puser2 = auth.authenticate(username=puser.username, password=old_password)
 		jdata = {}
-		if user2 is not None and user2 == user and user2.is_active:
-			user.set_password(new_password)
-			user.save()
+		if puser2 is not None and puser2 == puser and puser2.is_active:
+			puser.set_password(new_password)
+			puser.save()
 			jdata['result'] = 'yes'
 			return HttpResponse(json.dumps(jdata))
 		else:
 			jdata['result'] = 'no'
 			return HttpResponse(json.dumps(jdata))
 
-	qid_dict = json.loads(psuser.qid_list)
 	rq_list = []
-	qid_list = []
-	# 普通用户问卷
-	for qid in qid_dict:
-		questionaires = Questionaire.objects.filter(id=qid)
-		if len(questionaires) > 0:
-			questionaire = questionaires[0]
-			if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
-				rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
-				qid_list.append(questionaire.id)
-	# 该用户名相关的问卷
-	answeraires = Answeraire.objects.filter(username=user.username, submitted=True)
-	for answeraire in answeraires:
-		questionaires = Questionaire.objects.filter(id=int(answeraire.qid))
-		if len(questionaires) == 0: continue
-		questionaire = questionaires[0]
-		if int(questionaire.id) in qid_list: continue
-		rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
-		qid_list.append(questionaire.id)
-	# 公共问卷
-	for questionaire in Questionaire.objects.filter(public=True):
-		if questionaire.id in qid_list: continue
-		if questionaire.status == 4: continue
-		if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
-			rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
-			qid_list.append(questionaire.id)
+	for questionaire in Questionaire.objects.all():
+		rq = None
+		if questionaire.public:
+			if questionaire.status == 1 or questionaire.status == 3:
+				rq = Utils.remakeq(suser, questionaire, False)
+		elif Utils.check_allow(suser, questionaire):
+			if questionaire.status == 1 or questionaire.status == 3:
+				rq = Utils.remakeq(suser, questionaire, False)
+		if rq == None: continue
+		rq_list.append(rq)
+	
 	rq_list.sort(key=lambda x: x['create_time'], reverse=True)
 	rdata['rq_list'] = rq_list
 
 	return render(request, 'profile.html', rdata)
 
-def install(request):
-	username = 'root'
-	password = '123'
-	user = auth.authenticate(username=username, password=password)
-	if user is None:
-		user = User.objects.create_user(username=username, password=password, is_superuser=1, is_staff=1)
-		suser = SUser.objects.create(username=username, nickname=username, uid=user.id, is_sample=0)
-		html += 'add ' + username + ' successful <br/>'
-	else:
-		html += ' already exists <br/>'
-	return HttpResponse(html)
-
-def developer_admin(request):
+def backend_admin(request):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
@@ -557,6 +518,4 @@ def developer_admin(request):
 	# 	excel_name = Analysis.export_multi(qids)
 	# 	return HttpResponse(json.dumps({'result': 'yes', 'export_path': excel_name}))
 
-
-
-	return render(request, 'developer_admin.html', {})
+	return render(request, 'backend_admin.html', {})

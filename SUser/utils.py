@@ -12,12 +12,6 @@ def redirect_login(request, login_url='/login/'):
 	request.session['last_url'] = request.get_full_path()
 	return HttpResponseRedirect(login_url)
 
-def username_to_password(username):
-	h = 0
-	username = str(username)
-	for c in username: h = h * ord(c) % 10499997
-	return str(h)
-
 # -2 sample list cannot find
 # -1 questionaire cannot find
 #  0 not allowed
@@ -36,7 +30,7 @@ def check_allow(suser, questionaire=None, qid=None):
 		sample_list = json.loads(sample_lists[0].sample_list)
 		if not suser.id in sample_list: return 0
 	return 1
-	
+
 def check_fill(suser, questionaire):
 	answeraires = Answeraire.objects.filter(qid=questionaire.id, username=suser.username)
 	if len(answeraires) == 0: return 1
@@ -85,6 +79,14 @@ def remakeq(suser, questionaire, editable):
 		d['status'] = '错误'
 	
 	return d
+
+def get_request_basis(request):
+	rdata = {}
+	op = request.POST.get('op', '')
+	suser = None
+	if request.user.is_authenticated:
+		rdata['suser'] = suser = SUser.objects.filter(username=request.user.username)[0]
+	return rdata, op, suser
 
 def upload_file(raw):
 	f_path = 'media/' + time.strftime('%Y%m%d%H%M%S') + '-' + raw.name

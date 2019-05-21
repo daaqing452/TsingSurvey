@@ -30,11 +30,9 @@ def survey(request, qid):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	rdata = {}
-	rdata['suser'] = suser = SUser.objects.get(uid=int(request.user.id))
+	rdata, op, suser = Utils.get_request_basis(request)
 	rdata['viewable'] = 1
 	rdata['qid'] = qid
-	op = request.POST.get('op')
 	status = -1
 	now = datetime.datetime.now()
 
@@ -283,19 +281,17 @@ def survey(request, qid):
 
 def report(request, qid):
 	# 验证身份
-	rdata = {}
-	rdata['user'] = user = request.user
+	if not request.user.is_authenticated:
+		return Utils.redirect_login(request)
+	rdata, op, suser = Utils.get_request_basis(request)
 	return render(request, 'report.html', rdata)
 
 def bonus(request):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request, '../login/')
-	rdata = {}
-	rdata['user'] = request.user
+	rdata, op, suser = Utils.get_request_basis(request)
 	rdata['credit'] = request.GET.get('credit', 0)
-	op = request.POST.get('op')
-
 	return render(request, 'bonus.html', rdata)
 
 

@@ -343,11 +343,9 @@ def search(request):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	if not request.user.is_staff:
+	rdata, op, suser = Utils.get_request_basis(request)
+	if not suser.admin_all:
 		return render(request, 'permission_denied.html', {})
-	rdata = {}
-	rdata['user'] = user = request.user
-	op = request.POST.get('op')
 
 	def context(s, klen, pos):
 		l = max(0, pos - 5)
@@ -389,10 +387,7 @@ def prize(request):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	rdata = {}
-	rdata['user'] = user = request.user
-	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
-	op = request.POST.get('op')
+	rdata, op, suser = Utils.get_request_basis(request)
 
 	# 商家重导向
 	if suser.is_store:
@@ -445,10 +440,7 @@ def prize_ticket(request, ptype, qid=-1):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	rdata = {}
-	rdata['user'] = user = request.user
-	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
-	op = request.POST.get('op')
+	rdata, op, suser = Utils.get_request_basis(request)
 	qid = int(qid)
 
 	if op == 'clear_scaned':
@@ -552,11 +544,9 @@ def prize_add(request):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	if not request.user.is_staff:
+	rdata, op, suser = Utils.get_request_basis(request)
+	if not suser.admin_all:
 		return render(request, 'permission_denied.html', {})
-	rdata = {}
-	rdata['user'] = user = request.user
-	op = request.POST.get('op')
 
 	if op == 'add_prize':
 		title = request.POST.get('title')
@@ -573,12 +563,10 @@ def prize_add_store(request):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	if not request.user.is_staff:
+	rdata, op, suser = Utils.get_request_basis(request)
+	if not suser.admin_all:
 		return render(request, 'permission_denied.html', {})
-	rdata = {}
-	rdata['user'] = user = request.user
-	op = request.POST.get('op')
-
+	
 	if op == 'add_store':
 		jdata = {'result': 'ok'}
 		username = request.POST.get('username')
@@ -608,11 +596,10 @@ def prize_exchange(request, tid):
 	# 验证身份，只有特定商家和特定用户
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	rdata = {}
-	rdata['user'] = user = request.user
-	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
+	rdata, op, suser = Utils.get_request_basis(request)
 	rdata['ticket'] = ticket = PrizeTicket.objects.get(id=tid)
 	rdata['prize'] = prize = Prize.objects.get(id=ticket.pid)
+	
 	if suser.is_store:
 		store = json.loads(prize.store)
 		if not suser.id in store:
@@ -651,12 +638,10 @@ def prize_exchange(request, tid):
 def prize_store(request):
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	if not request.user.is_staff:
+	rdata, op, suser = Utils.get_request_basis(request)
+	if suser.admin_all:
 		return render(request, 'permission_denied.html', {})
-	rdata = {}
-	rdata['user'] = user = request.user
-	op = request.POST.get('op')
-
+	
 	if op == 'change_nickname':
 		SUser.objects.filter(id=int(request.POST.get('sid'))).update(nickname=request.POST.get('nickname'))
 		return HttpResponse(json.dumps({}))
@@ -706,12 +691,9 @@ def help_center(request):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	rdata = {}
-	rdata['user'] = user = request.user
-	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
-	op = request.POST.get('op')
-
-	if user.is_staff:
+	rdata, op, suser = Utils.get_request_basis(request)
+	
+	if suser.admin_all:
 		helps = reversed(Help.objects.all())
 	else:
 		helps = reversed(Help.objects.filter(released=True))
@@ -723,11 +705,8 @@ def tip(request, hid):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	rdata = {}
-	rdata['user'] = user = request.user
-	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
-	op = request.POST.get('op')
-
+	rdata, op, suser = Utils.get_request_basis(request)
+	
 	helps = Help.objects.filter(id=int(hid))
 	if len(helps) == 0:
 		rdata['info'] = '帮助不存在'

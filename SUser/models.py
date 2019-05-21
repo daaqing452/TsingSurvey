@@ -4,6 +4,7 @@ from django.db import models
 
 class SUser(models.Model):
 	uid = models.IntegerField()
+	admin_super = models.BooleanField(default=0)
 	admin_all = models.BooleanField(default=0)
 	admin_survey = models.BooleanField(default=0)
 	# qid_list = models.TextField(default='{}')

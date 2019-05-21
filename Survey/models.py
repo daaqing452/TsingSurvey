@@ -8,7 +8,7 @@ class Questionaire(models.Model):
 	update_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
 	release_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
 	close_time = models.DateTimeField(default='1970-01-01 00:00:00.000000')
-	founder = models.IntegerField(default=-1)
+	founder = models.CharField(max_length=64, default='')
 	title = models.CharField(max_length=128, default='')
 	questions = models.TextField(default='')
 	comment = models.TextField(default='')
@@ -16,8 +16,7 @@ class Questionaire(models.Model):
 	credit = models.IntegerField(default=-1)
 	report_template = models.TextField(default='')
 	sample_list_id = models.IntegerField(default=-1)
-	# abandon?
-	report_id = models.IntegerField(default=-1)
+	# report_id = models.IntegerField(default=-1)
 
 class Answeraire(models.Model):
 	qid = models.IntegerField()

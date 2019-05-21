@@ -49,6 +49,5 @@ urlpatterns = [
     url(r'^help_center/$', help_center),
     url(r'^tip/(\d{1,10})/$', tip),
 
-    url(r'^install/$', install),
-    url(r'^developer_admin/$', developer_admin),
+    url(r'^backend_admin/$', backend_admin),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
