@@ -83,8 +83,8 @@
 	       
 	      </div>
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default " data-dismiss="modal" onclick="closeModal()"> 关闭 </button>
-	        <button type="button" class="btn btn-primary" onclick="commitS()">保存 </button>
+	        <button type="button" class="btn btn-default btn-lg" data-dismiss="modal" onclick="closeModal()"> 关闭 </button>
+	        <button type="button" class="btn btn-primary btn-lg" onclick="commitS()">保存 </button>
 	      </div>
 	    </div>
 	  </div>
@@ -122,8 +122,8 @@
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default " data-dismiss="modal" onclick="closeModal()"> 关闭 </button>
-	        <button type="button" class="btn btn-primary" onclick="commitRS()">保存 </button>
-	        <button type="button" class="btn btn-primary" style="display: none;" onclick="previewShow()"> 预览 </button>
+	        <button type="button" class="btn btn-primary " onclick="commitRS()">保存 </button>
+	        <button type="button" class="btn btn-primary " style="display: none;" onclick="previewShow()"> 预览 </button>
 	      </div>
 	    </div>
 	  </div>
@@ -153,8 +153,8 @@
 			{% endfor %}
 		</select>
 		{% endif %}
-		<button id="save_btn" class="btn btn-success btn-sm" onclick="save()" style="float:right"> 暂存 </button>
-		<button id="release_btn" class="btn btn-success btn-sm" onclick="release()" style="float:right"> 发布 </button>
+		<button id="save_btn" class="btn btn-success " onclick="save()" style="float:right"> 暂存 </button>
+		<button id="release_btn" class="btn btn-success " onclick="release()" style="float:right"> 发布 </button>
 		<input id="ifpublic" type="checkbox" {% if not suser.admin_all %} checked="true" disabled="disabled" {% endif %}>公共问卷</input>&nbsp;&nbsp;&nbsp;&nbsp;
 		完成获得<input style="width:40px" id="credit" type="text"/>积分
 	{% endif %}
@@ -162,27 +162,27 @@
 	{% ifequal status 1 %}
 	{% ifequal permission_submit 1 %}
 	<div style="text-align:left;">
-		<button id ="submit_btn" class="btn btn-success btn-sm" onclick="submit(0)" style="float:right"> 提交 </button>
+		<button id ="submit_btn" class="btn btn-success " onclick="submit(0)" style="float:right"> 提交 </button>
 	</div>
 	{% endifequal %}
 	{% if editable %}
-	<button id="close_btn" class="btn btn-success btn-sm" onclick="closeup()" style="float:right"> 关闭问卷 </button>
+	<button id="close_btn" class="btn btn-success " onclick="closeup()" style="float:right"> 关闭问卷 </button>
 	{% endif %}
 	{% endifequal %}
 
 	{% if status == 2 or status == 3 %}
 	{% if editable %}
 
-	<button id="export_btn" class="btn btn-success btn-sm"  onclick="exportt()" style="float:right; display: none;"> 导出 </button>
-	<button id="saveSr_btn" class="btn btn-success btn-sm" onclick="saveSr()" style="float:right; display: none;"> 保存报告模板 </button>
-	<button id="exportSr_btn" class="btn btn-success btn-sm" onclick="exportSr()" style="float:right; display: none;"> 发布个人报告 </button>
-	<button id="preview_btn" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal" onclick="preview()" style="float:right; display: none;"> 预览 </button>
+	<button id="export_btn" class="btn btn-success "  onclick="exportt()" style="float:right; display: none;"> 导出 </button>
+	<button id="saveSr_btn" class="btn btn-success " onclick="saveSr()" style="float:right; display: none;"> 保存报告模板 </button>
+	<button id="exportSr_btn" class="btn btn-success " onclick="exportSr()" style="float:right; display: none;"> 发布个人报告 </button>
+	<button id="preview_btn" class="btn btn-success " data-toggle="modal" data-target="#myModal" onclick="preview()" style="float:right; display: none;"> 预览 </button>
 	<a id='download'> </a>
 	{% endif %}
 	{% endif %}
 
 	{% ifequal status 3 %}
-	<button id="export_btn" class="btn btn-success btn-sm"  onclick="exportt()" style="float:right; display: none;"> 导出 </button>
+	<button id="export_btn" class="btn btn-success "  onclick="exportt()" style="float:right; display: none;"> 导出 </button>
 	{% endifequal %}
 
 	{% ifequal status 4 %}
@@ -190,8 +190,8 @@
 		<span style="float:left">问卷发布对象：{{ sample_list_name }} </span><br/>
 		<br/>
 		{% if suser.admin_all %}
-		<button id="verify_no" class="btn btn-danger btn-sm" onclick="verify_no()" style="float:right"> 审核不通过 </button>
-		<button id="verify_yes" class="btn btn-success btn-sm" onclick="verify_yes()" style="float:right"> 审核通过 </button>
+		<button id="verify_no" class="btn btn-danger " onclick="verify_no()" style="float:right"> 审核不通过 </button>
+		<button id="verify_yes" class="btn btn-success " onclick="verify_yes()" style="float:right"> 审核通过 </button>
 		{% else %}
 		<h4>待审核<h4>
 		{% endif %}

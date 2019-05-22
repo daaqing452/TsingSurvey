@@ -236,6 +236,7 @@ def survey(request, qid):
 				questionaire.close_time = datetime.datetime.now()
 				questionaire.status = 2
 				questionaire.save()
+				Answeraire.objects.filter(qid=questionaire.id).update(submitted=True)
 				return HttpResponse(json.dumps({}))
 
 		# 问卷结束/报告编辑状态

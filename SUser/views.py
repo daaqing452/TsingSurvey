@@ -32,26 +32,27 @@ def index(request):
 	rdata, op, suser = Utils.get_request_basis(request)
 	
 	rq_list = []
-	for questionaire in Questionaire.objects.all():
-		rq = None
-		# 高级管理员
-		if suser.admin_all:
-			rq = Utils.remakeq(suser, questionaire, True)
-			rq['filled_number'] = len(Answeraire.objects.filter(qid=questionaire.id))
-			rq['submitted_number'] = len(Answeraire.objects.filter(qid=questionaire.id, submitted=True))
-		# 问卷管理员：自己发的问卷
-		elif suser.admin_survey and questionaire.founder == suser.username:
-			rq = Utils.remakeq(suser, questionaire, True)
-		# 普通用户：公共问卷
-		elif questionaire.public:
-			if questionaire.status in [1,2,3]:
-				rq = Utils.remakeq(suser, questionaire, False)
-		# 普通用户：被允许填的问卷
-		elif Utils.check_allow(suser, questionaire):
-			if questionaire.status in [1,2,3]:
-				rq = Utils.remakeq(suser, questionaire, False)
-		if rq == None: continue
-		rq_list.append(rq)
+	if not suser.is_store:
+		for questionaire in Questionaire.objects.all():
+			rq = None
+			# 高级管理员
+			if suser.admin_all:
+				rq = Utils.remakeq(suser, questionaire, True)
+				rq['filled_number'] = len(Answeraire.objects.filter(qid=questionaire.id))
+				rq['submitted_number'] = len(Answeraire.objects.filter(qid=questionaire.id, submitted=True))
+			# 问卷管理员：自己发的问卷
+			elif suser.admin_survey and questionaire.founder == suser.username:
+				rq = Utils.remakeq(suser, questionaire, True)
+			# 普通用户：公共问卷
+			elif questionaire.public:
+				if questionaire.status in [1,2,3]:
+					rq = Utils.remakeq(suser, questionaire, False)
+			# 普通用户：被允许填的问卷
+			elif Utils.check_allow(suser, questionaire):
+				if questionaire.status in [1,2,3]:
+					rq = Utils.remakeq(suser, questionaire, False)
+			if rq == None: continue
+			rq_list.append(rq)
 	
 	# 导入问卷
 	f = request.FILES.get('upload', None)
