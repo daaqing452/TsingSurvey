@@ -463,11 +463,11 @@ def prize_ticket(request, ptype, qid=-1):
 		if len(prizes) == 0:
 			return render(request, 'permission_denied.html', {})
 		prize = prizes[0]
-		if (not user.is_staff) and (not suser.id in json.loads(prize.store)):
+		if (not suser.admin_all) and (not suser.id in json.loads(prize.store)):
 			return render(request, 'permission_denied.html', {})
 		tickets = PrizeTicket.objects.filter(pid=qid)
 	elif ptype == 'u':
-		if (not user.is_staff) and (suser.id != qid):
+		if (not suser.admin_all) and (suser.id != qid):
 			return render(request, 'permission_denied.html', {})
 		qsuser = SUser.objects.get(id=qid)
 		if qsuser.is_store:
@@ -578,7 +578,7 @@ def prize_add_store(request):
 			nickname = request.POST.get('nickname')
 			password = request.POST.get('password')
 			pid_list = json.loads(request.POST.get('pid_list'))
-			user = User.objects.create_user(username=username, password=password, is_superuser=0, is_staff=0)
+			user = User.objects.create_user(username=username, password=password)
 			suser = SUser.objects.create(username=username, nickname=nickname, uid=user.id, is_sample=0, is_store=1)
 			for pid in pid_list:
 				prize = Prize.objects.get(id=int(pid))
@@ -712,7 +712,7 @@ def tip(request, hid):
 		rdata['info'] = '帮助不存在'
 	else:
 		help = helps[0]
-		if not request.user.is_staff and not help.released:
+		if not suser.admin_all and not help.released:
 			return render(request, 'permission_denied.html', {})
 
 	if op == 'create':

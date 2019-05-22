@@ -36,7 +36,7 @@
 		</td>
 		<td style="width: 25%">
 			<button id="description" content="{{ prize.description }}" onclick="show_description(this)" class="btn-primary">查看</button>
-			{% if user.is_staff %}
+			{% if suser.admin_all %}
 			<button class="btn-success" onclick="change_description(this)">修改</button>
 			{% endif %}
 		</td>
@@ -61,7 +61,7 @@
 		<td >
 			<button class="btn-success" onclick="exchange(this)">兑换</button>
 		
-		{% if user.is_staff %}
+		{% if suser.admin_all %}
 		
 			<button class="btn-warning" onclick="deletee(this)">删除</button>
 			<a href="/prize_ticket/p/{{ prize.id }}/" ><button class="btn-primary ">交易记录</button></a>

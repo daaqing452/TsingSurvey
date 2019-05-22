@@ -25,8 +25,6 @@ import xlsxwriter
 # reload(sys)
 # sys.setdefaultencoding('utf-8')
 
-MAGIC_NUMBER = 456321887;
-
 def index(request):
 	# 检查身份
 	if not request.user.is_authenticated:
@@ -61,7 +59,7 @@ def index(request):
 		filepath = Utils.upload_file(f)
 		qstring = load_survey(filepath)
 		now = datetime.datetime.now()
-		questionaire = Questionaire.objects.create(status=0, create_time=now, update_time=now, founder=request.user.id, questions=qstring)
+		questionaire = Questionaire.objects.create(status=0, create_time=now, update_time=now, founder=suser.username, questions=qstring)
 		return HttpResponseRedirect('/survey/' + str(questionaire.id) + '/')
 
 	def cmp_by_time(x):
@@ -74,34 +72,16 @@ def index(request):
 
 @csrf_exempt
 def login(request):
-	# 如果已登录直接跳转
-	if request.user.is_authenticated:
-		return HttpResponseRedirect('/index/')
 	rdata, op, suser = Utils.get_request_basis(request)
+	if request.user.is_authenticated and op == '':
+		return HttpResponseRedirect('/index/')
 	login = False
-
-	def uglyDecrypt(s):
-		t = ''
-		for i in range(0, len(s), 7):
-			x = 0
-			tt = ''
-			for j in range(6, -1, -1):
-				y = ord(s[i+j]) - 97
-				x = x * 26 + y
-			x = x ^ MAGIC_NUMBER
-			for i in range(3):
-				y = x % 1000
-				if y > 0: tt = chr(y) + tt
-				x = x // 1000
-			t += tt
-		return t
 
 	username = request.POST.get('username')
 	password = request.POST.get('password')
 
 	if username is not None and password is not None:
-		password = uglyDecrypt(password)
-		print(password)
+		password = Utils.uglyDecrypt(password)
 
 		# 判断是否存在
 		users = User.objects.filter(username=username)
@@ -127,7 +107,7 @@ def login(request):
 			rdata['info'] = '用户名不存在'
 
 	if op == 'get_magic_number':
-		return HttpResponse(json.dumps({'magic_number': MAGIC_NUMBER}))
+		return HttpResponse(json.dumps({'magic_number': Utils.MAGIC_NUMBER}))
 
 	if login:
 		url = '/index/'
@@ -466,8 +446,8 @@ def profile(request, uid):
 	rdata, op, suser = Utils.get_request_basis(request)
 	if (not suser.admin_all) and (int(suser.id) != int(uid)):
 		return render(request, 'permission_denied.html', {})
-	rdata['puser'] = puser = User.objects.get(id=uid)
-	rdata['psuser'] = psuser = SUser.objects.get(uid=uid)
+	rdata['psuser'] = psuser = SUser.objects.get(id=uid)
+	puser = User.objects.get(id=psuser.uid)
 
 	if op == 'change_nickname':
 		psuser.nickname = request.POST.get('nickname')
@@ -475,8 +455,10 @@ def profile(request, uid):
 		return HttpResponse(json.dumps({}))
 
 	if op == 'change_password':
-		old_password = request.POST.get('old_password')
-		new_password = request.POST.get('new_password')
+		old_password = Utils.uglyDecrypt(request.POST.get('old_password'))
+		new_password = Utils.uglyDecrypt(request.POST.get('new_password'))
+		print(old_password)
+		print(new_password)
 		puser2 = auth.authenticate(username=puser.username, password=old_password)
 		jdata = {}
 		if puser2 is not None and puser2 == puser and puser2.is_active:

@@ -35,8 +35,10 @@ function change_password() {
 		return;
 	}
 
-	old_password = hex_md5(old_password);
-	new_password = hex_md5(new_password);
+	//old_password = hex_md5(old_password);
+	//new_password = hex_md5(new_password);
+	old_password = uglyEncrypt(old_password);
+	new_password = uglyEncrypt(new_password);
 
 	$.ajax({
 		url: window.location.href,

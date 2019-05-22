@@ -8,9 +8,27 @@ import collections
 import hashlib
 import json
 
+MAGIC_NUMBER = 456321887
+
 def redirect_login(request, login_url='/login/'):
 	request.session['last_url'] = request.get_full_path()
 	return HttpResponseRedirect(login_url)
+
+def uglyDecrypt(s):
+	t = ''
+	for i in range(0, len(s), 7):
+		x = 0
+		tt = ''
+		for j in range(6, -1, -1):
+			y = ord(s[i+j]) - 97
+			x = x * 26 + y
+		x = x ^ MAGIC_NUMBER
+		for i in range(3):
+			y = x % 1000
+			if y > 0: tt = chr(y) + tt
+			x = x // 1000
+		t += tt
+	return t
 
 # -2 sample list cannot find
 # -1 questionaire cannot find
