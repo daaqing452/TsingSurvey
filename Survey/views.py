@@ -246,7 +246,7 @@ def survey(request, qid):
 
 		# 报告公开状态
 		elif status == 3:
-			if not editable and check_fill(suser, questionaire) != 3:
+			if not editable and Utils.check_fill(suser, questionaire) != 3:
 				rdata['viewable'] = 0
 				rdata['info'] = '没有权限访问'
 

@@ -92,17 +92,16 @@ def get_report_base(questionaire, answeraires):
 
 def get_report(qid):
 	questionaire = Questionaire.objects.get(id=qid)
+	reports = Report.objects.filter(qid=questionaire.id)
 	# 已经生成报告
-	if questionaire.report_id != -1:
-		return Report.objects.get(id=questionaire.report_id).report
+	if len(reports) > 0:
+		return reports[0].report
 	# 还没生成报告
 	answeraire_list = Answeraire.objects.filter(qid=qid, submitted=True)
 	answeraires = [json.loads(answeraire.answers) for answeraire in answeraire_list]
 	report_str = get_report_base(questionaire, answeraires)
 	if questionaire.status == 2:
 		report = Report.objects.create(qid=questionaire.id, report=report_str)
-		questionaire.report_id = report.id
-		questionaire.save()
 	return report_str
 
 
@@ -576,7 +575,7 @@ def prize_add_store(request):
 			jdata['result'] = '用户名已存在'
 		else:
 			nickname = request.POST.get('nickname')
-			password = request.POST.get('password')
+			password = Utils.uglyDecrypt(request.POST.get('password'))
 			pid_list = json.loads(request.POST.get('pid_list'))
 			user = User.objects.create_user(username=username, password=password)
 			suser = SUser.objects.create(username=username, nickname=nickname, uid=user.id, is_sample=0, is_store=1)
@@ -639,7 +638,7 @@ def prize_store(request):
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
 	rdata, op, suser = Utils.get_request_basis(request)
-	if suser.admin_all:
+	if not suser.admin_all:
 		return render(request, 'permission_denied.html', {})
 	
 	if op == 'change_nickname':

@@ -40,15 +40,15 @@ def index(request):
 			rq['filled_number'] = len(Answeraire.objects.filter(qid=questionaire.id))
 			rq['submitted_number'] = len(Answeraire.objects.filter(qid=questionaire.id, submitted=True))
 		# 问卷管理员：自己发的问卷
-		elif suser.admin_survey and questionaire.founder == suser.id:
+		elif suser.admin_survey and questionaire.founder == suser.username:
 			rq = Utils.remakeq(suser, questionaire, True)
 		# 普通用户：公共问卷
 		elif questionaire.public:
-			if questionaire.status == 1 or questionaire.status == 3:
+			if questionaire.status in [1,2,3]:
 				rq = Utils.remakeq(suser, questionaire, False)
 		# 普通用户：被允许填的问卷
 		elif Utils.check_allow(suser, questionaire):
-			if questionaire.status == 1 or questionaire.status == 3:
+			if questionaire.status in [1,2,3]:
 				rq = Utils.remakeq(suser, questionaire, False)
 		if rq == None: continue
 		rq_list.append(rq)
@@ -84,8 +84,8 @@ def login(request):
 		password = Utils.uglyDecrypt(password)
 
 		# 判断是否存在
-		users = User.objects.filter(username=username)
-		existed = (len(users) > 0)
+		susers = SUser.objects.filter(username=username)
+		existed = (len(susers) > 0)
 
 		# 判断是否是清华账号
 		if username.isdigit() and len(username) == 10:
@@ -466,15 +466,8 @@ def profile(request, uid):
 
 	rq_list = []
 	for questionaire in Questionaire.objects.all():
-		rq = None
-		if questionaire.public:
-			if questionaire.status == 1 or questionaire.status == 3:
-				rq = Utils.remakeq(suser, questionaire, False)
-		elif Utils.check_allow(suser, questionaire):
-			if questionaire.status == 1 or questionaire.status == 3:
-				rq = Utils.remakeq(suser, questionaire, False)
-		if rq == None: continue
-		rq_list.append(rq)
+		if questionaire.status in [1,2,3] and Utils.check_fill(suser, questionaire) in [2,3]:
+			rq_list.append(Utils.remakeq(suser, questionaire, False))
 	
 	rq_list.sort(key=lambda x: x['create_time'], reverse=True)
 	rdata['rq_list'] = rq_list
