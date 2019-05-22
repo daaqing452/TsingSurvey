@@ -406,15 +406,9 @@ def admin_list(request):
 		return render(request, 'permission_denied.html', {})
 
 	def get_admin_list():
-		uid_list = []
 		admin_list = []
-		for admin in User.objects.filter(is_staff=1).filter(~Q(username='root')):
-			sadmin = SUser.objects.get(uid=admin.id)
-			admin_list.append({'uid': sadmin.uid, 'username': sadmin.username, 'name': sadmin.name, 'admin_chief': True, 'admin_survey': sadmin.admin_survey})
-			uid_list.append(sadmin.uid)
-		for sadmin in SUser.objects.filter(admin_survey=1):
-			if sadmin.uid in uid_list: continue
-			admin_list.append({'uid': sadmin.uid, 'username': sadmin.username, 'name': sadmin.name, 'admin_chief': False, 'admin_survey': True})
+		for admin in SUser.objects.filter(Q(admin_all=1) | Q(admin_survey=1)).filter(~Q(username='root')):
+			admin_list.append({'uid': admin.id, 'username': admin.username, 'name': admin.name, 'admin_all': admin.admin_all, 'admin_survey': admin.admin_survey})
 		return admin_list
 
 	# 加载
@@ -427,9 +421,9 @@ def admin_list(request):
 		level = request.POST.get('level')
 		value = int(request.POST.get('value'))
 		if level == 'chief':
-			users = User.objects.filter(username=username)
-			users.update(is_staff=value)
-			ulen = len(users)
+			susers = SUser.objects.filter(username=username)
+			susers.update(admin_all=value)
+			ulen = len(susers)
 		elif level == 'survey':
 			susers = SUser.objects.filter(username=username)
 			susers.update(admin_survey=value)
