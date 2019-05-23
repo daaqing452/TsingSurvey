@@ -6,14 +6,19 @@ from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
-from SUser.models import SUser, SampleList
+from django.views.decorators.csrf import csrf_exempt
+from SUser.models import *
 from SUser.auth_tsinghua import auth_tsinghua
-from Survey.models import Questionaire, Answeraire
+from SUser.load_survey import load_survey
+from Survey.models import *
+import Analysis.views as Analysis
 import SUser.utils as Utils
 import codecs
+import datetime
 import json
 import math
 import random
+import re
 import time
 import sys
 import xlsxwriter
@@ -24,101 +29,73 @@ def index(request):
 	# 检查身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	rdata = {}
-	rdata['user'] = user = request.user
-	op = request.POST.get('op')
-
-	suser = SUser.objects.get(uid=user.id)
-	qid_dict = json.loads(suser.qid_list)
+	rdata, op, suser = Utils.get_request_basis(request)
+	
+	rq_list = []
+	if not suser.is_store:
+		anweraire_queries = {answeraire.qid : answeraire.submitted for answeraire in Answeraire.objects.filter(username=suser.username)}
+		for questionaire in Questionaire.objects.all():
+			rq = None
+			# 高级管理员
+			if suser.admin_all:
+				rq = Utils.remakeq(suser, questionaire, True, anweraire_queries)
+				rq['filled_number'] = Answeraire.objects.filter(qid=questionaire.id).count()
+				rq['submitted_number'] = Answeraire.objects.filter(qid=questionaire.id, submitted=True).count()
+			# 问卷管理员：自己发的问卷
+			elif suser.admin_survey and questionaire.founder == suser.username:
+				rq = Utils.remakeq(suser, questionaire, True, anweraire_queries)
+			# 普通用户：公共问卷
+			elif questionaire.public:
+				if questionaire.status in [1,2,3]:
+					rq = Utils.remakeq(suser, questionaire, False, anweraire_queries)
+			# 普通用户：被允许填的问卷
+			elif Utils.check_allow(suser, questionaire):
+				if questionaire.status in [1,2,3]:
+					rq = Utils.remakeq(suser, questionaire, False, anweraire_queries)
+			if rq == None: continue
+			rq_list.append(rq)
+	
+	# 导入问卷
+	f = request.FILES.get('upload', None)
+	if not f is None:
+		filepath = Utils.upload_file(f)
+		qstring = load_survey(filepath)
+		now = datetime.datetime.now()
+		questionaire = Questionaire.objects.create(status=0, create_time=now, update_time=now, founder=suser.username, questions=qstring)
+		return HttpResponseRedirect('/survey/' + str(questionaire.id) + '/')
 
 	def cmp_by_time(x):
 		return x['create_time']
 
- 	# 高级管理员
-	if user.is_staff:
-		questionaire_list = Questionaire.objects.all()
-		rq_list = [Utils.remakeq(questionaire, qid_dict, True) for questionaire in questionaire_list]
-		for rq in rq_list:
-			answeraires = Answeraire.objects.filter(qid=rq['id'])
-			rq['filled_number'] = len(answeraires)
-	else:
-		# 这里可以添加自动清理机制
-		rq_list = []
-		qid_list = []
-		# 问卷管理员
-		if suser.admin_survey:
-			for questionaire in Questionaire.objects.filter(founder=user.id):
-				rq_list.append(Utils.remakeq(questionaire, [], True))
-				qid_list.append(questionaire.id)
-		else:
-			# 普通用户问卷
-			for qid in qid_dict:
-				if int(qid) in qid_list: continue
-				questionaires = Questionaire.objects.filter(id=int(qid))
-				if len(questionaires) > 0:
-					questionaire = questionaires[0]
-					if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
-						rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
-						qid_list.append(questionaire.id)
-			# 该用户名相关的问卷
-			answeraires = Answeraire.objects.filter(username=user.username, submitted=True)
-			for answeraire in answeraires:
-				questionaires = Questionaire.objects.filter(id=answeraire.qid)
-				if len(questionaires) == 0: continue
-				questionaire = questionaires[0]
-				if int(questionaire.id) in qid_list: continue
-				rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
-				qid_list.append(questionaire.id)
-			# 公共问卷
-			for questionaire in Questionaire.objects.filter(public=True):
-				if int(questionaire.id) in qid_list: continue
-				if questionaire.status == 4: continue
-				if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
-					rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
-					qid_list.append(questionaire.id)
-	
 	rq_list.sort(key=lambda x: x['create_time'], reverse=True)
 	rdata['rq_list'] = rq_list
-	rdata['editable'] = user.is_staff or suser.admin_survey
+	rdata['editable'] = suser.admin_all or suser.admin_survey
 	return render(request, 'index.html', rdata)
 
+@csrf_exempt
 def login(request):
-	# 如果已登录直接跳转
-	if request.user.is_authenticated:
+	rdata, op, suser = Utils.get_request_basis(request)
+	if request.user.is_authenticated and op == '':
 		return HttpResponseRedirect('/index/')
-	rdata = {}
 	login = False
 
-	# 获取用户名密码
 	username = request.POST.get('username')
 	password = request.POST.get('password')
 
 	if username is not None and password is not None:
+		password = Utils.uglyDecrypt(password)
+
 		# 判断是否存在
-		users = User.objects.filter(username=username)
-		existed = (len(users) > 0)
+		susers = SUser.objects.filter(username=username)
+		existed = (len(susers) > 0)
 
 		# 判断是否是清华账号
 		if username.isdigit() and len(username) == 10:
-			'''# 清华登录
-			yes = auth_tsinghua(request, username, password)
-			if yes:
-				password = Utils.username_to_password(username)
-				users = User.objects.filter(username=username)
-				# 新用户
-				if len(users) == 0:
+			if not existed:
+				existed = True
+				if username == password:
 					user = User.objects.create_user(username=username, password=password)
 					suser = SUser.objects.create(uid=user.id, username=username, nickname=username)
-			else:
-				password = ''
-			'''
-
-			# 不存在就新建
-			if not existed:
-				password = Utils.hash_md5(username)
-				user = User.objects.create_user(username=username, password=password)
-				suser = SUser.objects.create(uid=user.id, username=username, nickname=username)
-				existed = True
 
 		if existed:
 			# 验证
@@ -130,6 +107,9 @@ def login(request):
 				rdata['info'] = '密码错误'
 		else:
 			rdata['info'] = '用户名不存在'
+
+	if op == 'get_magic_number':
+		return HttpResponse(json.dumps({'magic_number': Utils.MAGIC_NUMBER}))
 
 	if login:
 		url = '/index/'
@@ -147,11 +127,9 @@ def user_list(request):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	if not request.user.is_staff:
+	rdata, op, suser = Utils.get_request_basis(request)
+	if not suser.admin_all:
 		return render(request, 'permission_denied.html', {})
-	rdata = {}
-	rdata['user'] = user = request.user
-	op = request.POST.get('op')
 
 	ITEM_PER_PAGE = 50
 	lis = request.GET.get('list', 'all')
@@ -309,7 +287,7 @@ def user_list(request):
 				suser = SUser.objects.filter(username=username).update(name=a[1], name_english=a[2], student_type_code=a[3], student_type=a[4], gender_code=a[5], gender=a[6], birthday=a[7], ethnic_code=a[8], ethnic=a[9], nationality_code=a[10], nationality=a[11], political_status_code=a[12], political_status=a[13], certificate_type_code=a[14], certificate_type=a[15], certificate_number=a[16], marital_status_code=a[17], marital_status=a[18], original_education_code=a[19], original_education=a[20], bachelor_school=a[21], bachelor_school_code=a[22], bachelor_major=a[23], bachelor_major_code=a[24], bachelor_graduate_time=a[25], master_school=a[26], master_school_code=a[27], master_major=a[28], master_major_code=a[29], master_graduate_time=a[30], master_degree_date=a[31], department_number=a[32], department=a[33], secondary_subject_code=a[34], secondary_subject=a[35], advisor_certificate_number=a[36], enrollment_time=a[37], scheme_time=a[38], enrollment_mode_code=a[39], enrollment_mode=a[40], admission_type_code=a[41], admission_type=a[42], targeted_area_type_code=a[43], targeted_area_type=a[44], student_source_code=a[45], student_source=a[46], examination_ticket_number=a[47], bachelor_student_number=a[48], master_student_number=a[49], origin_place_code=a[50], origin_place=a[51], dormitory_address=a[52], dormitory_telephone=a[53], original_unit=a[54], client_unit=a[55], email=a[56], if_bed=a[57], if_socialized_madicine=a[58], if_resident_migration=a[59], if_internal_school_roll=a[60], if_national_school_roll=a[61], if_school_roll_abnormity=a[62], if_international_student=a[63], estimated_graduate_date=a[64], defense_date=a[65], completion_date=a[66], if_graduate=a[67], completion_mode_code=a[68], completion_mode=a[69], graduate_certificate_number=a[70], degree_confer_date=a[71], degree_confer_mode_code=a[72], degree_confer_mode=a[73], training_type_code=a[74], training_type=a[75], training_direction_code=a[76], training_direction=a[77], disciplines_field_code=a[78], disciplines_field=a[79], major_code=a[80], major=a[81], diploma_number=a[82], school_roll_status_code=a[83], campus_code=a[84], campus=a[85], remark=a[86], advisor_name=a[87], special_condition_code=a[88], special_condition=a[89], if_primary_subject=a[90], origin_province_code=a[91], origin_province=a[92], origin_city_code=a[93], origin_city=a[94], address_province_code=a[95], address_province=a[96], client_unit_city_code=a[97], client_unit_city=a[98], original_student_number=a[99], abnormity_type_code=a[100], abnormity_type=a[101], alteration_date=a[102])
 			else:
 				# 新建用户信息
-				password = Utils.hash_md5(username)
+				password = username
 				user = User.objects.create_user(username=username, password=password)
 				suser = SUser.objects.create(uid=user.id, username=a[0], nickname=a[0], name=a[1], name_english=a[2], student_type_code=a[3], student_type=a[4], gender_code=a[5], gender=a[6], birthday=a[7], ethnic_code=a[8], ethnic=a[9], nationality_code=a[10], nationality=a[11], political_status_code=a[12], political_status=a[13], certificate_type_code=a[14], certificate_type=a[15], certificate_number=a[16], marital_status_code=a[17], marital_status=a[18], original_education_code=a[19], original_education=a[20], bachelor_school=a[21], bachelor_school_code=a[22], bachelor_major=a[23], bachelor_major_code=a[24], bachelor_graduate_time=a[25], master_school=a[26], master_school_code=a[27], master_major=a[28], master_major_code=a[29], master_graduate_time=a[30], master_degree_date=a[31], department_number=a[32], department=a[33], secondary_subject_code=a[34], secondary_subject=a[35], advisor_certificate_number=a[36], enrollment_time=a[37], scheme_time=a[38], enrollment_mode_code=a[39], enrollment_mode=a[40], admission_type_code=a[41], admission_type=a[42], targeted_area_type_code=a[43], targeted_area_type=a[44], student_source_code=a[45], student_source=a[46], examination_ticket_number=a[47], bachelor_student_number=a[48], master_student_number=a[49], origin_place_code=a[50], origin_place=a[51], dormitory_address=a[52], dormitory_telephone=a[53], original_unit=a[54], client_unit=a[55], email=a[56], if_bed=a[57], if_socialized_madicine=a[58], if_resident_migration=a[59], if_internal_school_roll=a[60], if_national_school_roll=a[61], if_school_roll_abnormity=a[62], if_international_student=a[63], estimated_graduate_date=a[64], defense_date=a[65], completion_date=a[66], if_graduate=a[67], completion_mode_code=a[68], completion_mode=a[69], graduate_certificate_number=a[70], degree_confer_date=a[71], degree_confer_mode_code=a[72], degree_confer_mode=a[73], training_type_code=a[74], training_type=a[75], training_direction_code=a[76], training_direction=a[77], disciplines_field_code=a[78], disciplines_field=a[79], major_code=a[80], major=a[81], diploma_number=a[82], school_roll_status_code=a[83], campus_code=a[84], campus=a[85], remark=a[86], advisor_name=a[87], special_condition_code=a[88], special_condition=a[89], if_primary_subject=a[90], origin_province_code=a[91], origin_province=a[92], origin_city_code=a[93], origin_city=a[94], address_province_code=a[95], address_province=a[96], client_unit_city_code=a[97], client_unit_city=a[98], original_student_number=a[99], abnormity_type_code=a[100], abnormity_type=a[101], alteration_date=a[102])
 		f.close()
@@ -359,6 +337,20 @@ def user_list(request):
 	# 获得用户字段
 	if op == 'get_field_chinese':
 		return HttpResponse(json.dumps({'options': SUser.__var_chinese__}))
+
+	# 获得字段值
+	if op == 'get_field_values':
+		field_id = int(request.POST.get('field_id'))
+		values = eval('SUser.objects.values_list("' + SUser.__var_name__[field_id] + '").distinct()')
+		values = [value[0] for value in values]
+		return HttpResponse(json.dumps({'values': values}))
+
+	# 添加指定条件为样本
+	if op == 'add_condition_sample':
+		field_id = int(request.POST.get('field_id'))
+		value = request.POST.get('value')
+		eval('SUser.objects.filter(' + SUser.__var_name__[field_id] + '="' + value + '").update(is_sample=True)')
+		return HttpResponse(json.dumps({'user_list': get_suser_list()}))
 
 	# 自动样本生成
 	if op == 'auto_sample':
@@ -411,22 +403,14 @@ def admin_list(request):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	if not request.user.is_superuser:
+	rdata, op, suser = Utils.get_request_basis(request)
+	if not suser.admin_super:
 		return render(request, 'permission_denied.html', {})
-	rdata = {}
-	rdata['user'] = user = request.user
-	op = request.POST.get('op')
 
 	def get_admin_list():
-		uid_list = []
 		admin_list = []
-		for admin in User.objects.filter(is_staff=1).filter(~Q(username='root')):
-			sadmin = SUser.objects.get(uid=admin.id)
-			admin_list.append({'uid': sadmin.uid, 'username': sadmin.username, 'name': sadmin.name, 'admin_chief': True, 'admin_survey': sadmin.admin_survey})
-			uid_list.append(sadmin.uid)
-		for sadmin in SUser.objects.filter(admin_survey=1):
-			if sadmin.uid in uid_list: continue
-			admin_list.append({'uid': sadmin.uid, 'username': sadmin.username, 'name': sadmin.name, 'admin_chief': False, 'admin_survey': True})
+		for admin in SUser.objects.filter(Q(admin_all=1) | Q(admin_survey=1)).filter(~Q(username='root')):
+			admin_list.append({'uid': admin.id, 'username': admin.username, 'name': admin.name, 'admin_all': admin.admin_all, 'admin_survey': admin.admin_survey})
 		return admin_list
 
 	# 加载
@@ -439,9 +423,9 @@ def admin_list(request):
 		level = request.POST.get('level')
 		value = int(request.POST.get('value'))
 		if level == 'chief':
-			users = User.objects.filter(username=username)
-			users.update(is_staff=value)
-			ulen = len(users)
+			susers = SUser.objects.filter(username=username)
+			susers.update(admin_all=value)
+			ulen = len(susers)
 		elif level == 'survey':
 			susers = SUser.objects.filter(username=username)
 			susers.update(admin_survey=value)
@@ -455,13 +439,11 @@ def profile(request, uid):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	if (not request.user.is_staff) and (str(request.user.id) != uid):
+	rdata, op, suser = Utils.get_request_basis(request)
+	if (not suser.admin_all) and (int(suser.id) != int(uid)):
 		return render(request, 'permission_denied.html', {})
-	rdata = {}
-	rdata['user'] = user = request.user
-	rdata['puser'] = puser = User.objects.get(id=uid)
-	rdata['psuser'] = psuser = SUser.objects.get(uid=puser.id)
-	op = request.POST.get('op')
+	rdata['psuser'] = psuser = SUser.objects.get(id=uid)
+	puser = User.objects.get(id=psuser.uid)
 
 	if op == 'change_nickname':
 		psuser.nickname = request.POST.get('nickname')
@@ -469,69 +451,72 @@ def profile(request, uid):
 		return HttpResponse(json.dumps({}))
 
 	if op == 'change_password':
-		old_password = request.POST.get('old_password')
-		new_password = request.POST.get('new_password')
-		user2 = auth.authenticate(username=user.username, password=old_password)
+		old_password = Utils.uglyDecrypt(request.POST.get('old_password'))
+		new_password = Utils.uglyDecrypt(request.POST.get('new_password'))
+		puser2 = auth.authenticate(username=puser.username, password=old_password)
 		jdata = {}
-		if user2 is not None and user2 == user and user2.is_active:
-			user.set_password(new_password)
-			user.save()
+		if puser2 is not None and puser2 == puser and puser2.is_active:
+			puser.set_password(new_password)
+			puser.save()
 			jdata['result'] = 'yes'
 			return HttpResponse(json.dumps(jdata))
 		else:
 			jdata['result'] = 'no'
 			return HttpResponse(json.dumps(jdata))
 
-	qid_dict = json.loads(psuser.qid_list)
 	rq_list = []
-	qid_list = []
-	# 普通用户问卷
-	for qid in qid_dict:
-		questionaires = Questionaire.objects.filter(id=qid)
-		if len(questionaires) > 0:
-			questionaire = questionaires[0]
-			if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
-				rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
-				qid_list.append(questionaire.id)
-	# 该用户名相关的问卷
-	answeraires = Answeraire.objects.filter(username=user.username, submitted=True)
-	for answeraire in answeraires:
-		questionaires = Questionaire.objects.filter(id=int(answeraire.qid))
-		if len(questionaires) == 0: continue
-		questionaire = questionaires[0]
-		if int(questionaire.id) in qid_list: continue
-		rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
-		qid_list.append(questionaire.id)
-	# 公共问卷
-	for questionaire in Questionaire.objects.filter(public=True):
-		if questionaire.id in qid_list: continue
-		if questionaire.status == 4: continue
-		if Utils.check_questionaire_in_index(user, questionaire, qid_dict):
-			rq_list.append(Utils.remakeq(questionaire, qid_dict, False))
-			qid_list.append(questionaire.id)
+	anweraire_queries = {answeraire.qid : answeraire.submitted for answeraire in Answeraire.objects.filter(username=suser.username)}
+	for questionaire in Questionaire.objects.all():
+		if questionaire.status in [1,2,3] and Utils.check_fill2(anweraire_queries, questionaire.id) in [2,3]:
+			rq_list.append(Utils.remakeq(suser, questionaire, False, anweraire_queries))
+	
 	rq_list.sort(key=lambda x: x['create_time'], reverse=True)
 	rdata['rq_list'] = rq_list
 
 	return render(request, 'profile.html', rdata)
 
-def install(request):
-	username = 'root'
-	password = '123'
-	user = auth.authenticate(username=username, password=password)
-	if user is None:
-		user = User.objects.create_user(username=username, password=password, is_superuser=1, is_staff=1)
-		suser = SUser.objects.create(username=username, nickname=username, uid=user.id, is_sample=0)
-		html += 'add ' + username + ' successful <br/>'
-	else:
-		html += ' already exists <br/>'
-	return HttpResponse(html)
-
-def specialcondition(request):
+def backend_admin(request):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	if request.user.username != 'root':
+	rdata, op, suser = Utils.get_request_basis(request)
+	if suser.username != 'root':
 		return render(request, 'permission_denied.html', {})
-	op = request.POST.get('op')
 
-	return render(request, 'specialcondition.html', {})
+	if op == 'export_multi':
+		qids = json.loads(request.POST.get('qids'))
+		excel_name = Analysis.export_multi(qids)
+		return HttpResponse(json.dumps({'result': 'yes', 'export_path': excel_name}))
+
+	if op == 'del_ans':
+		cnt_del_ans = 0
+		for answeraire in Answeraire.objects.all():
+			questionaires = Questionaire.objects.filter(id=answeraire.qid)
+			if len(questionaires) == 0:
+				answeraire.delete()
+				cnt_del_ans += 1
+		cnt_del_rep = 0
+		for report in Report.objects.all():
+			questionaires = Questionaire.objects.filter(id=report.qid)
+			if len(questionaires) == 0:
+				report.delete()
+				cnt_del_rep += 1
+		return HttpResponse(json.dumps({'cnt_del_ans': cnt_del_ans, 'cnt_del_rep': cnt_del_rep}))
+
+	if op == 'del_tsinghua':
+		cnt_del_tsinghua = 0
+		for suser in SUser.objects.all():
+			username = suser.username
+			if username.isdigit() and len(username) == 10:
+				User.objects.filter(username=username).delete()
+				suser.delete()
+				cnt_del_tsinghua += 1
+		for user in User.objects.all():
+			username = user.username
+			if username.isdigit() and len(username) == 10:
+				SUser.objects.filter(username=username).delete()
+				user.delete()
+				cnt_del_tsinghua += 1
+		return HttpResponse(json.dumps({'cnt_del_tsinghua': cnt_del_tsinghua}))
+
+	return render(request, 'backend_admin.html', {})

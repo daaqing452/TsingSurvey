@@ -6,7 +6,7 @@
 
 <h3>积分兑换</h3>
 <div>
-{% if user.is_staff %}
+{% if suser.admin_all %}
 	<a style="float:left" href="/prize_add/"><button class="btn btn-sm btn-primary">添加新奖品</button></a>
 	<a style="float:left" href="/prize_store/"><button class="btn btn-sm btn-info">查看商家</button></a>
 	<a style="float:left" href="/prize_add_store/"><button class="btn btn-sm btn-warning">添加新商家</button></a>
@@ -28,7 +28,7 @@
 	{% for prize in prizes %}
 	<tr pid="{{ prize.id }}">
 		<td
-			{% if user.is_staff %}
+			{% if suser.admin_all %}
 				onclick="change_title(this)"
 				{% endif %}
 			>
@@ -36,19 +36,19 @@
 		</td>
 		<td style="width: 25%">
 			<button id="description" content="{{ prize.description }}" onclick="show_description(this)" class="btn-primary">查看</button>
-			{% if user.is_staff %}
+			{% if suser.admin_all %}
 			<button class="btn-success" onclick="change_description(this)">修改</button>
 			{% endif %}
 		</td>
 		<td
-			{% if user.is_staff %}
+			{% if suser.admin_all %}
 			onclick="change_credit(this)"
 			{% endif %}
 		>
 			<p id="credit">{{ prize.credit }}</p>
 		</td>
 		<td
-			{% if user.is_staff %}
+			{% if suser.admin_all %}
 			onclick="change_price(this)"
 			{% endif %}
 		>
@@ -61,7 +61,7 @@
 		<td >
 			<button class="btn-success" onclick="exchange(this)">兑换</button>
 		
-		{% if user.is_staff %}
+		{% if suser.admin_all %}
 		
 			<button class="btn-warning" onclick="deletee(this)">删除</button>
 			<a href="/prize_ticket/p/{{ prize.id }}/" ><button class="btn-primary ">交易记录</button></a>

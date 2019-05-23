@@ -111,9 +111,61 @@ $(document).ready(function(){
 		type: 'POST',
 		data: {'op': 'load'},
 		success: function(data) {
-			data = JSON.parse(data);
+			var data = JSON.parse(data);
 			refreshUserList(data['user_list']);
 		}
+	});
+
+	// 添加指定条件为样本
+	$.ajax({
+		url: window.location.href,
+		type: 'POST',
+		data: {'op': 'get_field_chinese'},
+		success: function(data) {
+			var data = JSON.parse(data);
+			options = data['options'];
+			var select = $('select#condition');
+			select.append('<option value=-1></option>')
+			var a = new Array(33, 4, 6, 9, 13, 40);
+			for (var j in a) {
+				var i = a[j];
+				select.append('<option value="' + i + '">' + options[i] + '</option>');
+			}
+		}
+	});
+	$('select#condition').change(function() {
+		var field_id = $('select#condition').val();
+		if (field_id == -1) return;
+		$.ajax({
+			url: window.location.href,
+			type: 'POST',
+			data: {'op': 'get_field_values', 'field_id': field_id},
+			success: function(data) {
+				var data = JSON.parse(data);
+				values = data['values'];
+				var select2 = $('select#condition_values');
+				select2.empty();
+				for (var j in values) {
+					var value = values[j];
+					select2.append('<option value="' + value + '">' + value + '</option>');
+				}
+			}
+		});
+	});
+	$('button#add_condition_sample').click(function() {
+		var field_id = $('select#condition').val();
+		if (field_id == -1) return;
+		var value = $('select#condition_values').val();
+		$.ajax({
+			url: window.location.href,
+			type: 'POST',
+			data: {'op': 'add_condition_sample', 'field_id': field_id, 'value': value},
+			success: function(data) {
+				var data = JSON.parse(data);
+				alert('设置成功！');
+				refreshUserList(data['user_list']);
+			}
+		});
 	});
 
 	//	全选
@@ -220,7 +272,7 @@ $(document).ready(function(){
 		});
 	});
 
-	//	添加样本限制条件
+	// 添加样本限制条件
 	$('button#add_constraint').click(function(){
 		$.ajax({
 			url: window.location.href,

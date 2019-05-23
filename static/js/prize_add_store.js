@@ -10,7 +10,7 @@ function add_store() {
 	$.ajax({
 		url: window.location.href,
 		type: "POST",
-		data: {"op": "add_store", "username": $("#username").val(), "nickname": $("#nickname").val(), "password": $("#password").val(), "pid_list": JSON.stringify(pid_list)},
+		data: {"op": "add_store", "username": $("#username").val(), "nickname": $("#nickname").val(), "password": uglyEncrypt($("#password").val()), "pid_list": JSON.stringify(pid_list)},
 		success: function(data) {
 			var data = JSON.parse(data);
 			var result = data["result"];

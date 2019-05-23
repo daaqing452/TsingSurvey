@@ -17,8 +17,9 @@ $(document).ready(function(){
 					$('[type="empty"]').show();
 					return;
 				}
-				for (i in result) {
+				for (var i in result) {
 					var d = result[i];
+					var tr = $('[type="clone"]').first().clone();
 					tr.attr('type', 'item');
 					tr.find('[type="qid"]').text(d['id']);
 					tr.find('[type="title"]').text(d['title']);

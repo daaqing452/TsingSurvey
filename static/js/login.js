@@ -22,7 +22,8 @@ function IsPC() {
 function checkAndSubmit() {
     var username = $('#username').val();
     var password = $('#password').val();
-    password = hex_md5(password);
+    //password = hex_md5(password);
+    password = uglyEncrypt(password);
     $('#password').val(password);
     return true;
 }

@@ -7,8 +7,8 @@ from django.shortcuts import render
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 # from django.utils import timezone
-from Survey.models import Questionaire, Answeraire
-from SUser.models import SUser, SampleList
+from Survey.models import *
+from SUser.models import *
 import SUser.utils as Utils
 import Analysis.views as Analysis
 import datetime
@@ -30,11 +30,9 @@ def survey(request, qid):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	rdata = {}
-	rdata['user'] = user = request.user
+	rdata, op, suser = Utils.get_request_basis(request)
 	rdata['viewable'] = 1
 	rdata['qid'] = qid
-	op = request.POST.get('op')
 	status = -1
 	now = datetime.datetime.now()
 
@@ -56,16 +54,12 @@ def survey(request, qid):
 					suser = SUser.objects.filter(id=suser_id)
 					if len(suser) > 0:
 						susers.append(suser[0])
-		for suser in susers:
-			qid_dict = json.loads(suser.qid_list)
-			qid_dict[str(questionaire.id)] = 0
-			suser.qid_list = json.dumps(qid_dict)
-			suser.save()
 		questionaire.status = 1
+		questionaire.save()
 
 	# 添加新问卷
 	if op == 'create':
-		questionaire = Questionaire.objects.create(status=0, create_time=now, update_time=now, founder=request.user.id)
+		questionaire = Questionaire.objects.create(status=0, create_time=now, update_time=now, founder=suser.username)
 		questionaire.save()
 		return HttpResponse(json.dumps({'qid': questionaire.id}));
 
@@ -75,46 +69,47 @@ def survey(request, qid):
 		rdata['info'] = '问卷不存在'
 	else:
 		questionaire = questionaires[0]
-		answered = len(Answeraire.objects.filter(qid=questionaire.id, username=user.username, submitted=True)) > 0
+		answered = len(Answeraire.objects.filter(qid=questionaire.id, username=suser.username, submitted=True)) > 0
 		status = questionaire.status
-		suser = SUser.objects.get(uid=user.id)
 
 		# 加载问卷请求
 		if op == 'load':
 			if status == 0 or status == 4 or status == 5:
 				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions}))
 			elif status == 1:
-				answeraire = Answeraire.objects.filter(qid=qid, username=user.username)
+				answeraire = Answeraire.objects.filter(qid=qid, username=suser.username)
 				if len(answeraire):
 					astring = answeraire[0].answers
 				else:
 					astring = '{}'
 				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions, 'astring': astring}))
 			elif status == 2 or status == 3:
-				answeraire = Answeraire.objects.filter(qid=qid, username=user.username)
+				answeraire = Answeraire.objects.filter(qid=qid, username=suser.username)
 				if len(answeraire):
 					astring = answeraire[0].answers
 				else:
 					astring = '{}'
 				report = Analysis.get_report(qid)
-				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions, 'report': report, 'gender_code': suser.gender_code, 'student_type_code': suser.student_type_code, 'astring': astring, 'is_staff': user.is_staff, 'report_template': questionaire.report_template}))
+				return HttpResponse(json.dumps({'status': status, 'title': questionaire.title, 'qstring': questionaire.questions, 'report': report, 'gender_code': suser.gender_code, 'student_type_code': suser.student_type_code, 'astring': astring, 'is_staff': suser.admin_all, 'report_template': questionaire.report_template}))
 			else:
 				assert(False)
 
 		# 删除问卷
 		if op == 'delete':
+			Answeraire.objects.filter(qid=questionaire.id).delete()
+			Report.objects.filter(qid=questionaire.id).delete()
 			questionaire.delete()
 			return HttpResponse(json.dumps({}))
 
 		# 复制问卷
 		if op == 'copy':
-			new_questionaire = Questionaire.objects.create(status=0, create_time=now, update_time=now, founder=user.id, title=questionaire.title, questions=questionaire.questions)
+			new_questionaire = Questionaire.objects.create(status=0, create_time=now, update_time=now, founder=suser.username, title=questionaire.title, questions=questionaire.questions)
 			new_questionaire.save()
 			return HttpResponse(json.dumps({}))
 
 		# 导出问卷
 		if op == 'export':
-			if status == 1 or status == 2:
+			if status == 1 or status == 2 or status == 3:
 				excel_name = Analysis.export(qid)
 				if excel_name == None:
 					return HttpResponse(json.dumps({'result': 'no', 'info': '尚未有人填写问卷！'}))
@@ -154,7 +149,7 @@ def survey(request, qid):
 			questionaire.save()
 			return HttpResponse(json.dumps({}))
 
-		rdata['editable'] = editable = (user.is_staff or questionaire.founder == user.id)
+		rdata['editable'] = editable = (suser.admin_all or questionaire.founder == suser.username)
 
 		# 问卷修改状态
 		if status == 0 or status == 5:
@@ -178,7 +173,7 @@ def survey(request, qid):
 					questionaire.credit = credit = int(request.POST.get('credit'))
 					if request.POST.get('sample_list_id') is not None:
 						questionaire.sample_list_id = sample_list_id = int(request.POST.get('sample_list_id'))
-					if user.is_staff or credit == 0:
+					if suser.admin_all or credit == 0:
 						release_to_users(questionaire)
 						jdata['result'] = '发布成功'
 					else:
@@ -191,20 +186,17 @@ def survey(request, qid):
 
 		# 问卷填写状态
 		elif status == 1:
-			# 检验是否可见和是否已经填写
-			permission_submit = 0
-			qid_dict = json.loads(suser.qid_list)
-			if (not questionaire.public) and (not qid in qid_dict) and (not editable):
+			# 检验是否可见、是否已经填写
+			if Utils.check_allow(suser, questionaire) != 1:
 				rdata['viewable'] = 0
 				rdata['info'] = '没有权限访问'
-			if qid in qid_dict:
-				if qid_dict[str(qid)] == 1:
-					rdata['info'] = '已经填写该问卷'
-				else:
-					permission_submit = 1
 			else:
-				permission_submit = 1
-			rdata['permission_submit'] = permission_submit
+				rdata['viewable'] = 1
+				if Utils.check_fill(suser, questionaire) == 3:
+					rdata['info'] = '已经填写该问卷'
+					rdata['permission_submit'] = 0
+				else:
+					rdata['permission_submit'] = 1
 
 			# 提交问卷请求
 			if op == 'submit':
@@ -218,11 +210,11 @@ def survey(request, qid):
 				# 记录
 				astring = request.POST.get('astring')
 				complete = request.POST.get('complete', 'no')
-				answeraire = Answeraire.objects.filter(qid=qid, username=user.username)
+				answeraire = Answeraire.objects.filter(qid=qid, username=suser.username)
 				if len(answeraire) > 0:
 					answeraire = answeraire[0]
 				else:
-					answeraire = Answeraire.objects.create(qid=qid, uid=user.id, username=user.username)
+					answeraire = Answeraire.objects.create(qid=qid, username=suser.username)
 				answeraire.load_time = request.POST['load_time']
 				answeraire.submit_time=request.POST['submit_time']
 				answeraire.ip = ip
@@ -232,16 +224,9 @@ def survey(request, qid):
 				answeraire.save()
 				# 判断暂存还是提交
 				if complete == 'yes':
-					qid_dict[str(qid)] = 1
 					answeraire.submitted = True
 					answeraire.save()
-					suser.qid_list = json.dumps(qid_dict)
 					# 计算积分
-					# k = (len(json.loads(astring)) - 1) / 5 + 1
-					# credit = int(k * math.pow(1.05, len(qid_dict)))
-					# if questionaire.credit != -1:
-					# 	credit = questionaire.credit;
-					# suser.credit += credit
 					suser.credit += questionaire.credit
 					suser.save()
 					return HttpResponse(json.dumps({'credit': questionaire.credit}))
@@ -253,22 +238,18 @@ def survey(request, qid):
 				questionaire.close_time = datetime.datetime.now()
 				questionaire.status = 2
 				questionaire.save()
+				Answeraire.objects.filter(qid=questionaire.id).update(submitted=True)
 				return HttpResponse(json.dumps({}))
 
 		# 问卷结束/报告编辑状态
 		elif status == 2:
-			qid_dict = json.loads(suser.qid_list)
-			if (not questionaire.public) and ((not qid in qid_dict) or (qid_dict[qid]) != 1) and (not editable) and (not answered):
+			if not editable:
 				rdata['viewable'] = 0
 				rdata['info'] = '没有权限访问'
-			#if not editable:
-			#	rdata['viewable'] = 0
-			#	rdata['info'] = '问卷已关闭，没有权限访问'
 
 		# 报告公开状态
 		elif status == 3:
-			qid_dict = json.loads(suser.qid_list)
-			if (not questionaire.public) and (not qid in qid_dict) and (not editable) and (not answered):
+			if not editable and Utils.check_fill(suser, questionaire) != 3:
 				rdata['viewable'] = 0
 				rdata['info'] = '没有权限访问'
 
@@ -303,19 +284,17 @@ def survey(request, qid):
 
 def report(request, qid):
 	# 验证身份
-	rdata = {}
-	rdata['user'] = user = request.user
+	if not request.user.is_authenticated:
+		return Utils.redirect_login(request)
+	rdata, op, suser = Utils.get_request_basis(request)
 	return render(request, 'report.html', rdata)
 
 def bonus(request):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request, '../login/')
-	rdata = {}
-	rdata['user'] = request.user
+	rdata, op, suser = Utils.get_request_basis(request)
 	rdata['credit'] = request.GET.get('credit', 0)
-	op = request.POST.get('op')
-
 	return render(request, 'bonus.html', rdata)
 
 

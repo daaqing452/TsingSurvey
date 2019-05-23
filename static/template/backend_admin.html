@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+	{% load static %}
+    {% block context %}
+
+<script>
+	function export_multi() {
+		var qids = $('#qids').val();
+		$.ajax({
+			url: window.location.href,
+			type: "POST",
+			data: {"op": "export_multi", "qids": qids},
+			success: function(data) {
+				var data = JSON.parse(data);
+				export_path = '/' + data['export_path'];
+				$('a#download').attr('href', export_path);
+				document.getElementById("download").click();
+			}
+		});
+	}
+
+	function del_ans() {
+		if (confirm('确认删除？')) {
+			$.ajax({
+				url: window.location.href,
+				type: "POST",
+				data: {"op": "del_ans"},
+				success: function(data) {
+					var data = JSON.parse(data);
+					var cnt_del_ans = data['cnt_del_ans'];
+					var cnt_del_rep = data['cnt_del_rep'];
+					alert('删除 ' + cnt_del_ans + ' 份无效问卷和 ' + cnt_del_rep + ' 份无效报告')
+				}
+			});
+		}
+	}
+
+	function del_tsinghua() {
+		if (confirm('确认删除？')) {
+			$.ajax({
+				url: window.location.href,
+				type: "POST",
+				data: {"op": "del_tsinghua"},
+				success: function(data) {
+					var data = JSON.parse(data);
+					var cnt_del_tsinghua = data['cnt_del_tsinghua'];
+					alert('删除 ' + cnt_del_tsinghua + ' 个清华学号用户')
+				}
+			});
+		}
+	}
+</script>
+
+<input id="qids" type="text">
+<button id="sub" onclick="export_multi()">导出多个问卷</button>例如：[1,2,3]
+<a id="download"></a>
+<br/><br/>
+<button id="del_ans" onclick="del_ans()">删除无效问卷</button>
+<br/><br/>
+<button id="del_tsinghua" onclick="del_tsinghua()">删除清华学号</button>
+<br/><br/>
+
+    {% endblock context %}

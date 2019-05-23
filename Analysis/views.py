@@ -18,17 +18,11 @@ import numpy as np
 import time
 import xlsxwriter
 
+MATRIX_STAT_RANK = 2
 
-def get_report(qid):
-	MATRIX_STAT_RANK = 2
-	questionaire = Questionaire.objects.get(id=qid)
-	# 已经生成报告
-	if questionaire.report_id != -1:
-		return Report.objects.get(id=questionaire.report_id).report
-	# 还没生成报告
+
+def get_report_base(questionaire, answeraires):
 	questions = json.loads(questionaire.questions)
-	answeraire_list = Answeraire.objects.filter(qid=qid, submitted=True)
-	answeraires = [json.loads(answeraire.answers) for answeraire in answeraire_list]
 	# 预处理+清空
 	counters = []
 	for question in questions:
@@ -94,21 +88,25 @@ def get_report(qid):
 					report['options'].append(roption)
 		reports.append(report)
 	report_str = json.dumps(reports)
-	if questionaire.status == 2:
-		report = Report.objects.create(qid=qid, report=report_str)
-		questionaire.report_id = report.id
-		questionaire.save()
 	return report_str
 
-def export(qid):
-	questionaires = Questionaire.objects.filter(id=qid)
-	if len(questionaires) == 0:
-		return HttpResponse(json.dumps({'info': 'no that'}))
-	questionaire = json.loads(questionaires[0].questions)
-	answeraires = Answeraire.objects.filter(qid=qid, submitted=True)
-	if len(answeraires) == 0: return None
+def get_report(qid):
+	questionaire = Questionaire.objects.get(id=qid)
+	reports = Report.objects.filter(qid=questionaire.id)
+	# 已经生成报告
+	if len(reports) > 0:
+		return reports[0].report
+	# 还没生成报告
+	answeraire_list = Answeraire.objects.filter(qid=qid, submitted=True)
+	answeraires = [json.loads(answeraire.answers) for answeraire in answeraire_list]
+	report_str = get_report_base(questionaire, answeraires)
+	if questionaire.status == 2:
+		report = Report.objects.create(qid=questionaire.id, report=report_str)
+	return report_str
+
+
+def export_base(questionaire, answeraires, reports):
 	answers = [json.loads(answeraire.answers) for answeraire in answeraires]
-	reports = json.loads(get_report(qid))
 	# 写入excel
 	excel_name = 'media/' + time.strftime('%Y%m%d%H%M%S') + '-问卷结果.xlsx'
 	excel = xlsxwriter.Workbook(excel_name)
@@ -148,12 +146,19 @@ def export(qid):
 	cnt = -1
 	for question in questionaire:
 		s_type = question['s_type']
-		cnt += 1
 		if s_type == 8: continue
+		cnt += 1
 		index_show = question['index']
-		index = cnt
 		title = question['title']
-		selects = [answer[index]['select'] for answer in answers]
+		selects = []
+		for answer in answers:
+			j = -1
+			for sub_answer in answer:
+				if sub_answer['s_type'] != 8: j += 1
+				if j == cnt:
+					selects.append(sub_answer['select'])
+					break
+		# selects2 = [answer[cnt]['select'] for answer in answers]
 		row = 0
 		# 单选题、下拉题
 		if s_type in [1, 4]:
@@ -311,15 +316,35 @@ def export(qid):
 	excel.close()
 	return excel_name
 
+def export(qid):
+	questionaires = Questionaire.objects.filter(id=qid)
+	if len(questionaires) == 0:
+		return HttpResponse(json.dumps({'info': 'no that'}))
+	questionaire = json.loads(questionaires[0].questions)
+	answeraires = Answeraire.objects.filter(qid=qid, submitted=True)
+	if len(answeraires) == 0: return None
+	reports = json.loads(get_report(qid))
+	return export_base(questionaire, answeraires, reports)
+
+def export_multi(qids):
+	questionaire = Questionaire.objects.get(id=qids[0])
+	questions = json.loads(questionaire.questions)
+	answeraire_list = []
+	for qid in qids:
+		answeraire_list += Answeraire.objects.filter(qid=qid, submitted=True)
+	answeraires = [json.loads(answeraire.answers) for answeraire in answeraire_list]
+	reports = json.loads(get_report_base(questionaire, answeraires))
+	return export_base(questions, answeraire_list, reports)
+
+
+
 def search(request):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	if not request.user.is_staff:
+	rdata, op, suser = Utils.get_request_basis(request)
+	if not suser.admin_all:
 		return render(request, 'permission_denied.html', {})
-	rdata = {}
-	rdata['user'] = user = request.user
-	op = request.POST.get('op')
 
 	def context(s, klen, pos):
 		l = max(0, pos - 5)
@@ -361,10 +386,7 @@ def prize(request):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	rdata = {}
-	rdata['user'] = user = request.user
-	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
-	op = request.POST.get('op')
+	rdata, op, suser = Utils.get_request_basis(request)
 
 	# 商家重导向
 	if suser.is_store:
@@ -417,10 +439,7 @@ def prize_ticket(request, ptype, qid=-1):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	rdata = {}
-	rdata['user'] = user = request.user
-	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
-	op = request.POST.get('op')
+	rdata, op, suser = Utils.get_request_basis(request)
 	qid = int(qid)
 
 	if op == 'clear_scaned':
@@ -443,11 +462,11 @@ def prize_ticket(request, ptype, qid=-1):
 		if len(prizes) == 0:
 			return render(request, 'permission_denied.html', {})
 		prize = prizes[0]
-		if (not user.is_staff) and (not suser.id in json.loads(prize.store)):
+		if (not suser.admin_all) and (not suser.id in json.loads(prize.store)):
 			return render(request, 'permission_denied.html', {})
 		tickets = PrizeTicket.objects.filter(pid=qid)
 	elif ptype == 'u':
-		if (not user.is_staff) and (suser.id != qid):
+		if (not suser.admin_all) and (suser.id != qid):
 			return render(request, 'permission_denied.html', {})
 		qsuser = SUser.objects.get(id=qid)
 		if qsuser.is_store:
@@ -524,11 +543,9 @@ def prize_add(request):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	if not request.user.is_staff:
+	rdata, op, suser = Utils.get_request_basis(request)
+	if not suser.admin_all:
 		return render(request, 'permission_denied.html', {})
-	rdata = {}
-	rdata['user'] = user = request.user
-	op = request.POST.get('op')
 
 	if op == 'add_prize':
 		title = request.POST.get('title')
@@ -545,12 +562,10 @@ def prize_add_store(request):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	if not request.user.is_staff:
+	rdata, op, suser = Utils.get_request_basis(request)
+	if not suser.admin_all:
 		return render(request, 'permission_denied.html', {})
-	rdata = {}
-	rdata['user'] = user = request.user
-	op = request.POST.get('op')
-
+	
 	if op == 'add_store':
 		jdata = {'result': 'ok'}
 		username = request.POST.get('username')
@@ -560,9 +575,9 @@ def prize_add_store(request):
 			jdata['result'] = '用户名已存在'
 		else:
 			nickname = request.POST.get('nickname')
-			password = request.POST.get('password')
+			password = Utils.uglyDecrypt(request.POST.get('password'))
 			pid_list = json.loads(request.POST.get('pid_list'))
-			user = User.objects.create_user(username=username, password=password, is_superuser=0, is_staff=0)
+			user = User.objects.create_user(username=username, password=password)
 			suser = SUser.objects.create(username=username, nickname=nickname, uid=user.id, is_sample=0, is_store=1)
 			for pid in pid_list:
 				prize = Prize.objects.get(id=int(pid))
@@ -580,11 +595,10 @@ def prize_exchange(request, tid):
 	# 验证身份，只有特定商家和特定用户
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	rdata = {}
-	rdata['user'] = user = request.user
-	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
+	rdata, op, suser = Utils.get_request_basis(request)
 	rdata['ticket'] = ticket = PrizeTicket.objects.get(id=tid)
 	rdata['prize'] = prize = Prize.objects.get(id=ticket.pid)
+	
 	if suser.is_store:
 		store = json.loads(prize.store)
 		if not suser.id in store:
@@ -623,12 +637,10 @@ def prize_exchange(request, tid):
 def prize_store(request):
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	if not request.user.is_staff:
+	rdata, op, suser = Utils.get_request_basis(request)
+	if not suser.admin_all:
 		return render(request, 'permission_denied.html', {})
-	rdata = {}
-	rdata['user'] = user = request.user
-	op = request.POST.get('op')
-
+	
 	if op == 'change_nickname':
 		SUser.objects.filter(id=int(request.POST.get('sid'))).update(nickname=request.POST.get('nickname'))
 		return HttpResponse(json.dumps({}))
@@ -678,12 +690,9 @@ def help_center(request):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	rdata = {}
-	rdata['user'] = user = request.user
-	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
-	op = request.POST.get('op')
-
-	if user.is_staff:
+	rdata, op, suser = Utils.get_request_basis(request)
+	
+	if suser.admin_all:
 		helps = reversed(Help.objects.all())
 	else:
 		helps = reversed(Help.objects.filter(released=True))
@@ -695,17 +704,14 @@ def tip(request, hid):
 	# 验证身份
 	if not request.user.is_authenticated:
 		return Utils.redirect_login(request)
-	rdata = {}
-	rdata['user'] = user = request.user
-	rdata['suser'] = suser = SUser.objects.get(uid=user.id)
-	op = request.POST.get('op')
-
+	rdata, op, suser = Utils.get_request_basis(request)
+	
 	helps = Help.objects.filter(id=int(hid))
 	if len(helps) == 0:
 		rdata['info'] = '帮助不存在'
 	else:
 		help = helps[0]
-		if not request.user.is_staff and not help.released:
+		if not suser.admin_all and not help.released:
 			return render(request, 'permission_denied.html', {})
 
 	if op == 'create':

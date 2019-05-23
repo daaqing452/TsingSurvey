@@ -2,6 +2,7 @@
   {% load static %}
     {% block context %}
 <script src='{% static 'js/md5.js' %}'> </script>
+<script src='{% static 'js/base.js' %}'> </script>
 <script src='{% static 'js/profile.js' %}'> </script>
 
 <div class="col-md-offset-2 col-md-8 ">
@@ -19,14 +20,14 @@
 				<td> {{ user.username }} </td>
 			</tr>-->
     		<tr class="info">
-				<td > 用户编号 </td>
-				<td> {{ puser.id }} </td>
+				<td > 用户名 </td>
+				<td> {{ psuser.username }} </td>
 			  </tr>
 			<tr class="success">
 				<td> 昵称 </td>
 				<td>
           <span id="nickname">{{ psuser.nickname }}</span>
-          {% ifequal user.id puser.id %}
+          {% ifequal suser.id psuser.id %}
           <a style="float:right" ><span class="glyphicon glyphicon-pencil"></span></a>
           {% endifequal %}
         </td>
@@ -38,7 +39,7 @@
     	</table>
     	</div>
   </div>
-  {% ifequal user.id puser.id %}
+  {% ifequal suser.id psuser.id %}
   <div style="float:right">
     <a href='/prize/'><button class="btn btn-sm btn-primary">积分兑换</button></a>
     <a href='/prize_ticket/u/{{ psuser.id }}/'><button class="btn btn-sm btn-success">已兑换奖品</button></a>

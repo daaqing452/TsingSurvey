@@ -11,7 +11,7 @@ function refreshAdminList(admin_list) {
 		tr.find('[type="username"]').attr('href', '/profile/' + uid + '/');
 		tr.find('[type="name"]').text(name);
 		var s = '';
-		if (admin_list[i]['admin_chief']) {
+		if (admin_list[i]['admin_all']) {
 			s += '高级 ';
 			tr.find('button#up_chief').hide();
 		} else {
