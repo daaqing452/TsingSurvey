@@ -464,10 +464,10 @@ def profile(request, uid):
 			return HttpResponse(json.dumps(jdata))
 
 	rq_list = []
-	answeraire_query_set = Answeraire.objects.filter(username=suser.username)
+	anweraire_queries = {answeraire.qid : answeraire.submitted for answeraire in Answeraire.objects.filter(username=suser.username)}
 	for questionaire in Questionaire.objects.all():
-		if questionaire.status in [1,2,3] and Utils.check_fill2(answeraire_query_set, questionaire.id) in [2,3]:
-			rq_list.append(Utils.remakeq(suser, questionaire, False, answeraire_query_set))
+		if questionaire.status in [1,2,3] and Utils.check_fill2(anweraire_queries, questionaire.id) in [2,3]:
+			rq_list.append(Utils.remakeq(suser, questionaire, False, anweraire_queries))
 	
 	rq_list.sort(key=lambda x: x['create_time'], reverse=True)
 	rdata['rq_list'] = rq_list

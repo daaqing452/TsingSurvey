@@ -55,22 +55,23 @@ def check_fill(suser, questionaire):
 	answeraire = answeraires[0]
 	return (3 if answeraire.submitted else 2)
 
-def check_fill2(answeraire_query_set, qid):
-	answeraires = answeraire_query_set.filter(qid=qid)
-	if len(answeraires) == 0: return 1
-	answeraire = answeraires[0]
-	return (3 if answeraire.submitted else 2)
+def check_fill2(anweraire_queries, qid):
+	if not qid in anweraire_queries:
+		return 1
+	else:
+		return (3 if anweraire_queries[qid] else 2)
 
-def remakeq(suser, questionaire, editable, answeraire_query_set):
+def remakeq(suser, questionaire, editable, anweraire_queries):
 	d = {}
 	d['id'] = questionaire.id
 	d['create_time'] = questionaire.create_time
 	d['editable'] = editable
 	
-	d['founder'] = '未找到'
-	founders =  SUser.objects.filter(username=questionaire.founder)
-	if len(founders) > 0:
-		d['founder'] = founders[0].username
+	d['founder'] = questionaire.founder
+	# d['founder'] = '未找到'
+	# founders =  SUser.objects.filter(username=questionaire.founder)
+	# if len(founders) > 0:
+	# 	d['founder'] = founders[0].username
 
 	if questionaire.title == '':
 		d['title'] = '（无标题）'
@@ -78,7 +79,7 @@ def remakeq(suser, questionaire, editable, answeraire_query_set):
 		d['title'] = questionaire.title
 
 	# fill = check_fill(suser, questionaire)
-	fill = check_fill2(answeraire_query_set, questionaire.id)
+	fill = check_fill2(anweraire_queries, questionaire.id)
 	if fill == 1:
 		d['fill'] = '尚未填写'
 	elif fill == 2:
