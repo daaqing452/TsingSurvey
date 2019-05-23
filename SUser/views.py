@@ -7,12 +7,12 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
-from SUser.models import SUser, SampleList
+from SUser.models import *
 from SUser.auth_tsinghua import auth_tsinghua
-from Survey.models import Questionaire, Answeraire
+from SUser.load_survey import load_survey
+from Survey.models import *
 import Analysis.views as Analysis
 import SUser.utils as Utils
-from SUser.load_survey import load_survey
 import codecs
 import datetime
 import json
@@ -91,10 +91,10 @@ def login(request):
 		# 判断是否是清华账号
 		if username.isdigit() and len(username) == 10:
 			if not existed:
-				password = username
-				user = User.objects.create_user(username=username, password=password)
-				suser = SUser.objects.create(uid=user.id, username=username, nickname=username)
 				existed = True
+				if username == password:
+					user = User.objects.create_user(username=username, password=password)
+					suser = SUser.objects.create(uid=user.id, username=username, nickname=username)
 
 		if existed:
 			# 验证
@@ -483,9 +483,40 @@ def backend_admin(request):
 		return render(request, 'permission_denied.html', {})
 	op = request.POST.get('op')
 
-	# if op == 'export_multi':
-	# 	qids = json.loads(request.POST.get('qids'))
-	# 	excel_name = Analysis.export_multi(qids)
-	# 	return HttpResponse(json.dumps({'result': 'yes', 'export_path': excel_name}))
+	if op == 'export_multi':
+		qids = json.loads(request.POST.get('qids'))
+		excel_name = Analysis.export_multi(qids)
+		return HttpResponse(json.dumps({'result': 'yes', 'export_path': excel_name}))
+
+	if op == 'del_ans':
+		cnt_del_ans = 0
+		for answeraire in Answeraire.objects.all():
+			questionaires = Questionaire.objects.filter(id=answeraire.qid)
+			if len(questionaires) == 0:
+				answeraire.detele()
+				cnt_del_ans += 1
+		cnt_del_rep = 0
+		for report in Report.objects.all():
+			questionaires = Questionaire.objects.filter(id=report.qid)
+			if len(questionaires) == 0:
+				report.delete()
+				cnt_del_rep += 1
+		return HttpResponse(json.dumps({'cnt_del_ans': cnt_del_ans, 'cnt_del_rep': cnt_del_rep}))
+
+	if op == 'del_tsinghua':
+		cnt_del_tsinghua = 0
+		for suser in SUser.objects.all():
+			username = suser.username
+			if username.isdigit() and len(username) == 10:
+				User.objects.filter(username=username).delete()
+				suser.delete()
+				cnt_del_tsinghua += 1
+		for user in User.objects.all():
+			username = user.username
+			if username.isdigit() and len(username) == 10:
+				SUser.objects.filter(username=username).delete()
+				user.delete()
+				cnt_del_tsinghua += 1
+		return HttpResponse(json.dumps({'cnt_del_tsinghua': cnt_del_tsinghua}))
 
 	return render(request, 'backend_admin.html', {})

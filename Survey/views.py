@@ -7,8 +7,8 @@ from django.shortcuts import render
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 # from django.utils import timezone
-from Survey.models import Questionaire, Answeraire
-from SUser.models import SUser, SampleList
+from Survey.models import *
+from SUser.models import *
 import SUser.utils as Utils
 import Analysis.views as Analysis
 import datetime
@@ -96,6 +96,8 @@ def survey(request, qid):
 
 		# 删除问卷
 		if op == 'delete':
+			Answeraire.objects.filter(qid=questionaire.id).delete()
+			Report.objects.filter(qid=questionaire.id).delete()
 			questionaire.delete()
 			return HttpResponse(json.dumps({}))
 
