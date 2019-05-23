@@ -39,8 +39,8 @@ def index(request):
 			# 高级管理员
 			if suser.admin_all:
 				rq = Utils.remakeq(suser, questionaire, True, anweraire_queries)
-				rq['filled_number'] = len(Answeraire.objects.filter(qid=questionaire.id))
-				rq['submitted_number'] = len(Answeraire.objects.filter(qid=questionaire.id, submitted=True))
+				rq['filled_number'] = Answeraire.objects.filter(qid=questionaire.id).count()
+				rq['submitted_number'] = Answeraire.objects.filter(qid=questionaire.id, submitted=True).count()
 			# 问卷管理员：自己发的问卷
 			elif suser.admin_survey and questionaire.founder == suser.username:
 				rq = Utils.remakeq(suser, questionaire, True, anweraire_queries)
