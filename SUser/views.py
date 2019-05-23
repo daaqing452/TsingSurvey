@@ -33,24 +33,25 @@ def index(request):
 	
 	rq_list = []
 	if not suser.is_store:
+		anweraire_queries = {answeraire.qid : answeraire.submitted for answeraire in Answeraire.objects.filter(username=suser.username)}
 		for questionaire in Questionaire.objects.all():
 			rq = None
 			# 高级管理员
 			if suser.admin_all:
-				rq = Utils.remakeq(suser, questionaire, True)
+				rq = Utils.remakeq(suser, questionaire, True, anweraire_queries)
 				rq['filled_number'] = len(Answeraire.objects.filter(qid=questionaire.id))
 				rq['submitted_number'] = len(Answeraire.objects.filter(qid=questionaire.id, submitted=True))
 			# 问卷管理员：自己发的问卷
 			elif suser.admin_survey and questionaire.founder == suser.username:
-				rq = Utils.remakeq(suser, questionaire, True)
+				rq = Utils.remakeq(suser, questionaire, True, anweraire_queries)
 			# 普通用户：公共问卷
 			elif questionaire.public:
 				if questionaire.status in [1,2,3]:
-					rq = Utils.remakeq(suser, questionaire, False)
+					rq = Utils.remakeq(suser, questionaire, False, anweraire_queries)
 			# 普通用户：被允许填的问卷
 			elif Utils.check_allow(suser, questionaire):
 				if questionaire.status in [1,2,3]:
-					rq = Utils.remakeq(suser, questionaire, False)
+					rq = Utils.remakeq(suser, questionaire, False, anweraire_queries)
 			if rq == None: continue
 			rq_list.append(rq)
 	
