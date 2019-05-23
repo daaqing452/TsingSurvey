@@ -493,7 +493,7 @@ def backend_admin(request):
 		for answeraire in Answeraire.objects.all():
 			questionaires = Questionaire.objects.filter(id=answeraire.qid)
 			if len(questionaires) == 0:
-				answeraire.detele()
+				answeraire.delete()
 				cnt_del_ans += 1
 		cnt_del_rep = 0
 		for report in Report.objects.all():
