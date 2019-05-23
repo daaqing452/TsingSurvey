@@ -53,9 +53,15 @@ def check_fill(suser, questionaire):
 	answeraires = Answeraire.objects.filter(qid=questionaire.id, username=suser.username)
 	if len(answeraires) == 0: return 1
 	answeraire = answeraires[0]
-	return (3 if answeraire.submitted else 2);
+	return (3 if answeraire.submitted else 2)
 
-def remakeq(suser, questionaire, editable):
+def check_fill2(answeraire_query_set, qid):
+	answeraires = answeraire_query_set.filter(qid=qid)
+	if len(answeraires) == 0: return 1
+	answeraire = answeraires[0]
+	return (3 if answeraire.submitted else 2)
+
+def remakeq(suser, questionaire, editable, answeraire_query_set):
 	d = {}
 	d['id'] = questionaire.id
 	d['create_time'] = questionaire.create_time
@@ -71,7 +77,8 @@ def remakeq(suser, questionaire, editable):
 	else:
 		d['title'] = questionaire.title
 
-	fill = check_fill(suser, questionaire)
+	# fill = check_fill(suser, questionaire)
+	fill = check_fill2(answeraire_query_set, questionaire.id)
 	if fill == 1:
 		d['fill'] = '尚未填写'
 	elif fill == 2:
