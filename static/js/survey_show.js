@@ -193,7 +193,7 @@ function createSurveyHtml(q){
 				for(var i = 0; i < n_row; i++){
 					HTMLContent += "<tr><td>" + q.options[i*n_col].text +"</td>";
 					for(var j = 0; j < n_col; j++){
-						HTMLContent += "<td align=\"center\"><input type=\"radio\" onclick = \"showBase(this)\" name=\"Q_"+(index+1).toString()+"_"+(i+1).toString()+"\" id=\"Q_"+(index+1).toString()+"_"+(i*n_col+j+1).toString() +"\"></td>";
+						HTMLContent += "<td align=\"center\"><input type=\"radio\" onclick = \"showBase(this)\" name=\"Q_"+(index+1).toString()+"_"+(i+1).toString()+"\" id=\"Q_"+(index+1).toString()+"_"+(i*n_col+j+1).toString() +"\" ></td>";
 					}
 					HTMLContent += "</tr>";
 				}

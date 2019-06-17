@@ -607,7 +607,7 @@ function createHtml(q,flag = 0){
 			for(var i = 0; i < q.n_option; i ++)
 			{
 				var option = q.options[i];
-				HTMLContent += "<p class=\"q_item\"><input type=\"radio\" name=\"single\"> "+option.index+". ";
+				HTMLContent += "<p class=\"q_item\"><input type=\"radio\" name=\"single\" > "+option.index+". ";
 				if(option.option_type==0){
 					HTMLContent += option.text;
 				}
@@ -738,7 +738,7 @@ function createHtml(q,flag = 0){
 			for(var i = 0; i < n_row; i++){
 				HTMLContent += "<tr><td>" + q.options[i*n_col].text +"</td>";
 				for(var j = 0; j < n_col; j++){
-					HTMLContent += "<td><input type=\"radio\" name=\"single"+ i.toString() +"\"></td>";
+					HTMLContent += "<td><input type=\"radio\" name=\"single"+ i.toString() +"\" ></td>";
 				}
 				HTMLContent += "</tr>";
 			}
@@ -751,10 +751,10 @@ function createHtml(q,flag = 0){
 			}
 			for(var i = 0; i < q.n_option; i++){
 				var option = q.options[i];
-				if(i != 0 & i % 3 ==0){
-					HTMLContent += "<br>";
-				}
-				HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\" style=\"width:50px\">&nbsp&nbsp";
+				// if(i != 0 & i % 3 ==0){
+				// 	HTMLContent += "<br>";
+				// }
+				HTMLContent += option.text+"&nbsp<input type=\"text\" name=\"single\" style=\"width:50px\">&nbsp&nbsp<br>";
 			}
 			if(q.must_answer == true && q.title.replace(" ", "").length == 0){
 				HTMLContent += "*";
