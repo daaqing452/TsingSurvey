@@ -19,7 +19,6 @@ def record(s_type_new):
 
 	if s_type != 0:
 		if s_type == 6:
-			print(options_mat)
 			options = []
 			n_set = len(options_mat[0])
 			cnt = 0
@@ -66,13 +65,21 @@ def load_survey(filepath):
 	index = 0
 	title = ''
 
-	document = Document(filepath)
+	ext = filepath.split('.')[-1]
+	if ext == 'docx':
+		document = Document(filepath)
+		texts = [paragraph.text for paragraph in document.paragraphs]
+	elif ext == 'txt':
+		texts = []
+		f = open(filepath, 'r')
+		while True:
+			line = f.readline()
+			if line is None or len(line) == 0: break
+			texts.append(line)
+
 	line_cnt = 0
-	for paragraph in document.paragraphs:
+	for text in texts:
 		line_cnt += 1
-		text = paragraph.text
-		# print(line_cnt, text)
-		# continue
 
 		# 大标题
 		if re.match('[一二三四五六七八九十][、．\.]', text) is not None:
