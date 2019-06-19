@@ -44,13 +44,9 @@ def index(request):
 			# 问卷管理员：自己发的问卷
 			elif suser.admin_survey and questionaire.founder == suser.username:
 				rq = Utils.remakeq(suser, questionaire, True, anweraire_queries)
-			# 普通用户：公共问卷
-			elif questionaire.public:
-				if questionaire.status in [1,2,3]:
-					rq = Utils.remakeq(suser, questionaire, False, anweraire_queries)
-			# 普通用户：被允许填的问卷
+			# 普通用户：被允许填的问卷，正在开放填写已经填写
 			elif Utils.check_allow(suser, questionaire):
-				if questionaire.status in [1,2,3]:
+				if (questionaire.status == 1) or (questionaire.status in [2,3] and Utils.check_fill2(anweraire_queries, questionaire.id) > 1):
 					rq = Utils.remakeq(suser, questionaire, False, anweraire_queries)
 			if rq == None: continue
 			rq_list.append(rq)
