@@ -38,6 +38,7 @@
 			<td qid='{{ rq.id }}' onclick='delete_questionaire(this)'> <span class='glyphicon glyphicon-remove'> </span> </td>
 			<td qid='{{ rq.id }}' onclick='copy_questionaire(this)'> <span class='glyphicon glyphicon-plus'> </span> </td>
 			<td qid='{{ rq.id }}' onclick='export_index(this)'> <span class='glyphicon glyphicon-arrow-down'> </span> </td>
+			<td qid='{{ rq.id }}' onclick='export_all_index(this)'> <span class='glyphicon glyphicon-sort-by-attributes'> </span> </td>
 			<td> <a id='{{ rq.id }}download'> </a> </td>
 			{% else %}
 			<td></td>
