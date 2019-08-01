@@ -118,6 +118,17 @@ def survey(request, qid):
 			else:
 				return HttpResponse(json.dumps({'result': 'no', 'info': '问卷尚未发布！'}))
 
+		# 导出所有问卷
+		if op == 'export_all':
+			if status == 1 or status == 2 or status == 3:
+				excel_name = Analysis.export(qid)
+				if excel_name == None:
+					return HttpResponse(json.dumps({'result': 'no', 'info': '尚未有人填写问卷！'}))
+				else:
+					return HttpResponse(json.dumps({'result': 'yes', 'export_path': excel_name}))
+			else:
+				return HttpResponse(json.dumps({'result': 'no', 'info': '问卷尚未发布！'}))
+
 		# 存储问卷模板
 		if op == 'save_report_template':
 			report_template = request.POST.get('report_template')
