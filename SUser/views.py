@@ -395,6 +395,16 @@ def user_list(request):
 	rdata['user_list'] = get_suser_list()
 	return render(request, 'user_list.html', rdata)
 
+def sample_list(request):
+	# 验证身份
+	if not request.user.is_authenticated:
+		return Utils.redirect_login(request)
+	rdata, op, suser = Utils.get_request_basis(request)
+	if not suser.admin_all and not suser.admin_survey:
+		return render(request, 'permission_denied.html', {})
+
+	return render(request, 'sample_list.html', rdata)
+
 def admin_list(request):
 	# 验证身份
 	if not request.user.is_authenticated:

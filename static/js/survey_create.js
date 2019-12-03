@@ -282,7 +282,6 @@ function createModal(){
 			
 			break;
 		}
-		
 	}
 	$("#myModal_body").children(".table").eq(0).find("textarea").eq(0).attr("name","title_bianji");
 	title_editor = KindEditor.create('textarea[name="title_bianji"]',options);

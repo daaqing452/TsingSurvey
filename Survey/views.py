@@ -298,6 +298,51 @@ def bonus(request):
 	rdata['credit'] = request.GET.get('credit', 0)
 	return render(request, 'bonus.html', rdata)
 
+def survey_status(request, qid):
+	if not request.user.is_authenticated:
+		return Utils.redirect_login(request)
+	rdata, op, suser = Utils.get_request_basis(request)
+	if not suser.admin_all:
+		return render(request, 'permission_denied.html', {})
+	rdata['qid'] = qid
+
+	questionaires = Questionaire.objects.filter(id=qid)
+	if len(questionaires) == 0:
+		rdata['info'] = '问卷不存在'
+		return render(request, 'survey_status.html', rdata)
+	questionaire = questionaires[0]
+
+	if op == 'get_list':
+		answeraires = Answeraire.objects.filter(qid=qid)
+		items = []
+		for answeraire in answeraires:
+			d = {}
+			d['username'] = answeraire.username
+			d['submitted'] = answeraire.submitted
+			d['submit_time'] = answeraire.submit_time.strftime('%Y-%m-%d %H:%M:%S')
+			susers = SUser.objects.filter(username=answeraire.username)
+			if len(susers) > 0:
+				suser = susers[0]
+				d['uid'] = suser.id
+				d['student_type'] = suser.student_type
+				d['political_status'] = suser.political_status
+				d['department'] = suser.department
+				d['enrollment_mode'] = suser.enrollment_mode
+			else:
+				d['student_type'] = d['political_status'] = d['department'] = d['enrollment_mode'] = '已删除'
+			items.append(d)
+
+		order = request.POST.get('order', '')
+		if_reversed = int(request.POST.get('reversed', 0))
+		if order != '':
+			items = sorted(items, key=lambda item: item[order], reverse=if_reversed)
+			print(items)
+
+		return HttpResponse(json.dumps({'item_list': items}))
+
+	return render(request, 'survey_status.html', rdata)
+
+
 
 def upload_file(request):
 	# 验证身份
