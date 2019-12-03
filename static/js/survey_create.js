@@ -96,7 +96,7 @@ function release() {
 
 
 function createModal(){
-    switch(current_status.s_type){
+	    switch(current_status.s_type){
         case 1:{
             //single choice
             $("#myModal_body").empty();
@@ -286,6 +286,7 @@ function createModal(){
     }
     $("#myModal_body").children(".table").eq(0).find("textarea").eq(0).attr("name","title_bianji");
     title_editor = KindEditor.create('textarea[name="title_bianji"]',options);
+
 }
 
 function jump(index){

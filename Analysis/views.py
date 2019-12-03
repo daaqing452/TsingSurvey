@@ -105,7 +105,7 @@ def get_report(qid):
 	return report_str
 
 
-def export_base(questionaire, answeraires, reports):
+def export_base(questionaire, answeraires, reports, export_all=False):
 	answers = [json.loads(answeraire.answers) for answeraire in answeraires]
 	# 写入excel
 	excel_name = 'media/' + time.strftime('%Y%m%d%H%M%S') + '-问卷结果.xlsx'
@@ -316,15 +316,18 @@ def export_base(questionaire, answeraires, reports):
 	excel.close()
 	return excel_name
 
-def export(qid):
+def export(qid, export_all=False):
 	questionaires = Questionaire.objects.filter(id=qid)
 	if len(questionaires) == 0:
 		return HttpResponse(json.dumps({'info': 'no that'}))
 	questionaire = json.loads(questionaires[0].questions)
-	answeraires = Answeraire.objects.filter(qid=qid, submitted=True)
+	if export_all == False:
+		answeraires = Answeraire.objects.filter(qid=qid, submitted=True)
+	else:
+		answeraires = Answeraire.objects.filter(qid=qid)
 	if len(answeraires) == 0: return None
 	reports = json.loads(get_report(qid))
-	return export_base(questionaire, answeraires, reports)
+	return export_base(questionaire, answeraires, reports, export_all)
 
 def export_multi(qids):
 	questionaire = Questionaire.objects.get(id=qids[0])

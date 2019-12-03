@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+	{% load static %}
+    {% block context %}
+<script src='{% static 'js/survey_status.js' %}'> </script>
+<script src='{% static 'js/survey_create.js' %}'> </script>
+<div class="col-md-offset-1 col-md-10 ">
+
+
+<h3 class="text-center"> 问卷详情：{{ qid }} </h3> 
+<p>{{ info }}</p>
+<br/>
+
+<div style="float:left">
+	<button id="filter_button" class="btn btn-primary">筛选</button>
+	<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal" onclick="createSurvey(10)"> 是否完成问卷 </button>
+	<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal" onclick="createSurvey(10)"> 学号 </button>
+	<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal" onclick="createSurvey(10)"> 提交时间 </button>
+	<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal" onclick="createSurvey(10)"> 学生类别 </button>
+	<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal" onclick="createSurvey(10)"> 政治面貌 </button>
+	<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal" onclick="createSurvey(10)"> 院系所 </button>
+	<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal" onclick="createSurvey(10)"> 录取类别 </button>
+</div>
+<br/>
+<br/>
+<br/>
+
+
+<table id="item_list" class="table table-hover">
+	<tr>
+		<td class="table_head" type="submitted">是否完成问卷</td>
+		<td class="table_head" type="username">学号</td>
+		<td class="table_head" type="submit_time">提交时间</td>
+		<td class="table_head" type="student_type">学生类别</td>
+		<td class="table_head" type="political_status">政治面貌</td>
+		<td class="table_head" type="department">院系所</td>
+		<td class="table_head" type="enrollment_mode">录取类别</td>
+	</tr>
+
+	<tr type="clone" style="display:none">
+		<td type="submitted">        clone_a </td>
+		<td> <a type="username">     clone_b </a> </td>
+		<td type="submit_time">      clone_c </td>
+		<td type="student_type">     clone_d </td>
+		<td type="political_status"> clone_e </td>
+		<td type="department">       clone_f </td>
+		<td type="enrollment_mode">  clone_g </td>
+	</tr>
+
+</table>
+
+<div>
+</div>
+
+    {% endblock context %}

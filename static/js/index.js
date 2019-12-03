@@ -61,3 +61,23 @@ function export_index(obj) {
 		}
 	});
 }
+
+function export_all_index(obj) {
+	var td = $(obj);
+	var qid = td.attr('qid');
+	$.ajax({
+		url: '/survey/' + qid + '/',
+		type: 'POST',
+		data: {'op': 'export_all'},
+		success: function(data) {
+			data = JSON.parse(data);
+			if (data['result'] == 'no') {
+				alert(data['info']);
+				return;
+			}
+			export_path = '/' + data['export_path'];
+			$('a#' + qid + 'download').attr('href', export_path);
+			document.getElementById(qid + "download").click();
+		}
+	});
+}

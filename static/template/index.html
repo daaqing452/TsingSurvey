@@ -16,7 +16,7 @@
 		{% endif %}
 		{% if editable %}
 		<td align=center> 问卷状态 </td>
-		<td align=center> 提交/填写人数 </td>
+		<td align=center> 提交/填写 </td>
 		<td> </td>
 		<td> </td>
 		<td> </td>
@@ -34,10 +34,11 @@
 		{% if editable %}
 			{% if rq.editable %}
 			<td align=center> {{ rq.status }} </td>
-			<td align=center> {{ rq.submitted_number }}/{{ rq.filled_number }} </td>
-			<td qid='{{ rq.id }}' onclick='delete_questionaire(this)'> <span class='glyphicon glyphicon-remove'> </span> </td>
-			<td qid='{{ rq.id }}' onclick='copy_questionaire(this)'> <span class='glyphicon glyphicon-plus'> </span> </td>
-			<td qid='{{ rq.id }}' onclick='export_index(this)'> <span class='glyphicon glyphicon-arrow-down'> </span> </td>
+			<td align=center> <a href='/survey_status/{{ rq.id }}/'> {{ rq.submitted_number }}/{{ rq.filled_number }}  </a> </td>
+			<td qid='{{ rq.id }}' onclick='delete_questionaire(this)'> <!--<span class='glyphicon glyphicon-remove'> </span>-->删除 </td>
+			<td qid='{{ rq.id }}' onclick='copy_questionaire(this)'> <!--<span class='glyphicon glyphicon-plus'> </span>-->复制 </td>
+			<td qid='{{ rq.id }}' onclick='export_index(this)'> <!--<span class='glyphicon glyphicon-arrow-down'> </span>-->导出已填 </td>
+			<td qid='{{ rq.id }}' onclick='export_all_index(this)'> <!--<span class='glyphicon glyphicon-sort-by-attributes'> </span>-->导出所有 </td>
 			<td> <a id='{{ rq.id }}download'> </a> </td>
 			{% else %}
 			<td></td>
