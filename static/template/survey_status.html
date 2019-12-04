@@ -11,7 +11,7 @@
 <br/>
 
 <div style="float:left">
-	<button id="filter_button" class="btn btn-primary">筛选</button>
+	<button id="filter_button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="filter_op()">筛选</button>
 	<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal" onclick="createSurvey(10)"> 是否完成问卷 </button>
 	<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal" onclick="createSurvey(10)"> 学号 </button>
 	<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal" onclick="createSurvey(10)"> 提交时间 </button>
@@ -47,6 +47,24 @@
 	</tr>
 
 </table>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+      <div class="modal-dialog" style="width:1100px">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+
+          </div>
+          <div class="modal-body" id="myModal_body"> 
+           
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default btn-lg" data-dismiss="modal" > 关闭 </button>
+            <button type="button" class="btn btn-primary btn-lg" onclick="commitS()">保存 </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
 <div>
 </div>

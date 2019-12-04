@@ -23,6 +23,8 @@ function refreshItemList(item_list) {
 	}
 }
 
+
+
 $(document).ready(function(){
 	$.ajax({
 		url: window.location.href,
@@ -54,4 +56,15 @@ $(document).ready(function(){
 		});
 	});
 });
+
+
+function commitS(){
+	// save function is here
+	return;
+}
+
+function filter_op(){
+	$("#myModal_body").empty();
+	$("#myModal_body").append("<button>123</button>");
+}
 
