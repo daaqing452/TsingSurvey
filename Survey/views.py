@@ -312,22 +312,29 @@ def survey_status(request, qid):
 		return render(request, 'survey_status.html', rdata)
 	questionaire = questionaires[0]
 
+	def add_column(d, filter0, suser, s):
+		val = eval('suser.' + s)
+		d[s] = val
+		if not val in filter0[s]:
+			filter0[s][val] = True
+
 	if op == 'get_list':
 		answeraires = Answeraire.objects.filter(qid=qid)
 		items = []
+		filter0 = {'submitted': {'是': True, '否': True}, 'username': ['', ''], 'submit_time': ['', ''], 'student_type': {}, 'political_status': {}, 'department': {}, 'enrollment_mode': {}}
 		for answeraire in answeraires:
 			d = {}
+			d['submitted'] = '是' if answeraire.submitted else '否'
 			d['username'] = answeraire.username
-			d['submitted'] = answeraire.submitted
 			d['submit_time'] = answeraire.submit_time.strftime('%Y-%m-%d %H:%M:%S')
 			susers = SUser.objects.filter(username=answeraire.username)
 			if len(susers) > 0:
 				suser = susers[0]
 				d['uid'] = suser.id
-				d['student_type'] = suser.student_type
-				d['political_status'] = suser.political_status
-				d['department'] = suser.department
-				d['enrollment_mode'] = suser.enrollment_mode
+				add_column(d, filter0, suser, 'student_type')
+				add_column(d, filter0, suser, 'political_status')
+				add_column(d, filter0, suser, 'department')
+				add_column(d, filter0, suser, 'enrollment_mode')
 			else:
 				d['student_type'] = d['political_status'] = d['department'] = d['enrollment_mode'] = '已删除'
 			items.append(d)
@@ -338,7 +345,7 @@ def survey_status(request, qid):
 			items = sorted(items, key=lambda item: item[order], reverse=if_reversed)
 			print(items)
 
-		return HttpResponse(json.dumps({'item_list': items}))
+		return HttpResponse(json.dumps({'item_list': items, 'filter': filter0}))
 
 	return render(request, 'survey_status.html', rdata)
 

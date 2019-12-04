@@ -33,6 +33,7 @@ $(document).ready(function(){
 		success: function(data) {
 			console.log(data);
 			data = JSON.parse(data);
+			filter = data['filter'];
 			refreshItemList(data['item_list']);
 		}
 	});
@@ -59,12 +60,28 @@ $(document).ready(function(){
 
 
 function commitS(){
-	// save function is here
-	return;
+	//console.log($("input#submitted_是").checked());
+}
+
+function add_filter_options(title, name) {
+	var s = "<div style='float:left'><b>" + title + "</b>";
+	for (var key in filter[name]) {
+		s += "<input id='" + name + '_' + key + "' type='checkbox' checked=" + filter[name][key] + " />" + key + '&nbsp;&nbsp;&nbsp;';
+	}
+	s += "</div><br/><hr/>";
+	return s;
 }
 
 function filter_op(){
 	$("#myModal_body").empty();
-	$("#myModal_body").append("<button>123</button>");
+	var s = "";
+	s += add_filter_options('是否完成问卷', 'submitted');
+	s += "<div style='float:left'><b>学号：</b><input type='text' value='" + filter['username'][0] + "' placeholder='20XXXXXXXX' />~<input type='text' value='" + filter['username'][1] + "' placeholder='20XXXXXXXX' /></div><br/><hr/>";
+	s += "<div style='float:left'><b>提交时间：</b><input type='text' value='" + filter['submit_time'][0] + "' placeholder='XXXX-XX-XX XX:XX:XX' />~<input type='text' value='" + filter['submit_time'][1] + "' placeholder='XXXX-XX-XX XX:XX:XX' />&nbsp;&nbsp;&nbsp;</div><br/><hr/>";
+	s += add_filter_options('学生类别：', 'student_type');
+	s += add_filter_options('政治面貌：', 'political_status');
+	s += add_filter_options('院 系 所：&nbsp;', 'department');
+	s += add_filter_options('录取类别：', 'enrollment_mode');
+	$("#myModal_body").append(s);
 }
 
