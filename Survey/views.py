@@ -319,9 +319,11 @@ def survey_status(request, qid):
 			filter0[s][val] = True
 
 	if op == 'get_list':
-		answeraires = Answeraire.objects.filter(qid=qid)
 		items = []
-		filter0 = {'submitted': {'是': True, '否': True}, 'username': ['', ''], 'submit_time': ['', ''], 'student_type': {}, 'political_status': {}, 'department': {}, 'enrollment_mode': {}}
+		filter0 = json.loads(request.POST.get('filter', {}))
+		if len(filter0) == 0:
+			filter0 = {'submitted': {'是': True, '否': True}, 'username': ['', ''], 'submit_time': ['', ''], 'student_type': {}, 'political_status': {}, 'department': {}, 'enrollment_mode': {}}
+		answeraires = Answeraire.objects.filter(qid=qid)
 		for answeraire in answeraires:
 			d = {}
 			d['submitted'] = '是' if answeraire.submitted else '否'
@@ -337,13 +339,23 @@ def survey_status(request, qid):
 				add_column(d, filter0, suser, 'enrollment_mode')
 			else:
 				d['student_type'] = d['political_status'] = d['department'] = d['enrollment_mode'] = '已删除'
-			items.append(d)
+			
+			addin = True
+			addin &= filter0['submitted'][d['submitted']]
+			if filter0['username'][0] != '': addin &= (filter0['username'][0] <= d['username'])
+			if filter0['username'][1] != '': addin &= (filter0['username'][1] >= d['username'])
+			if filter0['submit_time'][0] != '': addin &= (filter0['submit_time'][0] <= d['submit_time'])
+			if filter0['submit_time'][1] != '': addin &= (filter0['submit_time'][1] >= d['submit_time'])
+			addin &= filter0['student_type'][d['student_type']]
+			addin &= filter0['political_status'][d['political_status']]
+			addin &= filter0['department'][d['department']]
+			addin &= filter0['enrollment_mode'][d['enrollment_mode']]
+			if addin: items.append(d)
 
 		order = request.POST.get('order', '')
 		if_reversed = int(request.POST.get('reversed', 0))
 		if order != '':
 			items = sorted(items, key=lambda item: item[order], reverse=if_reversed)
-			print(items)
 
 		return HttpResponse(json.dumps({'item_list': items, 'filter': filter0}))
 
