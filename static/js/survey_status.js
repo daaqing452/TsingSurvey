@@ -69,18 +69,23 @@ function renew_filter(){
 }
 
 function add_filter_options(title, name) {
-	var s = "<div style='float:left'><b>" + title + "</b>";
+	var s = "<table style='float:left'><tr><td><b>" + title + "</b></td>";
+	var cnt = 0;
 	for (var key in filter[name]) {
-		s += "<input id='" + name + '_' + key + "' type='checkbox' " + (filter[name][key] ? "checked='checked'" : "") + " />" + key + '&nbsp;&nbsp;&nbsp;';
+		cnt++;
+		if (cnt % 5 == 1 && cnt > 1) {
+			s += "</tr><tr><td></td>";
+		}
+		s += "<td style='float:left'><input id='" + name + '_' + key + "' type='checkbox' " + (filter[name][key] ? "checked='checked'" : "") + " />" + key + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>';
 	}
-	s += "</div><br/><hr/>";
+	s += "</tr></table><br/><hr/>";
 	return s;
 }
 
 function filter_op(){
 	$("#myModal_body").empty();
 	var s = "";
-	s += add_filter_options('是否完成问卷', 'submitted');
+	s += add_filter_options('是否完成问卷：', 'submitted');
 	s += "<div style='float:left'><b>学号：</b><input id='username_lower' type='text' value='" + filter['username'][0] + "' placeholder='20XXXXXXXX' />~<input id='username_upper' type='text' value='" + filter['username'][1] + "' placeholder='20XXXXXXXX' /></div><br/><hr/>";
 	s += "<div style='float:left'><b>提交时间：</b><input id='submit_time_lower' type='text' value='" + filter['submit_time'][0] + "' placeholder='XXXX-XX-XX XX:XX:XX' />~<input id='submit_time_upper' type='text' value='" + filter['submit_time'][1] + "' placeholder='XXXX-XX-XX XX:XX:XX' />&nbsp;&nbsp;&nbsp;</div><br/><hr/>";
 	s += add_filter_options('学生类别：', 'student_type');
