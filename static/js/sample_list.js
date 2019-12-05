@@ -1,5 +1,5 @@
 // 刷新用户列表
-function refreshUserList(user_list) {
+function refresh_user_list(user_list) {
 	var tbody = $('table#user_list').children('tbody');
 	tbody.find('[type="item"]').remove();
 	for (i in user_list) {
@@ -20,6 +20,25 @@ function refreshUserList(user_list) {
 		tr.show();
 		tbody.append(tr);
 	}
+}
+
+// 刷新样本列表
+function refresh_sample_list() {
+	$.ajax({
+		url: window.location.href,
+		type: 'POST',
+		data: {'op': 'get_sample_list'},
+		success: function(data) {
+			data = JSON.parse(data);
+			sample_lists = data['sample_lists'];
+			var select = $('select#sample_lists');
+			select.empty();
+			for (var i in sample_lists) {
+				var sample_list = sample_lists[i];
+				select.append("<option value='" + sample_list['id'] + "'> " + sample_list['name'] + ' </option>');
+			}
+		}
+	});
 }
 
 /*function show_statistic(obj) {
@@ -67,42 +86,6 @@ function refreshUserList(user_list) {
 	});
 }*/
 
-// 更改积分
-function change_credit(obj) {
-	var new_credit = prompt('新的积分', '');
-	var td = $(obj);
-	if (new_credit == null) new_credit = td.html();
-	if (new_credit == '') new_credit = td.html();
-	var username = td.parent().find('[type=username]').html();
-	$.ajax({
-		url: window.location.href,
-		type: 'POST',
-		data: {'op': 'change_credit', 'credit': new_credit, 'username': username},
-		success: function(data) {
-			data = JSON.parse(data);
-		}
-	});
-	td.html(new_credit);
-}
-
-// 导出
-function exportt(obj) {
-	var button = $(obj);
-	$.ajax({
-		url: window.location.href,
-		type: 'POST',
-		data: {'op': 'export', 'size': button.attr('type')},
-		success: function(data) {
-			data = JSON.parse(data);
-			export_path = '/' + data['export_path'];
-			$('a#download').attr('href', export_path);
-			document.getElementById("download").click();
-		}
-	});
-}
-
-
-
 $(document).ready(function(){
 
 	//	加载
@@ -112,7 +95,7 @@ $(document).ready(function(){
 		data: {'op': 'load'},
 		success: function(data) {
 			var data = JSON.parse(data);
-			refreshUserList(data['user_list']);
+			refresh_user_list(data['user_list']);
 		}
 	});
 
@@ -163,7 +146,7 @@ $(document).ready(function(){
 			success: function(data) {
 				var data = JSON.parse(data);
 				alert('设置成功！');
-				refreshUserList(data['user_list']);
+				refresh_user_list(data['user_list']);
 			}
 		});
 	});
@@ -194,12 +177,12 @@ $(document).ready(function(){
 			data: {'op': 'sample_yes', 'username_list': JSON.stringify(username_list)},
 			success: function(data) {
 				data = JSON.parse(data);
-				refreshUserList(data['user_list']);
+				refresh_user_list(data['user_list']);
 			}
 		});
 	});
 
-	//	设置为样本
+	//	设置为非样本
 	$('button#sample_no').click(function(){
 		username_list = new Array();
 		$('input[username]:checked').each(function(){
@@ -211,63 +194,7 @@ $(document).ready(function(){
 			data: {'op': 'sample_no', 'username_list': JSON.stringify(username_list)},
 			success: function(data) {
 				data = JSON.parse(data);
-				refreshUserList(data['user_list']);
-			}
-		});
-	});
-
-	//	删除用户
-	$('button#delete').click(function(){
-		if (confirm('确认删除？')) {
-			var username_list = new Array();
-			$('input[username]:checked').each(function(){
-				username_list.push($(this).attr('username'));
-			});
-			$.ajax({
-				url: window.location.href,
-				type: 'POST',
-				data: {'op': 'delete', 'username_list': JSON.stringify(username_list)},
-				success: function(data) {
-					data = JSON.parse(data);
-					refreshUserList(data['user_list']);
-				}
-			});
-		}
-	});
-
-
-	//	删除所有用户
-	$('button#delete_all').click(function(){
-		if (confirm('确认删除所有用户？')) {
-			$.ajax({
-				url: window.location.href,
-				type: 'POST',
-				data: {'op': 'delete_all'},
-				success: function(data) {
-					data = JSON.parse(data);
-					refreshUserList(data['user_list']);
-				}
-			});
-		}
-	});
-
-	//	添加用户
-	$('button#add_new_user').click(function(){
-		var username = $('input#add_new_user').val();
-		$.ajax({
-			url: window.location.href,
-			type: 'POST',
-			data: {'op': 'add_new_user', 'username': username},
-			success: function(data) {
-				data = JSON.parse(data);
-				if (data['result'] == 'yes') {
-					refreshUserList(data['user_list']);
-					$('input#add_new_user').val('');
-					alert('添加成功！');
-					window.location.reload();
-				} else {
-					alert(data['result']);
-				}
+				refresh_user_list(data['user_list']);
 			}
 		});
 	});
@@ -365,20 +292,9 @@ $(document).ready(function(){
 				data: {'op': 'clear_all_sample'},
 				success: function(data) {
 					var data = JSON.parse(data);
-					refreshUserList(data['user_list']);
+					refresh_user_list(data['user_list']);
 				}
 			});
 		}
-	});
-
-	// 显示名单
-	$('button#list_add').click(function() {
-		window.location.href = '/user_list/?list=all';
-	});
-	$('button#list_sample').click(function() {
-		window.location.href = '/user_list/?list=sample';
-	});
-	$('button#list_single').click(function() {
-		window.location.href = '/user_list/?list=q' + $('input#query_single').val();
 	});
 });
