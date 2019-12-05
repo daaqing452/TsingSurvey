@@ -7,42 +7,52 @@
 
 
 <div class="col-md-offset-1 col-md-10 ">
-<h3 class="text-center"> 用户管理 </h3>
-<br/>
+<h3 class="text-center"> 样本管理 </h3>
 
 <table width="100%">
 	<tr>
 		<td>
-			<button class="btn btn-info btn-sm" type='all' onclick='exportt(this)'> 导出所有用户 </button>
-			<button class="btn btn-info btn-sm" type='sample' onclick='exportt(this)'> 导出样本名单 </button>
-		</td>
-		<td>
-			<button id='add_new_user' class="btn btn-info btn-sm"> 添加新用户 </button>
-			<input id="add_new_user" type="text" style="width:90px"/>
-		</td>
-		<td>
-			<a id='download'> </a>
-			<form enctype='multipart/form-data' action='/user_list/' method='post' style="margin:0px;display:inline;">
-			{% csrf_token %}
-			<input type='submit' value='上传名单' class="btn btn-info btn-sm" >
-			<input type='file' class="btn btn-sm" name='upload' style="margin:0px;display:inline;">
-			{% csrf_token %}
-			</form>
+			<button class="btn btn-success btn-sm" id='select_all'> 全选 </button>
+			<button class="btn btn-success btn-sm" id='select_none'> 全不选 </button>
+			<button class="btn btn-info btn-sm" id='sample_yes'> 设置为样本 </button>
+			<button class="btn btn-info btn-sm" id='sample_no'> 设置为非样本 </button>
+			<button class="btn btn-info btn-sm" id='clear_all_sample'> 清空所有样本 </button>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<br/>
-			<button class="btn btn-success btn-sm" id="select_all">全选</button>
-			<button class="btn btn-success btn-sm" id="select_none">全不选</button>
+		<br/>
+		<button class="btn btn-success btn-warning btn-sm" id='add_condition_sample'> 设置指定条件为样本 </button>
+		<select id='condition'></select>
+		<select id='condition_values'></select>
 		</td>
+	</tr>
+	<tr>
 		<td>
-			<br/>
-			<button class="btn btn-danger btn-sm" id='delete'> 删除用户 </button>
-			<button class="btn btn-danger btn-sm" id='delete_all'> 删除所有用户 </button>
+		<br/>
+		<button class="btn btn-sm btn-warning" id='auto_sample'> 自动筛选 </button>
+		<button class="btn btn-sm btn-warning" id='show_statistic'> 样本统计 </button>
+		<button class="btn btn-sm btn-warning" id='save_sample_list'> 保存样本列表 </button>
+		<button class="btn btn-sm btn-warning" id='add_constraint'> 添加筛选条件 </button>
+		<div id='constraint' style="margin:0px;display:inline;">
+			<!--<div type='clone' style='display:none'>
+				<select>
+					<option value='-1'> </option>
+				</select>
+				<input type='checkbox' name='checkbox_clone' style='display:none'/>
+				<span name='span_clone' style='display:none'> </span>
+			</div>-->
+			<select type='clone' style='display:none'>
+				<option value='-1'> </option>
+			</select>
+		</div>
+		抽样比例 <input type='text' id='upperbound' style='width:30px'/>%
+		<table id='statistic' class='table table-bordered'>
+			<tr type='clone'> </tr>
+		</table>
 		</td>
-		<td>
-			<br/>
+	<tr>
+		<td >
 			<button class="btn btn-sm btn-primary" id='list_add'> 显示全部 </button>
 			<button class="btn btn-sm btn-primary" id='list_sample'> 显示样本 </button>
 			<button class="btn btn-sm btn-primary" id='list_single'> 显示个人 </button>

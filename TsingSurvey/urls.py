@@ -29,11 +29,13 @@ urlpatterns = [
     url(r'^logout/$', logout),
     url(r'^index/$', index),
     url(r'^user_list/$', user_list),
+    url(r'^sample_list/$', sample_list),
     url(r'^admin_list/$', admin_list),
     url(r'^profile/(\d{1,10})/$', profile),
 
     url(r'^survey/(\d{1,10})/$', survey),
     url(r'^report/(\d{1,10})/$', report),
+    url(r'^survey_status/(\d{1,10})/$$', survey_status),
 
     url(r'^bonus/', bonus),
     url(r'^upload_file/', upload_file),

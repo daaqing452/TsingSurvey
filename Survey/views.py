@@ -298,6 +298,70 @@ def bonus(request):
 	rdata['credit'] = request.GET.get('credit', 0)
 	return render(request, 'bonus.html', rdata)
 
+def survey_status(request, qid):
+	if not request.user.is_authenticated:
+		return Utils.redirect_login(request)
+	rdata, op, suser = Utils.get_request_basis(request)
+	if not suser.admin_all:
+		return render(request, 'permission_denied.html', {})
+	rdata['qid'] = qid
+
+	questionaires = Questionaire.objects.filter(id=qid)
+	if len(questionaires) == 0:
+		rdata['info'] = '问卷不存在'
+		return render(request, 'survey_status.html', rdata)
+	questionaire = questionaires[0]
+
+	def add_column(d, filter0, suser, s):
+		val = eval('suser.' + s)
+		d[s] = val
+		if not val in filter0[s]:
+			filter0[s][val] = True
+
+	if op == 'get_list':
+		items = []
+		filter0 = json.loads(request.POST.get('filter', {}))
+		if len(filter0) == 0:
+			filter0 = {'submitted': {'是': True, '否': True}, 'username': ['', ''], 'submit_time': ['', ''], 'student_type': {}, 'political_status': {}, 'department': {}, 'enrollment_mode': {}}
+		answeraires = Answeraire.objects.filter(qid=qid)
+		for answeraire in answeraires:
+			d = {}
+			d['submitted'] = '是' if answeraire.submitted else '否'
+			d['username'] = answeraire.username
+			d['submit_time'] = answeraire.submit_time.strftime('%Y-%m-%d %H:%M:%S')
+			susers = SUser.objects.filter(username=answeraire.username)
+			if len(susers) > 0:
+				suser = susers[0]
+				d['uid'] = suser.id
+				add_column(d, filter0, suser, 'student_type')
+				add_column(d, filter0, suser, 'political_status')
+				add_column(d, filter0, suser, 'department')
+				add_column(d, filter0, suser, 'enrollment_mode')
+			else:
+				d['student_type'] = d['political_status'] = d['department'] = d['enrollment_mode'] = '已删除'
+			
+			addin = True
+			addin &= filter0['submitted'][d['submitted']]
+			if filter0['username'][0] != '': addin &= (filter0['username'][0] <= d['username'])
+			if filter0['username'][1] != '': addin &= (filter0['username'][1] >= d['username'])
+			if filter0['submit_time'][0] != '': addin &= (filter0['submit_time'][0] <= d['submit_time'])
+			if filter0['submit_time'][1] != '': addin &= (filter0['submit_time'][1] >= d['submit_time'])
+			addin &= filter0['student_type'][d['student_type']]
+			addin &= filter0['political_status'][d['political_status']]
+			addin &= filter0['department'][d['department']]
+			addin &= filter0['enrollment_mode'][d['enrollment_mode']]
+			if addin: items.append(d)
+
+		order = request.POST.get('order', '')
+		if_reversed = int(request.POST.get('reversed', 0))
+		if order != '':
+			items = sorted(items, key=lambda item: item[order], reverse=if_reversed)
+
+		return HttpResponse(json.dumps({'item_list': items, 'filter': filter0}))
+
+	return render(request, 'survey_status.html', rdata)
+
+
 
 def upload_file(request):
 	# 验证身份

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+	{% load static %}
+    {% block context %}
+<script src='{% static 'js/survey_status.js' %}'> </script>
+<script src='{% static 'js/survey_create.js' %}'> </script>
+<div class="col-md-offset-1 col-md-10 ">
+
+
+<h3 class="text-center"> 问卷详情：{{ qid }} </h3> 
+<p>{{ info }}</p>
+<br/>
+
+<div style="float:left">
+	<button id="filter_button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="filter_op()">筛选条件</button>
+</div>
+<br/>
+<br/>
+<br/>
+
+
+<table id="item_list" class="table table-hover">
+	<tr>
+		<td class="table_head" type="submitted">是否完成问卷</td>
+		<td class="table_head" type="username">学号</td>
+		<td class="table_head" type="submit_time">提交时间</td>
+		<td class="table_head" type="student_type">学生类别</td>
+		<td class="table_head" type="political_status">政治面貌</td>
+		<td class="table_head" type="department">院系所</td>
+		<td class="table_head" type="enrollment_mode">录取类别</td>
+	</tr>
+
+	<tr type="clone" style="display:none">
+		<td type="submitted">        clone_a </td>
+		<td> <a type="username">     clone_b </a> </td>
+		<td type="submit_time">      clone_c </td>
+		<td type="student_type">     clone_d </td>
+		<td type="political_status"> clone_e </td>
+		<td type="department">       clone_f </td>
+		<td type="enrollment_mode">  clone_g </td>
+	</tr>
+
+</table>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+      <div class="modal-dialog" style="width:800px">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+
+          </div>
+          <div class="modal-body" id="myModal_body"> 
+           
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default btn-lg" data-dismiss="modal" > 关闭 </button>
+            <button type="button" class="btn btn-primary btn-lg" onclick="renew_filter()">筛选</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<div>
+</div>
+
+    {% endblock context %}
