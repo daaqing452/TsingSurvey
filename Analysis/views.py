@@ -110,6 +110,7 @@ def export_base(questionaire, answeraires, reports, export_all=False):
 	# 写入excel
 	excel_name = 'media/' + time.strftime('%Y%m%d%H%M%S') + '-问卷结果.xlsx'
 	excel = xlsxwriter.Workbook(excel_name)
+	excel.encoding = 'utf8'
 	sheet1 = excel.add_worksheet('工作表1')
 	sheet2 = excel.add_worksheet('工作表2')
 	sheet3 = excel.add_worksheet('工作表3')

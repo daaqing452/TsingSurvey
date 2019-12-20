@@ -7,6 +7,7 @@ import time
 import collections
 import hashlib
 import json
+import xlsxwriter
 
 MAGIC_NUMBER = 456321887
 
@@ -130,3 +131,50 @@ def hash_md5(s):
 	h1 = hashlib.md5()
 	h1.update(s.encode(encoding='utf-8'))
 	return h1.hexdigest()
+
+def export_user_list(susers):
+	n_susers = len(susers)
+	excel_name = 'media/' + time.strftime('%Y%m%d%H%M%S') + '-用户名单.xlsx'
+	excel = xlsxwriter.Workbook(excel_name)
+	sheet1 = excel.add_worksheet('工作表1')
+	sheet2 = excel.add_worksheet('工作表2')
+	# 用户列表
+	sheet1.write(0, 0, '是否为样本')
+	for i in range(len(SUser.__var_chinese__)):
+		sheet1.write(0, i + 1, SUser.__var_chinese__[i])
+	row = 1
+	for row in range(n_susers):
+		suser = susers[row]
+		if suser.username == 'root': continue
+		sheet1.write(row, 0, suser.is_sample)
+		for i in range(len(SUser.__var_name__)):
+			s = 'sheet1.write(row, ' + str(i + 1) + ', suser.' + SUser.__var_name__[i] + ')'
+			eval(s)
+		row += 1
+
+	def get_statistic(susers):
+		fields = [6, 4, 33, 13]
+		cnt = {}
+		for suser in susers:
+			for field in fields:
+				key = SUser.__var_chinese__[field]
+				if not key in cnt: cnt[key] = {}
+				value = eval('suser.' + SUser.__var_name__[field])
+				if not value in cnt[key]: cnt[key][value] = 0
+				cnt[key][value] += 1
+		return cnt
+
+	# 统计用户列表
+	cnt = get_statistic(susers)
+	row = 0
+	for key in cnt:
+		sheet2.write(row, 0, key)
+		col = 1
+		for value in cnt[key]:
+			sheet2.write(row + 1, col, value)
+			sheet2.write(row + 2, col, cnt[key][value])
+			sheet2.write(row + 3, col, str(round(100.0 * cnt[key][value] / n_susers, 1)) + '%')
+			col += 1
+		row += 5
+	excel.close()
+	return excel_name

@@ -142,13 +142,13 @@ def user_list(request):
 		else:
 			pass
 		n_susers = len(susers)
-		page_s = (page_n - 1) * ITEM_PER_PAGE
-		page_t = min(page_s + ITEM_PER_PAGE, n_susers)
 		rdata['page_current'] = page_n
 		rdata['page_max'] = (n_susers - 1) / ITEM_PER_PAGE + 1
+		page_s = (page_n - 1) * ITEM_PER_PAGE
+		page_t = min(page_s + ITEM_PER_PAGE, n_susers)
 		return [{'uid': suser.uid, 'username': suser.username, 'name': suser.name, 'is_sample': suser.is_sample, 'credit': suser.credit} for suser in susers[page_s:page_t] ]
 
-	# 加载
+	# 导入
 	if op == 'load':
 		return HttpResponse(json.dumps({'user_list': get_suser_list()}))
 
@@ -258,41 +258,14 @@ def user_list(request):
 			susers = SUser.objects.filter(is_sample=True)
 		else:
 			susers = []
-		n_susers = len(susers)
-		excel_name = 'media/' + time.strftime('%Y%m%d%H%M%S') + '-用户名单.xlsx'
-		excel = xlsxwriter.Workbook(excel_name)
-		sheet1 = excel.add_worksheet('工作表1')
-		sheet2 = excel.add_worksheet('工作表2')
-		# 用户列表
-		sheet1.write(0, 0, '是否为样本')
-		for i in range(len(SUser.__var_chinese__)):
-			sheet1.write(0, i + 1, SUser.__var_chinese__[i])
-		row = 1
-		for row in range(n_susers):
-			suser = susers[row]
-			if suser.username == 'root': continue
-			sheet1.write(row, 0, suser.is_sample)
-			for i in range(len(SUser.__var_name__)):
-				s = 'sheet1.write(row, ' + str(i + 1) + ', suser.' + SUser.__var_name__[i] + ')'
-				eval(s)
-			row += 1
-		# 统计用户列表
-		cnt = get_statistic(susers)
-		row = 0
-		for key in cnt:
-			sheet2.write(row, 0, key)
-			col = 1
-			for value in cnt[key]:
-				sheet2.write(row + 1, col, value)
-				sheet2.write(row + 2, col, cnt[key][value])
-				sheet2.write(row + 3, col, str(round(100.0 * cnt[key][value] / n_susers, 1)) + '%')
-				col += 1
-			row += 5
-		excel.close()
+		excel_name = Utils.export_user_list(susers)
 		return HttpResponse(json.dumps({'export_path': excel_name}))
 
-	rdata['user_list'] = get_suser_list()
+	get_suser_list()
 	return render(request, 'user_list.html', rdata)
+
+
+temp_list = []
 
 def sample_list(request):
 	# 验证身份
@@ -303,46 +276,52 @@ def sample_list(request):
 		return render(request, 'permission_denied.html', {})
 
 	ITEM_PER_PAGE = 50
-	lis = request.GET.get('list', 'all')
+	sample_list_id = int(request.GET.get('samplelist', -1))
+	if sample_list_id == -1:
+		sample_list = None
+		sample_list_susers = []
+	else:
+		sample_list = SampleList.objects.get(id=sample_list_id)
+		sample_list_susers = json.loads(sample_list.sample_list)
 	page_n = int(request.GET.get('page', 1))
 
 	def get_suser_list():
-		susers = []
-		if lis == 'all':
-			susers = SUser.objects.order_by('id')
-		elif lis == 'sample':
-			susers = SUser.objects.filter(is_sample=True).order_by('id')
-		elif lis[0] == 'q':
-			susers = SUser.objects.filter(username=lis[1:])
-		else:
-			pass
+		susers = SUser.objects.order_by('id')
 		n_susers = len(susers)
 		page_s = (page_n - 1) * ITEM_PER_PAGE
 		page_t = min(page_s + ITEM_PER_PAGE, n_susers)
 		rdata['page_current'] = page_n
 		rdata['page_max'] = (n_susers - 1) / ITEM_PER_PAGE + 1
-		return [{'uid': suser.uid, 'username': suser.username, 'name': suser.name, 'is_sample': suser.is_sample, 'credit': suser.credit} for suser in susers[page_s:page_t] ]
+		return [{'uid': suser.id, 'username': suser.username, 'name': suser.name, 'is_sample': suser.id in sample_list_susers, 'credit': suser.credit} for suser in susers[page_s:page_t] ]
 
-	def get_statistic(susers):
-		fields = [6, 4, 33, 13]
-		cnt = {}
-		for suser in susers:
-			for field in fields:
-				key = SUser.__var_chinese__[field]
-				if not key in cnt: cnt[key] = {}
-				value = eval('suser.' + SUser.__var_name__[field])
-				if not value in cnt[key]: cnt[key][value] = 0
-				cnt[key][value] += 1
-		return cnt
-
-	# 加载
+	# 导入
 	if op == 'load':
-		return HttpResponse(json.dumps({'user_list': get_suser_list()}))
+		return HttpResponse(json.dumps({'user_list': get_suser_list(), 'sample_list_size'}))
 
+	# 获取用户列表
 	if op == 'get_sample_list':
 		sample_lists = SampleList.objects.all()
 		sample_list_array = [{'id': sample_list.id, 'name': sample_list.name} for sample_list in sample_lists]
-		return HttpResponse(json.dumps({'sample_lists': sample_list_array}))
+		return HttpResponse(json.dumps({'sample_lists': sample_list_array, 'sample_list_id': sample_list_id}))
+
+	# 新建用户列表
+	if op == 'new_sample_list':
+		name = request.POST.get('sample_list_name', '')
+		if name == '': name = time.strftime('%Y%m%d%H%M%S')
+		sample_list = SampleList.objects.create(name=name, sample_list='[]')
+		return HttpResponse(json.dumps({'id': sample_list.id, 'name': sample_list.name}))
+
+	# 保存样本列表
+	if op == 'save_sample_list':
+		name = request.POST.get('sample_list_name', '')
+		if name == '': name = time.strftime('%Y%m%d%H%M%S')
+		suser_id_list = [suser.id for suser in SUser.objects.filter(is_sample=True)]
+		SampleList.objects.create(name=name, sample_list=json.dumps(suser_id_list))
+		return HttpResponse(json.dumps({}))
+
+	if op == 'export_sample_list':
+
+		return HttpResponse(json.dumps({'export_path': excel_name}))
 
 	# 获得用户字段
 	if op == 'get_field_chinese':
@@ -398,14 +377,6 @@ def sample_list(request):
 		cnt = get_statistic(susers)
 		return HttpResponse(json.dumps({'statistic': cnt, 'n_susers': len(susers)}))
 
-	# 保存样本列表
-	if op == 'save_sample_list':
-		name = request.POST.get('sample_list_name', '')
-		if name == '': name = time.strftime('%Y%m%d%H%M%S')
-		suser_id_list = [suser.id for suser in SUser.objects.filter(is_sample=True)]
-		SampleList.objects.create(name=name, sample_list=json.dumps(suser_id_list))
-		return HttpResponse(json.dumps({}))
-
 	# 设置为样本
 	if op == 'sample_yes':
 		username_list = json.loads(request.POST.get('username_list'))
@@ -433,6 +404,7 @@ def sample_list(request):
 		SUser.objects.all().update(is_sample=False)
 		return HttpResponse(json.dumps({}))
 
+	get_suser_list()
 	return render(request, 'sample_list.html', rdata)
 
 def admin_list(request):

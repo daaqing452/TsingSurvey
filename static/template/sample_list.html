@@ -13,10 +13,14 @@
 	<tr>
 		<td>
 			<br/>
-			<select id='sample_lists' style='float:right;height: 30px;'>
-	            <option value='-1'> 请选择样本列表 </option>
-	        </select>
-			<button class="btn btn-sm btn-primary" id='save_sample_list'> 保存样本列表 </button>
+			<b>当前样本列表：</b><select id='sample_lists'></select>
+			&nbsp;&nbsp;&nbsp;
+			<b>样本容量：</b><span id="sample_list_size"></span>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<button class="btn btn-sm btn-primary" id='new_sample_list'> 新建 </button>
+			<button class="btn btn-sm btn-primary" id='save_sample_list'> 保存 </button>
+			<button class="btn btn-sm btn-primary" id='export_sample_list'> 导出 </button>
+			<button class="btn btn-sm btn-danger" id='delete_sample_list'> 删除 </button>
 		</td>
 	</tr>
 	<tr>
@@ -43,6 +47,7 @@
 			<button class="btn btn-sm btn-warning" id='auto_sample'> 自动筛选 </button>
 			<button class="btn btn-sm btn-warning" id='show_statistic'> 样本统计 </button>
 			<button class="btn btn-sm btn-warning" id='add_constraint'> 添加筛选条件 </button>
+			<button class="btn btn-sm btn-warning" id=""> 清空当前列表并重新抽样 </button>
 			<div id='constraint' style="margin:0px;display:inline;">
 				<!--<div type='clone' style='display:none'>
 					<select>
@@ -103,7 +108,8 @@
         			if (arr[0] == 'list') list = arr[1];
         		}
         	}
-            window.location.href = '/user_list/?list=' + list + '&page=' + page_n;
+        	var sample_list_id = $("select#sample_lists").val();
+            window.location.href = '/sample_list/?samplelist=' + sample_list_id + '&list=' + list + '&page=' + page_n;
         }
     });
 </script>

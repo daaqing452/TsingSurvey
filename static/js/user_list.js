@@ -15,7 +15,7 @@ function refreshUserList(user_list) {
 		tr.find('[type="username"]').text(username);
 		tr.find('[type="username"]').attr('href', '/profile/' + uid + '/');
 		tr.find('[type="name"]').text(name);
-		tr.find('[type="is_sample"]').text(is_sample);
+		//tr.find('[type="is_sample"]').text(is_sample);
 		tr.find('[type="credit"]').text(credit);
 		tr.show();
 		tbody.append(tr);
