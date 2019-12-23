@@ -145,7 +145,7 @@ def export_user_list(susers):
 	row = 1
 	for row in range(n_susers):
 		suser = susers[row]
-		if suser.username == 'root': continue
+		# if suser.username == 'root': continue
 		sheet1.write(row, 0, suser.is_sample)
 		for i in range(len(SUser.__var_name__)):
 			s = 'sheet1.write(row, ' + str(i + 1) + ', suser.' + SUser.__var_name__[i] + ')'
@@ -153,7 +153,8 @@ def export_user_list(susers):
 		row += 1
 
 	def get_statistic(susers):
-		fields = [6, 4, 33, 13]
+		# gender, student_type, department, policical_status, enrollment_mode
+		fields = [6, 4, 33, 13, 40]
 		cnt = {}
 		for suser in susers:
 			for field in fields:

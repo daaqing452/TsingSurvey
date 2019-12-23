@@ -23,70 +23,9 @@ function refresh_user_list(user_list) {
 }
 
 // 刷新样本列表
-function refresh_sample_list() {
-	$.ajax({
-		url: window.location.href,
-		type: 'POST',
-		data: {'op': 'get_sample_list'},
-		success: function(data) {
-			data = JSON.parse(data);
-			sample_lists = data['sample_lists'];
-			var select = $('select#sample_lists');
-			select.empty();
-			select.append("<option value='-1'> 请选择样本列表 </option>");
-			for (var i in sample_lists) {
-				var sample_list = sample_lists[i];
-				select.append("<option value='" + sample_list['id'] + "'> " + sample_list['name'] + ' </option>');
-			}
-			select.val(data['sample_list_id']);
-		}
-	});
+function refresh_sample_list(sample_lists, sample_list_id) {
+	
 }
-
-/*function show_statistic(obj) {
-	var button = $(obj);
-	var select = button.parent().children('select');
-	var option = select.find('option:selected');
-	$.ajax({
-		url: window.location.href,
-		type: 'POST',
-		data: {'op': 'show_statistic', 'index': option.val()},
-		success: function(data) {
-			data = JSON.parse(data);
-			button.parent().children('span').text(JSON.stringify(data['result']));
-		}
-	});
-}*/
-
-/*function constraint_select_change(obj) {
-	var select = $(obj);
-	var option = select.find('option:selected');
-	$.ajax({
-		url: window.location.href,
-		type: 'POST',
-		data: {'op': 'constraint_select_change', 'index': option.val()},
-		success: function(data) {
-			data = JSON.parse(data);
-			var values = data['values'];
-			var div = select.parent();
-			div.attr('value', data['index']);
-			div.children('[name="item"]').remove();
-			for (i in values) {
-				var input = div.children('[name="checkbox_clone"]').clone();
-				input.attr('name', 'item');
-				input.val(values[i]);
-				input.show();
-				var span = div.children('[name="span_clone"]').clone();
-				span.attr('name', 'item');
-				span.append(values[i]);
-				span.append('&nbsp;&nbsp;&nbsp;');
-				span.show();
-				div.append(input);
-				div.append(span);
-			}
-		}
-	});
-}*/
 
 $(document).ready(function(){
 
@@ -98,14 +37,40 @@ $(document).ready(function(){
 		success: function(data) {
 			var data = JSON.parse(data);
 			refresh_user_list(data['user_list']);
-			refresh_sample_list();
 			$('span#sample_list_size').text(data['sample_list_size']);
+
+			var sample_lists = data['sample_lists'];
+			var sample_list_id = data['sample_list_id'];
+			var select = $('select#sample_lists');
+			select.empty();
+			select.append("<option value='-1'> 请选择样本列表 </option>");
+			for (var i in sample_lists) {
+				var sample_list = sample_lists[i];
+				select.append("<option value='" + sample_list['id'] + "'> " + sample_list['name'] + " </option>");
+			}
+			select.val(sample_list_id);
+
+			var show_statistic_options = data['show_statistic_options'];
+			var select = $('select#show_statistic_select');
+			select.empty();
+			for (var i in show_statistic_options) {
+				var option_t = show_statistic_options[i];
+				select.append("<option value='" + option_t[0] + "'> " + option_t[1] + " </option>");
+			}
 		}
 	});
 
 	// 更改样本列表
 	$("select#sample_lists").change(function() {
 		var sample_list_id = $("select#sample_lists").val();
+		$.ajax({
+			url: window.location.href,
+			type: 'POST',
+			data: {'op': 'change_sample_list'},
+			success: function(data) {
+				// do nothing
+			}
+		});
 		window.location.href = '/sample_list/?samplelist=' + sample_list_id;
 	});
 
@@ -118,37 +83,91 @@ $(document).ready(function(){
 			data: {'op': 'new_sample_list', 'sample_list_name': sample_list_name},
 			success: function(data) {
 				data = JSON.parse(data);
-				$('select#sample_lists').append("<option value='" + data['id'] + "'>" + data['name'] + "</option>");
-				$('select#sample_lists').val(data['id']);
+				var sample_list_id = data['id'];
+				window.location.href = '/sample_list/?samplelist=' + sample_list_id;
 			}
 		});
 	});
 
+	// 保存样本列表
+	$('button#save_sample_list').click(function() {
+		var sample_list_id = $('select#sample_lists').val();
+		var sample_list_name = $('select#sample_lists').find('option:selected').text();
+		if (sample_list_id == -1) {
+			alert('请选择样本列表');
+		} else {
+			if (confirm('确认要保存到当前列表（' + sample_list_name + '）吗？')) {
+				$.ajax({
+					url: window.location.href,
+					type: 'POST',
+					data: {'op': 'save_sample_list'},
+					success: function(data) {
+						data = JSON.parse(data);
+						alert(data['info']);
+						window.location.reload();
+					}
+				});
+			}
+		}
+	});
+
 	// 导出样本列表
 	$('button#export_sample_list').click(function() {
-
+		var sample_list_id = $('select#sample_lists').val();
+		if (sample_list_id == -1) {
+			alert('请选择样本列表');
+		} else {
+			$.ajax({
+				url: window.location.href,
+				type: 'POST',
+				data: {'op': 'export_sample_list'},
+				success: function(data) {
+					data = JSON.parse(data)
+					export_path = '/' + data['export_path'];
+					$('a#download').attr('href', export_path);
+					document.getElementById("download").click();
+				}
+			});
+		}
 	});
 
 	// 删除样本列表
 	$('button#delete_sample_list').click(function() {
-
+		var sample_list_id = $('select#sample_lists').val();
+		var sample_list_name = $('select#sample_lists').find('option:selected').text();
+		if (sample_list_id == -1) {
+			alert('请选择样本列表');
+		} else {
+			if (confirm('确认删除当前样本列表（' + sample_list_name + '）吗')) {
+				$.ajax({
+					url: window.location.href,
+					type: 'POST',
+					data: {'op': 'delete_sample_list'},
+					success: function(data) {
+						data = JSON.parse(data);
+						alert(data['info']);
+						window.location.href = '/sample_list/';
+					}
+				});
+			}
+		}
 	});
 
-	//	全选
+	// 全选
 	$('button#select_all').click(function(){
 		$('input[username]').each(function(){
 			$(this).prop('checked', true);
 		});
 	});
 
-	//	全不选
+	// 全不选
 	$('button#select_none').click(function(){
 		$('input[username]').each(function(){
 			$(this).prop('checked', false);
 		});
 	});
 
-	//	设置为样本
+	// 设置为样本
 	$('button#sample_yes').click(function(){
 		username_list = new Array();
 		$('input[username]:checked').each(function(){
@@ -157,7 +176,7 @@ $(document).ready(function(){
 		$.ajax({
 			url: window.location.href,
 			type: 'POST',
-			data: {'op': 'sample_yes', 'username_list': JSON.stringify(username_list)},
+			data: {'op': 'sample_yes', 'usernames': JSON.stringify(username_list)},
 			success: function(data) {
 				data = JSON.parse(data);
 				refresh_user_list(data['user_list']);
@@ -165,7 +184,7 @@ $(document).ready(function(){
 		});
 	});
 
-	//	设置为非样本
+	// 设置为非样本
 	$('button#sample_no').click(function(){
 		username_list = new Array();
 		$('input[username]:checked').each(function(){
@@ -174,7 +193,7 @@ $(document).ready(function(){
 		$.ajax({
 			url: window.location.href,
 			type: 'POST',
-			data: {'op': 'sample_no', 'username_list': JSON.stringify(username_list)},
+			data: {'op': 'sample_no', 'usernames': JSON.stringify(username_list)},
 			success: function(data) {
 				data = JSON.parse(data);
 				refresh_user_list(data['user_list']);
@@ -182,89 +201,17 @@ $(document).ready(function(){
 		});
 	});
 
-	// 添加样本限制条件
-	$('button#add_constraint').click(function(){
+	// 显示统计
+	$('button#show_statistic').click(function() {
+		var field = $('select#show_statistic_select').val();
 		$.ajax({
 			url: window.location.href,
 			type: 'POST',
-			data: {'op': 'get_field_chinese'},
+			data: {'op': 'show_statistic', 'field': field},
 			success: function(data) {
 				data = JSON.parse(data);
-				options = data['options'];
-				var div = $('div#constraint');
-				var select = div.children('[type="clone"]').clone();
-				select.attr('type', 'item');
-				var a = new Array(33, 4, 6, 9, 13, 40);
-				for (var j in a) {
-					var i = a[j];
-					select.append('<option value="' + i + '">' + options[i] + '</option>');
-				}
-				select.show();
-				div.append(select);
+				alert(data['res']);
 			}
 		});
-	});
-
-	//	自动筛选
-	$('button#auto_sample').click(function() {
-		var constraints = [];
-		var div = $('div#constraint');
-		div.children('[type="item"]').each(function() {
-			var value = $(this).val();
-			if (value == -1) return;
-			constraints.push(value);
-		});
-		$.ajax({
-			url: window.location.href,
-			type: 'POST',
-			data: {'op': 'auto_sample', 'constraints': JSON.stringify(constraints), 'upperbound': $('input#upperbound').val()},
-			success: function(data) {
-				data = JSON.parse(data);
-				window.location.href='/user_list/?list=all';
-			}
-		});
-	});
-
-	// 添加统计
-	$('button#show_statistic').click(function(){
-		$.ajax({
-			url: window.location.href,
-			type: 'POST',
-			data: {'op': 'show_statistic'},
-			success: function(data) {
-				data = JSON.parse(data);
-				statistic = data['statistic'];
-				n_susers = parseInt(data['n_susers']);
-				var table = $('table#statistic');
-				for (var key in statistic) {
-					var tr = table.find('[type="clone"]').clone();
-					tr.attr('type', 'item');
-					values = statistic[key];
-					tr.append('<td>' + key + '</td>');
-					for (var value in values) {
-						s = '<td>' + value + ': ';
-						var d = parseInt(values[value]);
-						s += d + ' (' + (100.0 * d / n_susers) + '%) </td>';
-						tr.append(s);
-					}
-					table.append(tr);
-				}
-			}
-		});
-	});
-
-	// 清空所有样本
-	$('button#clear_all_sample').click(function() {
-		if (confirm('确认清空所有的样本？')) {
-			$.ajax({
-				url: window.location.href,
-				type: 'POST',
-				data: {'op': 'clear_all_sample'},
-				success: function(data) {
-					var data = JSON.parse(data);
-					refresh_user_list(data['user_list']);
-				}
-			});
-		}
 	});
 });

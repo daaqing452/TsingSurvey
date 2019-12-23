@@ -21,48 +21,50 @@
 			<button class="btn btn-sm btn-primary" id='save_sample_list'> 保存 </button>
 			<button class="btn btn-sm btn-primary" id='export_sample_list'> 导出 </button>
 			<button class="btn btn-sm btn-danger" id='delete_sample_list'> 删除 </button>
+			<a id='download'> </a>
 		</td>
 	</tr>
 	<tr>
 		<td>
 			<br/>
-			<button class="btn btn-success btn-sm" id='select_all'> 全选 </button>
-			<button class="btn btn-success btn-sm" id='select_none'> 全不选 </button>
+			<!--<button class="btn btn-success btn-sm" id='select_all'> 全选 </button>
+			<button class="btn btn-success btn-sm" id='select_none'> 全不选 </button>-->
 			<button class="btn btn-info btn-sm" id='sample_yes'> 设置为样本 </button>
 			<button class="btn btn-info btn-sm" id='sample_no'> 设置为非样本 </button>
-			<button class="btn btn-info btn-sm" id='clear_all_sample'> 清空所有样本 </button>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<br/>
-			<button class="btn btn-success btn-warning btn-sm" id='add_condition_sample'> 设置指定条件为样本 </button>
-			<select id='condition'></select>
-			<select id='condition_values'></select>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<select id='show_statistic_select'></select>
+			<button class="btn btn-success btn-sm" id='show_statistic'> 样本信息统计 </button>
 		</td>
 	</tr>
 	<tr>
 		<td>
 		<br/>
-			<button class="btn btn-sm btn-warning" id='auto_sample'> 自动筛选 </button>
-			<button class="btn btn-sm btn-warning" id='show_statistic'> 样本统计 </button>
-			<button class="btn btn-sm btn-warning" id='add_constraint'> 添加筛选条件 </button>
-			<button class="btn btn-sm btn-warning" id=""> 清空当前列表并重新抽样 </button>
-			<div id='constraint' style="margin:0px;display:inline;">
-				<!--<div type='clone' style='display:none'>
-					<select>
-						<option value='-1'> </option>
-					</select>
-					<input type='checkbox' name='checkbox_clone' style='display:none'/>
-					<span name='span_clone' style='display:none'> </span>
-				</div>-->
-				<select type='clone' style='display:none'>
-					<option value='-1'> </option>
-				</select>
-			</div>
-			抽样比例 <input type='text' id='upperbound' style='width:30px'/>%
-			<table id='statistic' class='table table-bordered'>
-				<tr type='clone'> </tr>
+			<button class="btn btn-sm btn-warning" id="add_constraint"> 添加抽样条件 </button>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;抽样比例：抽出满足上述条件
+			<input type='text' id='ratio_autosampling' style='width:30px'/>%的样本
+			<button class="btn btn-sm btn-warning" id="autosampling"> 开始抽样 </button>
+			<br/>
+			<table id='constraint' style="margin:0px;display:inline;">
+				<tr type='clone'>
+					<td>
+						<select>
+							<option value='and'>and</option>
+							<option value='or'>or</option>
+						</select>
+					</td>
+					<td>
+						<select>
+							<option value='-1'> </option>
+						</select>
+					</td>
+					<td>
+						<input type='radio' name='eq' /> &gt;
+						<input type='radio' name='eq' /> =
+						<input type='radio' name='eq' /> &lt;
+						<input type='radio' name='eq' /> !=
+						<input type='text'/>
+					</td>
+				<tr>
 			</table>
 		</td>
 </table>
