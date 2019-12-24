@@ -5,7 +5,7 @@
 <link href='{% static 'css/jpage.css' %}' rel='stylesheet'>
 <script src='{% static 'js/sample_list.js' %}'> </script>
 
-
+<title>样本管理</title>
 <div class="col-md-offset-1 col-md-10 ">
 <h3 class="text-center"> 样本管理 </h3>
 
@@ -45,23 +45,22 @@
 			<button class="btn btn-sm btn-warning" id="autosampling"> 开始抽样 </button>
 			<br/>
 			<table id='constraint' style="margin:0px;display:inline;">
-				<tr type='clone'>
+				<tr type='clone' style="display:none">
 					<td>
-						<select>
+						<select id="operator">
 							<option value='and'>and</option>
 							<option value='or'>or</option>
 						</select>
 					</td>
 					<td>
-						<select>
-							<option value='-1'> </option>
+						<select id="field">
 						</select>
 					</td>
 					<td>
-						<input type='radio' name='eq' /> &gt;
-						<input type='radio' name='eq' /> =
-						<input type='radio' name='eq' /> &lt;
-						<input type='radio' name='eq' /> !=
+						<input type='radio' value='gt' /> &gt;
+						<input type='radio' value='eq' /> =
+						<input type='radio' value='lt' /> &lt;
+						<input type='radio' value='neq' /> !=
 						<input type='text'/>
 					</td>
 				<tr>

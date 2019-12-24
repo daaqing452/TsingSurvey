@@ -7,15 +7,14 @@ function refreshUserList(user_list) {
 		var username = user_list[i]['username'];
 		var name = user_list[i]['name'];
 		var credit = user_list[i]['credit']
-		var is_sample = '√';
-		if (user_list[i]['is_sample'] == 0) is_sample = '';
+		var department = user_list[i]['department'];
 		var tr = tbody.find('[type="clone"]').clone();
 		tr.attr('type', 'item');
 		tr.find('[type="checkbox"]').attr('username', username);
 		tr.find('[type="username"]').text(username);
 		tr.find('[type="username"]').attr('href', '/profile/' + uid + '/');
 		tr.find('[type="name"]').text(name);
-		//tr.find('[type="is_sample"]').text(is_sample);
+		tr.find('[type="department"]').text(department);
 		tr.find('[type="credit"]').text(credit);
 		tr.show();
 		tbody.append(tr);

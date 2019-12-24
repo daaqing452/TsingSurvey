@@ -146,7 +146,7 @@ def user_list(request):
 		rdata['page_max'] = (n_susers - 1) / ITEM_PER_PAGE + 1
 		page_s = (page_n - 1) * ITEM_PER_PAGE
 		page_t = min(page_s + ITEM_PER_PAGE, n_susers)
-		return [{'uid': suser.uid, 'username': suser.username, 'name': suser.name, 'is_sample': suser.is_sample, 'credit': suser.credit} for suser in susers[page_s:page_t] ]
+		return [{'uid': suser.uid, 'username': suser.username, 'name': suser.name, 'department': suser.department, 'credit': suser.credit} for suser in susers[page_s:page_t] ]
 
 	# 导入
 	if op == 'load':
@@ -310,6 +310,7 @@ def sample_list(request):
 		# gender, student_type, department, policical_status, enrollment_mode
 		show_statistic_option_ids = [6, 4, 33, 13, 40]
 		jdata['show_statistic_options'] = [[SUser.__var_name__[i], SUser.__var_chinese__[i]] for i in show_statistic_option_ids]
+		jdata['constraint_options'] = [[SUser.__var_name__[i], SUser.__var_chinese__[i]] for i in range(len(SUser.__var_name__))]
 		return HttpResponse(json.dumps(jdata))
 
 	# 更改样本列表
@@ -397,6 +398,27 @@ def sample_list(request):
 			jdata['res'] = '错误'
 		return HttpResponse(json.dumps(jdata))
 
+	if op == 'autosampling':
+		constraints = json.loads(request.POST.get('constraints'))
+		ratio = int(request.POST.get('ratio')) / 100.0;
+		cmd = ''
+		for i in range(len(constraints)):
+			c = constraints[i]
+			if i > 0:
+				if c[0] == 'and': cmd += ' & '
+				if c[0] == 'or':  cmd += ' | '
+			if c[2] == 'gt':
+				cmd += 'Q(' + c[1] + '__gt="' + c[3] + '")'
+			elif c[2] == 'lt':
+				cmd += 'Q(' + c[1] + '__lt="' + c[3] + '")'
+			elif c[2] == 'eq':
+				cmd += 'Q(' + c[1] + '="' + c[3] + '")'
+			elif c[2] == 'neq':
+				cmd += '~Q(' + c[1] + '="' + c[3] + '")'
+		print(cmd)
+		xxx
+
+
 	'''# 自动样本生成
 	if op == 'auto_sample':
 		# 构造命令
@@ -426,7 +448,7 @@ def sample_list(request):
 				suser.is_sample = True
 				suser.save()
 		return HttpResponse(json.dumps({}))'''
-	
+
 	return render(request, 'sample_list.html', rdata)
 
 def admin_list(request):

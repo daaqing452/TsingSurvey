@@ -22,10 +22,8 @@ function refresh_user_list(user_list) {
 	}
 }
 
-// 刷新样本列表
-function refresh_sample_list(sample_lists, sample_list_id) {
-	
-}
+var constraint_options = [];
+var n_constrain = 0;
 
 $(document).ready(function(){
 
@@ -57,6 +55,8 @@ $(document).ready(function(){
 				var option_t = show_statistic_options[i];
 				select.append("<option value='" + option_t[0] + "'> " + option_t[1] + " </option>");
 			}
+
+			constraint_options = data['constraint_options'];
 		}
 	});
 
@@ -211,6 +211,62 @@ $(document).ready(function(){
 			success: function(data) {
 				data = JSON.parse(data);
 				alert(data['res']);
+			}
+		});
+	});
+
+	// 添加抽样条件
+	$('button#add_constraint').click(function() {
+		n_constrain++;
+		var tbody = $('table#constraint').children('tbody');
+		var tr = tbody.find('[type="clone"]').clone();
+		tr.attr('type', 'item');
+		tr.attr('row', n_constrain);
+		if (n_constrain == 1) tr.find('select#operator').hide();
+		var select = tr.find('select#field');
+		for (var i in constraint_options) {
+			select.append("<option value='" + constraint_options[i][0] + "'>" + constraint_options[i][1] + "</option>");
+		}
+		tr.find('input:radio').attr('name', 'cmp' + n_constrain);
+		tr.show();
+		tbody.append(tr);
+	});
+
+	// 开始抽样
+	$('button#autosampling').click(function() {
+		var tbody = $('table#constraint').children('tbody');
+		var l = [];
+		var feedback = '';
+		tbody.find('tr[type="item"]').each(function() {
+			var tr = $(this);
+			var tr_row = tr.attr('row');
+			var operator = tr.find('select#operator').val();
+			var field = tr.find('select#field').val();
+			var cmp = tr.find('input:radio[name=cmp' + tr_row + ']:checked').val();
+			if (cmp == null) feedback += '请选择第' + tr_row + '行的比较符号\n';
+			var value = tr.find('input:text').val();
+			if (value == '') feedback += '请填写第' + tr_row + '行的数据值\n';
+			l.push([operator, field, cmp, value]);
+		});
+		var ratio = $("input#ratio_autosampling").val();
+		var num_pattern = new RegExp("^[1-9][0-9]{0,2}$");
+		if (num_pattern.test(ratio) == false) {
+			feedback += '请输入合法的正整数';
+		} else {
+			ratio = parseInt(ratio);
+			if (ratio <= 0 || ratio > 100) feedback += '请输入1到100之间的整数';
+		}
+		if (feedback != '') {
+			alert(feedback);
+			return;
+		}
+		console.log(l);
+		$.ajax({
+			url: window.location.href,
+			type: 'POST',
+			data: {'op': 'autosampling', 'constraints': JSON.stringify(l), 'ratio': ratio},
+			success: function(data) {
+				data = JSON.parse(data);
 			}
 		});
 	});
