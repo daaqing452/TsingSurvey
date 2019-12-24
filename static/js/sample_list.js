@@ -267,6 +267,12 @@ $(document).ready(function(){
 			data: {'op': 'autosampling', 'constraints': JSON.stringify(l), 'ratio': ratio},
 			success: function(data) {
 				data = JSON.parse(data);
+				if (data['res'] == 'yes') {
+					alert('自动抽样得到' + data['n_sample'] + '位样本');
+					refresh_user_list(data['user_list']);
+				} else {
+					alert(data['res']);
+				}
 			}
 		});
 	});
