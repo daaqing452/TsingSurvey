@@ -22,7 +22,7 @@ function delete_questionaire(obj) {
 			data: {'op': 'delete'},
 			success: function(data) {
 				data = JSON.parse(data);
-				td.parent().remove();
+				td.parent().parent().remove();
 			}
 		});
 	}

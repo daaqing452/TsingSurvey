@@ -30,7 +30,7 @@
 		{% if editable %}
 		<td align=center> 问卷状态 </td>
 		<td align=center> 填写进度 </td>
-		<td align=center colspan="5"> 编辑操作 </td>
+		<td align=center> 编辑操作 </td>
 		{% endif %}
 	</tr>
 	{% for rq in rq_list %}
@@ -45,14 +45,18 @@
 			{% if rq.editable %}
 			<td align=center> {{ rq.status }} </td>
 			<td align=center> <a href='/survey_status/{{ rq.id }}/'> {{ rq.submitted_number }}/{{ rq.filled_number }}  </a> </td>
-			<td qid='{{ rq.id }}' onclick='delete_questionaire(this)'> <!--<span class='glyphicon glyphicon-remove'> </span>--><button class="btn btn-sm btn-danger">删除</button> </td>
-			<td qid='{{ rq.id }}' onclick='copy_questionaire(this)'> <!--<span class='glyphicon glyphicon-plus'> </span>--><button class="btn btn-sm btn-success">复制</button> </td>
-			<td qid='{{ rq.id }}' onclick='export_index(this)'> <!--<span class='glyphicon glyphicon-arrow-down'> </span>--><button class="btn btn-sm btn-success">导出已填</button> </td>
-			<td qid='{{ rq.id }}' onclick='export_all_index(this)'> <!--<span class='glyphicon glyphicon-sort-by-attributes'> </span>--><button class="btn btn-sm btn-success">导出所有</button> </td>
-			<td> <a id='{{ rq.id }}download'> </a> </td>
+			<td>
+			<button class="btn btn-xs btn-danger" qid='{{ rq.id }}' onclick='delete_questionaire(this)'>删除</button>
+			<button class="btn btn-xs btn-success" qid='{{ rq.id }}' onclick='copy_questionaire(this)'>复制</button>
+			<button class="btn btn-xs btn-success" qid='{{ rq.id }}' onclick='export_index(this)'>导出已填</button>
+			<button class="btn btn-xs btn-success" qid='{{ rq.id }}' onclick='export_all_index(this)'>导出所有</button>
+			<!--<span class='glyphicon glyphicon-remove'> </span>-->
+			<!--<span class='glyphicon glyphicon-plus'> </span>-->
+			<!--<span class='glyphicon glyphicon-arrow-down'> </span>-->
+			<!--<span class='glyphicon glyphicon-sort-by-attributes'> </span>-->
+			<a id='{{ rq.id }}download'> </a>
+			</td>
 			{% else %}
-			<td></td>
-			<td></td>
 			<td></td>
 			<td></td>
 			<td></td>
