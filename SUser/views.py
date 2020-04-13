@@ -188,7 +188,8 @@ def user_list(request):
 		if len(susers) > 0:
 			result = '用户名已存在'
 		else:
-			password = Utils.hash_md5(username)
+			password = username
+			# password = Utils.hash_md5(username)
 			user = User.objects.create_user(username=username, password=password)
 			suser = SUser.objects.create(uid=user.id, username=username, nickname=username)
 			result = 'yes'
