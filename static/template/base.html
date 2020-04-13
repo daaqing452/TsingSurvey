@@ -3,7 +3,6 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title> 首页 </title>
 	<link href='{% static 'bootstrap/css/bootstrap.min.css' %}' rel="stylesheet">
 	<script src='{% static 'js/jquery-3.1.1.min.js' %}'> </script>
   <script src='{% static 'js/jquery-ui.min.js' %}'> </script>
@@ -30,7 +29,7 @@
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-        <li ><a href='/index/'> 首页 </a></li>
+        <li ><a href='/index/'> 问卷列表 </a></li>
     		<li ><a href='/profile/{{ suser.id }}'> 个人资料 </a></li>
     		{% if suser.admin_super %}
   	    <li ><a href='/admin_list/'> 管理员列表 </a> </li>
@@ -50,12 +49,19 @@
       </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
   </nav>
-
+  
     {% block context %}
         添加内容
     {% endblock context %}
-
-  <div id='footer'> </div>
+  <footer class="navbar-fixed-bottom navbar-default" style="margin-top: 20px" >
+   <div class="container">
+      <font >
+      版权所有 © 中国共产主义青年团清华大学研究生委员会 青年发展研究中心 <br/>
+      Copyright © Youth Development Research Center, Graduate Student Committees of Tsinghua University, the Communist Youth League 
+      </font>
+   </div>
+ </footer>
+  
 </body>
 </html>
 

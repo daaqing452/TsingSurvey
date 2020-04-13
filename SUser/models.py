@@ -123,4 +123,4 @@ class SUser(models.Model):
 
 class SampleList(models.Model):
 	name = models.CharField(max_length=128)
-	sample_list = models.TextField(default='{}')
+	sample_list = models.TextField(default='[]')

@@ -3,62 +3,69 @@
     {% block context %}
 <script src='{% static 'js/jpage.js' %}'> </script>
 <link href='{% static 'css/jpage.css' %}' rel='stylesheet'>
-<script src='{% static 'js/user_list.js' %}'> </script>
+<script src='{% static 'js/sample_list.js' %}'> </script>
 
-
+<title>样本管理</title>
 <div class="col-md-offset-1 col-md-10 ">
 <h3 class="text-center"> 样本管理 </h3>
 
 <table width="100%">
 	<tr>
 		<td>
-			<button class="btn btn-success btn-sm" id='select_all'> 全选 </button>
-			<button class="btn btn-success btn-sm" id='select_none'> 全不选 </button>
+			<br/>
+			<b>当前样本列表：</b><select id='sample_lists'></select>
+			&nbsp;&nbsp;&nbsp;
+			<b>样本容量：</b><span id="sample_list_size"></span>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<button class="btn btn-sm btn-primary" id='new_sample_list'> 新建 </button>
+			<button class="btn btn-sm btn-primary" id='save_sample_list'> 保存 </button>
+			<button class="btn btn-sm btn-primary" id='export_sample_list'> 导出 </button>
+			<button class="btn btn-sm btn-danger" id='delete_sample_list'> 删除 </button>
+			<a id='download'> </a>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<br/>
+			<!--<button class="btn btn-success btn-sm" id='select_all'> 全选 </button>
+			<button class="btn btn-success btn-sm" id='select_none'> 全不选 </button>-->
 			<button class="btn btn-info btn-sm" id='sample_yes'> 设置为样本 </button>
 			<button class="btn btn-info btn-sm" id='sample_no'> 设置为非样本 </button>
-			<button class="btn btn-info btn-sm" id='clear_all_sample'> 清空所有样本 </button>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<select id='show_statistic_select'></select>
+			<button class="btn btn-success btn-sm" id='show_statistic'> 样本信息统计 </button>
 		</td>
 	</tr>
 	<tr>
 		<td>
 		<br/>
-		<button class="btn btn-success btn-warning btn-sm" id='add_condition_sample'> 设置指定条件为样本 </button>
-		<select id='condition'></select>
-		<select id='condition_values'></select>
+			<button class="btn btn-sm btn-warning" id="add_constraint"> 添加抽样条件 </button>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;抽样比例：抽出满足上述条件
+			<input type='text' id='ratio_autosampling' style='width:30px'/>%的样本
+			<button class="btn btn-sm btn-warning" id="autosampling"> 开始抽样 </button>
+			<br/>
+			<table id='constraint' style="margin:0px;display:inline;">
+				<tr type='clone' style="display:none">
+					<td>
+						<select id="operator">
+							<option value='and'>and</option>
+							<option value='or'>or</option>
+						</select>
+					</td>
+					<td>
+						<select id="field">
+						</select>
+					</td>
+					<td>
+						<input type='radio' value='gt' /> &gt;
+						<input type='radio' value='eq' /> =
+						<input type='radio' value='lt' /> &lt;
+						<input type='radio' value='neq' /> !=
+						<input type='text'/>
+					</td>
+				<tr>
+			</table>
 		</td>
-	</tr>
-	<tr>
-		<td>
-		<br/>
-		<button class="btn btn-sm btn-warning" id='auto_sample'> 自动筛选 </button>
-		<button class="btn btn-sm btn-warning" id='show_statistic'> 样本统计 </button>
-		<button class="btn btn-sm btn-warning" id='save_sample_list'> 保存样本列表 </button>
-		<button class="btn btn-sm btn-warning" id='add_constraint'> 添加筛选条件 </button>
-		<div id='constraint' style="margin:0px;display:inline;">
-			<!--<div type='clone' style='display:none'>
-				<select>
-					<option value='-1'> </option>
-				</select>
-				<input type='checkbox' name='checkbox_clone' style='display:none'/>
-				<span name='span_clone' style='display:none'> </span>
-			</div>-->
-			<select type='clone' style='display:none'>
-				<option value='-1'> </option>
-			</select>
-		</div>
-		抽样比例 <input type='text' id='upperbound' style='width:30px'/>%
-		<table id='statistic' class='table table-bordered'>
-			<tr type='clone'> </tr>
-		</table>
-		</td>
-	<tr>
-		<td >
-			<button class="btn btn-sm btn-primary" id='list_add'> 显示全部 </button>
-			<button class="btn btn-sm btn-primary" id='list_sample'> 显示样本 </button>
-			<button class="btn btn-sm btn-primary" id='list_single'> 显示个人 </button>
-			<input type='text' id='query_single' style='width:90px'/>
-		</td>
-	</tr>
 </table>
 <br/>
 
@@ -75,7 +82,7 @@
 		<td align=center> <a type='username'> clone_a </a> </td>
 		<td align=center type='name'> clone_b </td>
 		<td align=center type='is_sample'> clone_c </td>
-		<td align=center type='credit' onclick='change_credit(this)'> clone_d </td>
+		<td align=center type='credit'> clone_d </td>
 	</tr>
 	<tr type='item'>
 		<td> <input type='checkbox' username='' /> </td>
@@ -102,7 +109,8 @@
         			if (arr[0] == 'list') list = arr[1];
         		}
         	}
-            window.location.href = '/user_list/?list=' + list + '&page=' + page_n;
+        	var sample_list_id = $("select#sample_lists").val();
+            window.location.href = '/sample_list/?samplelist=' + sample_list_id + '&list=' + list + '&page=' + page_n;
         }
     });
 </script>
